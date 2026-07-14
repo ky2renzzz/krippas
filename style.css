@@ -1,0 +1,556 @@
+/* KRIPPAS - Classic Reigns Vector Art Aesthetic */
+
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root {
+  /* Dynamic themes managed by JS based on character, default is gold/sand medieval */
+  --bg-color: #c2a76f;
+  --panel-bg: #ebd9a0;
+  --text-dark: #221a0f;
+  --text-light: #f5eedc;
+  --card-border: #362511;
+  --accent-red: #8e1c19;
+  
+  --font-game: 'Courier Prime', monospace;
+  --card-width: 330px;
+  --card-height: 380px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #1a1510;
+  color: var(--text-dark);
+  font-family: var(--font-game);
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Wide dynamic background landscape in flat low-poly design */
+.bg-scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: #121820; /* Dynamically changed in app.js */
+  overflow: hidden;
+  transition: background-color 0.5s ease;
+}
+
+/* Landscape SVGs generated in background */
+.bg-scene::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500' preserveAspectRatio='none'%3E%3Cpath d='M0 500 L0 380 L150 330 L350 420 L600 310 L800 400 L1000 350 L1000 500 Z' fill='%23080c12' opacity='0.7'/%3E%3Cpath d='M0 500 L0 420 L220 380 L480 460 L750 390 L1000 440 L1000 500 Z' fill='%23030508'/%3E%3Ccircle cx='700' cy='150' r='40' fill='%23fefdec'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: bottom;
+  opacity: 0.65;
+}
+
+/* Main Container: Reigns classic triple screen structure */
+.game-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Side Panels - floating transparent overlay texts to match Reigns layout */
+.side-panel {
+  position: absolute;
+  bottom: 40px;
+  width: 250px;
+  background: transparent;
+  color: #fff;
+  font-family: var(--font-game);
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+  pointer-events: none;
+}
+
+.left-panel {
+  left: 40px;
+  text-align: left;
+}
+
+.right-panel {
+  right: 40px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.side-panel h2 {
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.side-panel h3 {
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  opacity: 0.6;
+}
+
+.log-list {
+  max-height: 150px;
+  overflow-y: hidden;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.control-key, .legend ul {
+  font-size: 0.8rem;
+  list-style: none;
+  opacity: 0.7;
+}
+
+.audio-control button {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 6px 12px;
+  cursor: pointer;
+  pointer-events: auto;
+  font-family: var(--font-game);
+  font-size: 0.8rem;
+}
+
+/* Objective list on bottom right */
+.objectives-checklist {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.obj-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.obj-checkbox {
+  width: 10px;
+  height: 10px;
+  border: 1px solid #fff;
+  display: inline-block;
+}
+.obj-checkbox.checked {
+  background-color: var(--primary, #00ffaa);
+  border-color: var(--primary, #00ffaa);
+}
+
+/* Center Phone Viewport - exact replica of Reigns screen */
+.viewport {
+  width: 375px;
+  height: 667px;
+  background-color: var(--bg-color);
+  border: 8px solid var(--card-border);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.5s ease, border-color 0.5s ease;
+}
+
+/* Top bar: Stats indicators with classic medieval icons */
+.stats-header {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--card-border);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.stat-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.stat-indicator .icon {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+  color: var(--card-border);
+  font-weight: bold;
+}
+
+.bar-container {
+  width: 14px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--card-border);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bar-fill {
+  width: 100%;
+  background: var(--card-border);
+  transition: height 0.3s ease;
+}
+
+/* Small dot indicator above stats when choice is hovered */
+.change-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--card-border);
+  border-radius: 50%;
+  position: absolute;
+  top: -8px;
+  opacity: 0;
+  transform: scale(0);
+  transition: transform 0.2s, opacity 0.2s;
+}
+.change-dot.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Central Deck Area */
+.deck-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 24px;
+}
+
+.screen {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 20px;
+  text-align: center;
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Welcome Screen */
+.brand h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--card-border);
+  margin-bottom: 6px;
+  letter-spacing: 2px;
+}
+
+.brand .subtitle {
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  color: var(--card-border);
+  opacity: 0.8;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+
+.intro-art {
+  width: 140px;
+  height: 140px;
+  margin-bottom: 30px;
+  border: 4px solid var(--card-border);
+  background: rgba(0,0,0,0.05);
+}
+
+.flavor-text {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--card-border);
+  margin-bottom: 30px;
+}
+
+/* Buttons in Reigns typewriter style */
+.btn {
+  font-family: var(--font-game);
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--card-border);
+  border: 2px solid var(--card-border);
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  max-width: 250px;
+}
+.btn:hover {
+  background: var(--card-border);
+  color: var(--panel-bg);
+}
+
+/* Quiz Screen */
+.quiz-progress-bar {
+  width: 80%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--card-border);
+  margin-bottom: 20px;
+}
+.quiz-progress-bar .progress-fill {
+  height: 100%;
+  background: var(--card-border);
+  transition: width 0.3s;
+}
+
+.quiz-title {
+  font-size: 0.85rem;
+  color: var(--card-border);
+  margin-bottom: 24px;
+}
+
+.quiz-question-container {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  padding: 0 10px;
+}
+.quiz-question-container p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  align-items: center;
+}
+.quiz-btn {
+  font-size: 0.8rem;
+  padding: 12px 16px;
+  text-transform: none;
+}
+
+/* Reveal Screen */
+.reveal-portrait-container {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 20px;
+  border: 4px solid var(--card-border);
+  background: rgba(0,0,0,0.05);
+}
+
+#reveal-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--card-border);
+  margin-bottom: 4px;
+}
+
+.reveal-role-tag {
+  font-size: 0.75rem;
+  color: var(--card-border);
+  opacity: 0.7;
+  margin-bottom: 12px;
+}
+
+#reveal-description {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-bottom: 24px;
+}
+
+/* Gameplay Screen setup */
+.dialogue-box {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 15px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.dialogue-box p {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-dark);
+}
+
+/* Cards layout & geometry */
+.card-wrapper {
+  position: relative;
+  width: var(--card-width);
+  height: var(--card-height);
+  margin-bottom: 16px;
+  cursor: grab;
+}
+.card-wrapper:active {
+  cursor: grabbing;
+}
+
+.reigns-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--panel-bg);
+  border: 4px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+  transform-origin: 50% 90%;
+  transition: transform 0.1s ease-out;
+}
+
+.card-art {
+  flex: 1;
+  background: #f7edd4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-art svg {
+  width: 100%;
+  height: 100%;
+}
+
+.card-label {
+  padding: 8px;
+  background: var(--panel-bg);
+  border-top: 2px solid var(--card-border);
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--card-border);
+}
+
+/* Swiping Indicator preview text at the top of the card */
+.swipe-indicator {
+  position: absolute;
+  top: -36px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-game);
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--card-border);
+  opacity: 0;
+  pointer-events: none;
+  line-height: 1.3;
+  padding: 0 10px;
+}
+
+.swipe-indicator.left {
+  text-align: center;
+}
+.swipe-indicator.right {
+  text-align: center;
+}
+
+/* Invisible swiping preview area - Reigns style overrides this by putting text inside the dialog box or directly above card */
+
+/* Accessibility controls underneath */
+.manual-controls {
+  display: flex;
+  gap: 20px;
+}
+.swipe-btn {
+  background: transparent;
+  border: 2px solid var(--card-border);
+  color: var(--card-border);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.swipe-btn:hover {
+  background: var(--card-border);
+  color: var(--panel-bg);
+}
+
+/* Footer HUD */
+.hud-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-top: 2px solid var(--card-border);
+  background: rgba(0, 0, 0, 0.03);
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+.player-identity {
+  color: var(--card-border);
+}
+.player-identity .separator {
+  margin: 0 4px;
+}
+.time-in-power {
+  color: var(--card-border);
+  opacity: 0.8;
+}
+
+/* Gameover Screen */
+.gameover-title {
+  color: var(--accent-red);
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+}
+.gameover-art {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
+}
+#gameover-text {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin-bottom: 30px;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 900px) {
+  .side-panel {
+    display: none;
+  }
+}
