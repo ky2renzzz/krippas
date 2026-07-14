@@ -317,6 +317,10 @@ class GameEngine {
       currentCardNode: null,
       stats: { capital: 50, hype: 50, compute: 50, safety: 50 },
       flags: {},
+      relations: {},
+      delayed: [],
+      recentTags: [],
+      lastEffects: null,
       visitedNodes: {},
       timeInPower: 0,
       unlockedEndings: [],
@@ -407,6 +411,24 @@ class GameEngine {
         if ((this.state.visitedNodes[nodeId] || 0) < cond.minVisits[nodeId]) return false;
       }
     }
+    if (cond.minRelations) {
+      for (const key in cond.minRelations) {
+        if (this.getRelation(key) < cond.minRelations[key]) return false;
+      }
+    }
+    if (cond.maxRelations) {
+      for (const key in cond.maxRelations) {
+        if (this.getRelation(key) > cond.maxRelations[key]) return false;
+      }
+    }
+    if (cond.tagsAny && Array.isArray(cond.tagsAny)) {
+      const have = this.state.recentTags || [];
+      if (!cond.tagsAny.some((t) => have.includes(t))) return false;
+    }
+    if (cond.tagsAll && Array.isArray(cond.tagsAll)) {
+      const have = this.state.recentTags || [];
+      if (!cond.tagsAll.every((t) => have.includes(t))) return false;
+    }
     return true;
   }
 
@@ -433,7 +455,11 @@ class GameEngine {
           next: picked.next !== undefined ? picked.next : rawChoice.next,
           specialEnding: picked.specialEnding || rawChoice.specialEnding || null,
           objectiveKeys: picked.objectiveKeys || rawChoice.objectiveKeys || null,
-          log: picked.log || rawChoice.log || null
+          log: picked.log || rawChoice.log || null,
+          relations: { ...(rawChoice.relations || {}), ...(picked.relations || {}) },
+          tags: picked.tags || rawChoice.tags || null,
+          delay: picked.delay || rawChoice.delay || null,
+          smart: picked.smart !== undefined ? picked.smart : rawChoice.smart
         };
       }
     }
@@ -445,8 +471,202 @@ class GameEngine {
       next: rawChoice.next,
       specialEnding: rawChoice.specialEnding || null,
       objectiveKeys: rawChoice.objectiveKeys || null,
-      log: rawChoice.log || null
+      log: rawChoice.log || null,
+      relations: rawChoice.relations || null,
+      tags: rawChoice.tags || null,
+      delay: rawChoice.delay || null,
+      smart: rawChoice.smart
     };
+  }
+
+  clampStat(v) {
+    return Math.max(0, Math.min(100, Math.round(v)));
+  }
+
+  defaultRelations() {
+    return {
+      family: 50,
+      board: 50,
+      rival: 50,
+      regulator: 50,
+      partner: 50,
+      public: 50,
+      staff: 50
+    };
+  }
+
+  getRelation(key) {
+    if (typeof this.state.relations[key] !== 'number') return 50;
+    return this.state.relations[key];
+  }
+
+  applyRelations(deltaMap) {
+    if (!deltaMap || typeof deltaMap !== 'object') return;
+    for (const key in deltaMap) {
+      const cur = this.getRelation(key);
+      this.state.relations[key] = this.clampStat(cur + deltaMap[key]);
+    }
+    // Soft sync: extreme relations bleed into visible bars over time.
+    if (this.getRelation('public') >= 70) this.state.stats.hype = this.clampStat(this.state.stats.hype + 1);
+    if (this.getRelation('public') <= 30) this.state.stats.hype = this.clampStat(this.state.stats.hype - 1);
+    if (this.getRelation('partner') >= 70) this.state.stats.capital = this.clampStat(this.state.stats.capital + 1);
+    if (this.getRelation('partner') <= 30) this.state.stats.capital = this.clampStat(this.state.stats.capital - 1);
+    if (this.getRelation('staff') >= 70) this.state.stats.compute = this.clampStat(this.state.stats.compute + 1);
+    if (this.getRelation('staff') <= 30) this.state.stats.safety = this.clampStat(this.state.stats.safety - 1);
+    if (this.getRelation('regulator') <= 30) this.state.stats.safety = this.clampStat(this.state.stats.safety - 1);
+    if (this.getRelation('family') <= 25) this.state.stats.hype = this.clampStat(this.state.stats.hype - 1);
+  }
+
+  queueDelay(delaySpec) {
+    if (!delaySpec) return;
+    const list = Array.isArray(delaySpec) ? delaySpec : [delaySpec];
+    list.forEach((d) => {
+      if (!d) return;
+      const turns = typeof d.turns === 'number' ? d.turns : 2;
+      this.state.delayed.push({
+        remaining: Math.max(1, turns),
+        effects: d.effects || null,
+        setFlags: d.setFlags || null,
+        clearFlags: d.clearFlags || null,
+        relations: d.relations || null,
+        log: d.log || null,
+        goto: d.goto || d.next || null,
+        force: !!d.force
+      });
+    });
+  }
+
+  processDelayedEffects() {
+    if (!Array.isArray(this.state.delayed) || !this.state.delayed.length) return null;
+    const due = [];
+    const keep = [];
+    this.state.delayed.forEach((d) => {
+      const next = { ...d, remaining: d.remaining - 1 };
+      if (next.remaining <= 0) due.push(next);
+      else keep.push(next);
+    });
+    this.state.delayed = keep;
+
+    let forcedGoto = null;
+    due.forEach((d) => {
+      if (d.effects) this.applySmartEffects(d.effects, { silent: true, smart: true });
+      if (d.relations) this.applyRelations(d.relations);
+      this.applyFlags(d.setFlags, d.clearFlags);
+      if (d.log) {
+        this.narrativeLog.insertAdjacentHTML(
+          'afterbegin',
+          `<div class="log-item system">AFTERMATH: ${d.log}</div>`
+        );
+      }
+      if (d.goto && (d.force || !forcedGoto)) forcedGoto = d.goto;
+    });
+    return forcedGoto;
+  }
+
+  // Context-aware stat deltas: same "choice magnitude" hits differently
+  // depending on your current position and relationships.
+  applySmartEffects(rawEffects, options = {}) {
+    const smart = options.smart !== false;
+    const base = {};
+    STAT_KEYS.forEach((k) => {
+      base[k] = 0;
+    });
+    if (!rawEffects) {
+      this.state.lastEffects = base;
+      return base;
+    }
+
+    const s = this.state.stats;
+    const out = { ...base };
+    for (const k of STAT_KEYS) {
+      if (typeof rawEffects[k] === 'number') out[k] = rawEffects[k];
+    }
+
+    if (smart) {
+      // Diminishing returns near extremes (harder to stack infinite power, softer near collapse).
+      for (const k of STAT_KEYS) {
+        const delta = out[k];
+        if (!delta) continue;
+        const cur = s[k] ?? 50;
+        if (delta > 0) {
+          if (cur >= 85) out[k] = Math.max(1, Math.round(delta * 0.35));
+          else if (cur >= 70) out[k] = Math.max(1, Math.round(delta * 0.65));
+          else if (cur <= 25) out[k] = Math.round(delta * 1.15);
+        } else {
+          if (cur <= 15) out[k] = Math.min(-1, Math.round(delta * 0.45));
+          else if (cur <= 30) out[k] = Math.round(delta * 0.75);
+          else if (cur >= 80) out[k] = Math.round(delta * 1.15);
+        }
+      }
+
+      // Cascade tradeoffs: ambition taxes safety, safety taxes speed, hype feeds capital then burn, etc.
+      if (out.compute > 0) {
+        out.safety += -Math.max(1, Math.round(out.compute * 0.35));
+        out.capital += -Math.max(0, Math.round(out.compute * 0.2));
+      }
+      if (out.safety > 0) {
+        out.compute += -Math.max(0, Math.round(out.safety * 0.25));
+        if (this.getRelation('regulator') >= 60) out.hype += 1;
+      }
+      if (out.hype > 0) {
+        out.capital += Math.max(0, Math.round(out.hype * 0.2));
+        if (this.getRelation('regulator') <= 40) out.safety += -Math.max(1, Math.round(out.hype * 0.25));
+      }
+      if (out.capital > 0) {
+        // Money attracts oversight and product pressure.
+        out.safety += -Math.max(0, Math.round(out.capital * 0.12));
+        if (this.getRelation('board') <= 40) out.hype += -1;
+      }
+      if (out.capital < 0) {
+        // Burn rate hurts staff morale/compute capacity slightly.
+        out.compute += -Math.max(0, Math.round(Math.abs(out.capital) * 0.15));
+      }
+
+      // Relationship modifiers amplify political reality.
+      if (this.getRelation('rival') >= 70 && out.hype > 0) out.hype = Math.max(1, out.hype - 2);
+      if (this.getRelation('partner') <= 35 && out.capital > 0) out.capital = Math.max(1, Math.round(out.capital * 0.6));
+      if (this.getRelation('staff') <= 35 && out.compute > 0) out.compute = Math.max(1, Math.round(out.compute * 0.6));
+      if (this.getRelation('family') <= 30 && out.hype > 0) out.safety += -1;
+
+      // Recent behavioral tags create short-term narrative momentum.
+      const tags = this.state.recentTags || [];
+      if (tags.includes('aggressive') && out.safety < 0) out.safety -= 1;
+      if (tags.includes('cautious') && out.compute > 0) out.compute = Math.max(1, out.compute - 1);
+      if (tags.includes('alliance') && out.capital > 0) out.capital += 1;
+      if (tags.includes('betrayal') && out.hype !== 0) out.hype += out.hype > 0 ? -1 : -1;
+    }
+
+    // Apply + keep for UI dots.
+    for (const k of STAT_KEYS) {
+      out[k] = Math.round(out[k] || 0);
+      s[k] = this.clampStat((s[k] ?? 50) + out[k]);
+    }
+    this.state.lastEffects = out;
+    return out;
+  }
+
+  rememberTags(tags) {
+    if (!tags) return;
+    const list = Array.isArray(tags) ? tags : [tags];
+    this.state.recentTags = [...list, ...(this.state.recentTags || [])].slice(0, 8);
+  }
+
+  // World reacts to your portfolio of decisions, not just the last click.
+  pickWorldPressureNode() {
+    const story = this.getStory();
+    if (!story || !story.pressure || !Array.isArray(story.pressure.nodes)) return null;
+    if (this.state.timeInPower < 3) return null;
+    // Every 3-4 turns, pressure scene can cut in if conditions match.
+    if (this.state.timeInPower % 3 !== 0) return null;
+
+    for (const entry of story.pressure.nodes) {
+      if (!entry || !entry.goto) continue;
+      if (entry.if && !this.evaluateCondition(entry.if)) continue;
+      if (entry.minTime && this.state.timeInPower < entry.minTime) continue;
+      if (entry.once && this.state.visitedNodes[entry.goto]) continue;
+      return entry.goto;
+    }
+    return null;
   }
 
   getResolvedNode(nodeId) {
@@ -552,6 +772,7 @@ class GameEngine {
 
     this.dialogueText = document.getElementById('dialogue-text');
     this.speakerName = document.getElementById('speaker-name');
+    this.cardSpeakerLabel = document.getElementById('card-speaker-label');
     this.cardPortrait = document.getElementById('card-portrait');
     this.hudPlayerName = document.getElementById('hud-player-name');
     this.hudPlayerRole = document.getElementById('hud-player-role');
@@ -760,6 +981,13 @@ class GameEngine {
 
     this.state.stats = this.cloneStats(charConfig.initialStats);
     this.state.flags = {};
+    this.state.relations = this.defaultRelations();
+    if (charConfig.initialRelations) {
+      Object.assign(this.state.relations, charConfig.initialRelations);
+    }
+    this.state.delayed = [];
+    this.state.recentTags = [];
+    this.state.lastEffects = null;
     this.state.visitedNodes = {};
     this.state.timeInPower = 0;
     this.state.currentCardNode = story.start;
@@ -835,16 +1063,16 @@ class GameEngine {
 
       this.dialogueText.innerText = node.text;
       this.speakerName.innerText = node.speaker;
+      if (this.cardSpeakerLabel) this.cardSpeakerLabel.innerText = node.speaker;
 
       const portraitKey = node.avatar || 'engineer';
       this.cardPortrait.innerHTML = PORTRAITS[portraitKey] || PORTRAITS.engineer;
 
-      this.indicatorLeft.innerText = node.left ? node.left.text : '';
-      this.indicatorRight.innerText = node.right ? node.right.text : '';
+      if (this.indicatorLeft) this.indicatorLeft.innerText = node.left ? node.left.text : '';
+      if (this.indicatorRight) this.indicatorRight.innerText = node.right ? node.right.text : '';
 
       this.mainCard.style.transform = 'rotate(0deg) translate(0px, 0px)';
-      this.indicatorLeft.style.opacity = 0;
-      this.indicatorRight.style.opacity = 0;
+      this.setChoicePreview(null);
       this.hideChangeDots();
       return;
     }
@@ -877,18 +1105,20 @@ class GameEngine {
     if (!node) return;
 
     if (this.dragOffset.x > 30) {
-      this.indicatorRight.style.opacity = Math.min((this.dragOffset.x - 30) / 70, 1);
-      this.indicatorLeft.style.opacity = 0;
+      this.setChoicePreview('right');
       this.showChangeDots(node.right && node.right.effects);
     } else if (this.dragOffset.x < -30) {
-      this.indicatorLeft.style.opacity = Math.min((-this.dragOffset.x - 30) / 70, 1);
-      this.indicatorRight.style.opacity = 0;
+      this.setChoicePreview('left');
       this.showChangeDots(node.left && node.left.effects);
     } else {
-      this.indicatorLeft.style.opacity = 0;
-      this.indicatorRight.style.opacity = 0;
+      this.setChoicePreview(null);
       this.hideChangeDots();
     }
+  }
+
+  setChoicePreview(side) {
+    if (this.btnSwipeLeft) this.btnSwipeLeft.classList.toggle('active-preview', side === 'left');
+    if (this.btnSwipeRight) this.btnSwipeRight.classList.toggle('active-preview', side === 'right');
   }
 
   dragEndHandler() {
@@ -902,8 +1132,7 @@ class GameEngine {
       this.performChoice('left');
     } else {
       this.mainCard.style.transform = 'rotate(0deg) translate(0px, 0px)';
-      this.indicatorLeft.style.opacity = 0;
-      this.indicatorRight.style.opacity = 0;
+      this.setChoicePreview(null);
       this.hideChangeDots();
     }
     this.dragOffset = { x: 0, y: 0 };
@@ -931,14 +1160,12 @@ class GameEngine {
     }
 
     this.applyFlags(choice.setFlags, choice.clearFlags);
+    this.applyRelations(choice.relations);
+    this.rememberTags(choice.tags);
+    this.queueDelay(choice.delay);
 
-    if (choice.effects) {
-      for (const stat in choice.effects) {
-        if (!Object.prototype.hasOwnProperty.call(this.state.stats, stat)) continue;
-        this.state.stats[stat] += choice.effects[stat];
-        this.state.stats[stat] = Math.max(0, Math.min(100, this.state.stats[stat]));
-      }
-    }
+    // Smart cascading effects instead of raw additive stats.
+    this.applySmartEffects(choice.effects, { smart: choice.smart !== false });
 
     this.state.timeInPower++;
     this.hudTimeVal.innerText = this.state.timeInPower;
@@ -965,19 +1192,65 @@ class GameEngine {
       return;
     }
 
+    // Delayed consequences can force a future scene (betrayal, leak, call at night).
+    const delayedGoto = this.processDelayedEffects();
+    if (delayedGoto && story.nodes[delayedGoto]) {
+      this.state.currentCardNode = delayedGoto;
+      this.renderCurrentCard();
+      return;
+    }
+
+    // World pressure scenes interrupt linear chains based on relations/flags.
+    const pressure = this.pickWorldPressureNode();
+    if (pressure && story.nodes[pressure]) {
+      this.state.currentCardNode = pressure;
+      this.renderCurrentCard();
+      return;
+    }
+
     this.state.currentCardNode = this.resolveNextTarget(choice.next) || story.start;
     this.renderCurrentCard();
   }
 
   showChangeDots(effects) {
     this.hideChangeDots();
+    // Preview uses smart estimation so the dots reflect real cascades.
     if (!effects) return;
-    for (const stat in effects) {
-      if (effects[stat] !== 0) {
+    const preview = this.estimateSmartEffects(effects);
+    for (const stat in preview) {
+      if (preview[stat] !== 0) {
         const query = document.querySelector(`#stat-${stat} .change-dot`);
         if (query) query.classList.add('active');
       }
     }
+  }
+
+  estimateSmartEffects(rawEffects) {
+    // Non-mutating mirror of applySmartEffects for UI preview.
+    const s = { ...this.state.stats };
+    const out = { capital: 0, hype: 0, compute: 0, safety: 0 };
+    if (!rawEffects) return out;
+    for (const k of STAT_KEYS) {
+      if (typeof rawEffects[k] === 'number') out[k] = rawEffects[k];
+    }
+    for (const k of STAT_KEYS) {
+      const delta = out[k];
+      if (!delta) continue;
+      const cur = s[k] ?? 50;
+      if (delta > 0) {
+        if (cur >= 85) out[k] = Math.max(1, Math.round(delta * 0.35));
+        else if (cur >= 70) out[k] = Math.max(1, Math.round(delta * 0.65));
+      } else if (delta < 0) {
+        if (cur <= 15) out[k] = Math.min(-1, Math.round(delta * 0.45));
+        else if (cur <= 30) out[k] = Math.round(delta * 0.75);
+      }
+    }
+    if (out.compute > 0) out.safety += -Math.max(1, Math.round(out.compute * 0.35));
+    if (out.safety > 0) out.compute += -Math.max(0, Math.round(out.safety * 0.25));
+    if (out.hype > 0) out.capital += Math.max(0, Math.round(out.hype * 0.2));
+    if (out.capital > 0) out.safety += -Math.max(0, Math.round(out.capital * 0.12));
+    for (const k of STAT_KEYS) out[k] = Math.round(out[k] || 0);
+    return out;
   }
 
   hideChangeDots() {
@@ -993,7 +1266,7 @@ class GameEngine {
       if (fill) fill.style.height = `${val}%`;
 
       if (indicator) {
-        if (val <= 15 || val >= 85) {
+        if (val <= 15) {
           indicator.classList.add('danger');
         } else {
           indicator.classList.remove('danger');
@@ -1006,7 +1279,6 @@ class GameEngine {
     for (const stat of STAT_KEYS) {
       const val = this.state.stats[stat];
       if (val <= 0) return `${stat}_low`;
-      if (val >= 100) return `${stat}_high`;
     }
     return null;
   }
@@ -1059,6 +1331,10 @@ class GameEngine {
     this.state.currentCardNode = null;
     this.state.stats = this.defaultStats();
     this.state.flags = {};
+    this.state.relations = this.defaultRelations();
+    this.state.delayed = [];
+    this.state.recentTags = [];
+    this.state.lastEffects = null;
     this.state.visitedNodes = {};
     this.state.timeInPower = 0;
     this.state.quizStep = 0;

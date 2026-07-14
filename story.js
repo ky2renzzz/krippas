@@ -359,7 +359,17 @@ const STORY_DATA = {
   // ============================================================
   elon: {
     start: 'elon_a1_power',
-    nodes: {
+        pressure: {
+      nodes: [
+        { once: true, minTime: 4, if: { maxRelations: { family: 35 } }, goto: 'elon_pressure_family' },
+        { once: true, minTime: 5, if: { minRelations: { rival: 70 } }, goto: 'elon_pressure_rival' },
+        { once: true, minTime: 6, if: { maxRelations: { regulator: 30 } }, goto: 'elon_pressure_doj' },
+        { once: true, minTime: 7, if: { flags: { lawsuit_mode: true } }, goto: 'elon_pressure_lawyer_night' },
+        { once: true, minTime: 8, if: { maxRelations: { staff: 40 } }, goto: 'elon_pressure_walkout' },
+        { once: true, minTime: 9, if: { minRelations: { public: 75 }, tagsAny: ['aggressive'] }, goto: 'elon_pressure_mob' }
+      ]
+    },
+nodes: {
       elon_a1_power: {
         speaker: 'Chief GPU Officer',
         avatar: 'engineer',
@@ -368,6 +378,9 @@ const STORY_DATA = {
           text: 'Tap the grid. We are the future\'s power plant.',
           effects: { capital: -6, hype: 7, compute: 8, safety: -7 },
           setFlags: { colossus_grid: true, energy_war: true },
+          relations: { public: -6, regulator: -8, staff: 4, partner: 2 },
+          tags: ['aggressive'],
+          delay: { turns: 3, log: 'Local residents organize against Memphis brownouts.', effects: { hype: -3, capital: -2 }, relations: { public: -5, regulator: -3 } },
           next: 'elon_a1_family',
           objectiveKeys: ['card_elon_a1_power']
         },
@@ -375,6 +388,8 @@ const STORY_DATA = {
           text: 'Buy the generators. Quiet power, loud compute.',
           effects: { capital: -8, hype: -4, compute: 7, safety: 6 },
           setFlags: { colossus_diesel: true },
+          relations: { public: 3, regulator: 4, partner: -2, staff: 2 },
+          tags: ['cautious'],
           next: 'elon_a1_family',
           objectiveKeys: ['card_elon_a1_power']
         }
@@ -396,12 +411,16 @@ const STORY_DATA = {
           text: 'I stay. Double night shifts. Family later.',
           effects: { capital: -6, hype: 6, compute: 7, safety: -6 },
           setFlags: { workaholic: true, family_strain: true },
+          relations: { family: -10, staff: 3, public: 2 },
+          tags: ['aggressive'],
           next: 'elon_a1_sec'
         },
         right: {
           text: 'Take Starbase weekend. Reset my head.',
           effects: { capital: -5, hype: 6, compute: -6, safety: 6 },
           setFlags: { family_repair: true },
+          relations: { family: 12, staff: -2, public: 3 },
+          tags: ['cautious', 'family'],
           next: 'elon_a1_sec'
         }
       },
@@ -413,12 +432,17 @@ const STORY_DATA = {
           text: 'Meme them. Post the affidavit as comedy.',
           effects: { capital: 6, hype: 8, compute: 0, safety: -7 },
           setFlags: { sec_war: true, meme_war: true },
+          relations: { regulator: -12, public: 8, board: -4, partner: -3 },
+          tags: ['aggressive'],
+          delay: { turns: 2, log: 'An SEC supplemental notice cites your meme as market signal.', effects: { capital: -3, safety: -2 }, relations: { regulator: -4 } },
           next: 'elon_a1_gate'
         },
         right: {
           text: 'Issue a cold legal clarification.',
           effects: { capital: -5, hype: -7, compute: 0, safety: 7 },
           setFlags: { sec_calm: true },
+          relations: { regulator: 10, public: -4, board: 4, partner: 3 },
+          tags: ['cautious', 'alliance'],
           next: 'elon_a1_gate'
         }
       },
@@ -791,6 +815,129 @@ const STORY_DATA = {
           next: 'elon_loop_hub'
         }
       },
+      elon_pressure_family: {
+        speaker: 'Shivon Zilis',
+        avatar: 'friend',
+        text: 'One of the kids hung up on me. They said they only see you in headlines. This is not a PR problem. This is our life.',
+        left: {
+          text: 'Block a week. Put them before Colossus.',
+          effects: { capital: -3, hype: 2, compute: -4, safety: 4 },
+          relations: { family: 14, staff: 2, public: 3 },
+          tags: ['cautious', 'family'],
+          setFlags: { family_week: true },
+          next: 'elon_loop_hub'
+        },
+        right: {
+          text: 'I cannot stop the train. Send help, not me.',
+          effects: { capital: 1, hype: 3, compute: 4, safety: -3 },
+          relations: { family: -12, public: -2, staff: -2 },
+          tags: ['aggressive'],
+          setFlags: { family_broken: true },
+          delay: { turns: 3, log: 'A tabloid runs a family feature you cannot meme away.', effects: { hype: -5, safety: -2 }, relations: { public: -6, family: -4 } },
+          next: 'elon_loop_hub'
+        }
+      },
+      elon_pressure_rival: {
+        speaker: 'Rival Lab Mole',
+        avatar: 'board',
+        text: 'Your Memphis power stunt gave them a weapon. They are prepping a joint press hit calling Colossus a public hazard. Leak their draft first - or kill the story with lawyers.',
+        left: {
+          text: 'Leak first. Own the narrative war.',
+          effects: { capital: -4, hype: 7, compute: 0, safety: -4 },
+          relations: { rival: 6, regulator: -6, public: 4 },
+          tags: ['aggressive', 'betrayal'],
+          setFlags: { leaked_rival: true },
+          next: 'elon_loop_hub'
+        },
+        right: {
+          text: 'Drown them in legal letters.',
+          effects: { capital: -6, hype: -2, compute: 2, safety: 4 },
+          relations: { rival: -4, regulator: 3, partner: 2 },
+          tags: ['cautious'],
+          next: 'elon_loop_hub'
+        }
+      },
+      elon_pressure_doj: {
+        speaker: 'DOJ Contact',
+        avatar: 'politician',
+        text: 'Unofficially: you are on a list. Cooperate on model risk disclosures, or keep swaggering until subpoenas replace DMs.',
+        left: {
+          text: 'Soft-cooperate. Buy time with paperwork.',
+          effects: { capital: -3, hype: -3, compute: -2, safety: 7 },
+          relations: { regulator: 12, public: -2, board: 3 },
+          tags: ['cautious', 'alliance'],
+          setFlags: { doj_soft: true },
+          next: 'elon_loop_hub'
+        },
+        right: {
+          text: 'Tell them innovation does not kneel.',
+          effects: { capital: 2, hype: 6, compute: 3, safety: -6 },
+          relations: { regulator: -12, public: 5, partner: -3 },
+          tags: ['aggressive'],
+          delay: { turns: 2, log: 'A sealed inquiry request lands on your general counsel desk.', effects: { capital: -5, safety: -3 }, relations: { regulator: -4 } },
+          next: 'elon_loop_hub'
+        }
+      },
+      elon_pressure_lawyer_night: {
+        speaker: 'Legal Advisor',
+        avatar: 'lawyer',
+        text: "3:11am. Sam's team offered a sealed settlement window that expires at dawn. Take the off-ramp - or keep burning millions for principle and spectacle.",
+        left: {
+          text: 'Sign the sealed peace.',
+          effects: { capital: 5, hype: -4, compute: 3, safety: 5 },
+          relations: { rival: -10, partner: 6, board: 4, public: -3 },
+          tags: ['alliance'],
+          setFlags: { settled_sam: true },
+          clearFlags: ['lawsuit_mode'],
+          next: 'elon_loop_hub'
+        },
+        right: {
+          text: 'No. The war is the product.',
+          effects: { capital: -5, hype: 5, compute: -1, safety: -2 },
+          relations: { rival: 8, staff: -3, family: -2 },
+          tags: ['aggressive', 'betrayal'],
+          next: 'elon_loop_hub'
+        }
+      },
+      elon_pressure_walkout: {
+        speaker: 'xAI Night-Shift Lead',
+        avatar: 'engineer',
+        text: 'Half the night crew is talking walkout. They say you only speak to the cluster. Stock options or an apology - pick something human.',
+        left: {
+          text: 'Grant emergency equity and sleep rotations.',
+          effects: { capital: -6, hype: 2, compute: 5, safety: 3 },
+          relations: { staff: 14, family: 2 },
+          tags: ['alliance'],
+          next: 'elon_loop_hub'
+        },
+        right: {
+          text: 'Anyone free to quit can quit.',
+          effects: { capital: 2, hype: 1, compute: -7, safety: -4 },
+          relations: { staff: -14, public: -3 },
+          tags: ['aggressive'],
+          delay: { turns: 2, log: 'Key kernel engineers resign on the same morning.', effects: { compute: -6, hype: -3 }, relations: { staff: -4 } },
+          next: 'elon_loop_hub'
+        }
+      },
+      elon_pressure_mob: {
+        speaker: 'Livestream Host',
+        avatar: 'politician',
+        text: 'Your fans want a midnight spaces to crown you philosopher-king. Do you feed the cult - or starve it before it owns you?',
+        left: {
+          text: 'Host the spaces. Ride the wave.',
+          effects: { capital: 3, hype: 8, compute: -2, safety: -5 },
+          relations: { public: 10, regulator: -5, board: -2 },
+          tags: ['aggressive'],
+          next: 'elon_loop_hub'
+        },
+        right: {
+          text: 'Go silent. Build instead of sermonize.',
+          effects: { capital: 0, hype: -4, compute: 5, safety: 4 },
+          relations: { public: -6, staff: 4, regulator: 3 },
+          tags: ['cautious'],
+          next: 'elon_loop_hub'
+        }
+      },
       elon_loop_hub: {
         speaker: 'Chief of Staff',
         avatar: 'friend',
@@ -824,7 +971,17 @@ const STORY_DATA = {
   // ============================================================
   sam: {
     start: 'sam_a1_board',
-    nodes: {
+        pressure: {
+      nodes: [
+        { once: true, minTime: 3, if: { maxRelations: { board: 40 } }, goto: 'sam_pressure_whisper' },
+        { once: true, minTime: 5, if: { flags: { ilya_ignored: true } }, goto: 'sam_pressure_ilya_letter' },
+        { once: true, minTime: 6, if: { minRelations: { partner: 70 }, maxRelations: { board: 45 } }, goto: 'sam_pressure_satya' },
+        { once: true, minTime: 7, if: { maxRelations: { staff: 40 } }, goto: 'sam_pressure_staff' },
+        { once: true, minTime: 8, if: { flags: { silent_patch: true } }, goto: 'sam_pressure_leak' },
+        { once: true, minTime: 9, if: { minRelations: { public: 70 } }, goto: 'sam_pressure_congress' }
+      ]
+    },
+nodes: {
       sam_a1_board: {
         speaker: 'Greg Brockman',
         avatar: 'engineer',
@@ -833,12 +990,17 @@ const STORY_DATA = {
           text: 'Offer seats. Keep enemies close.',
           effects: { capital: -6, hype: 5, compute: 0, safety: 7 },
           setFlags: { board_appeased: true },
+          relations: { board: 10, staff: 2, partner: 1 },
+          tags: ['alliance', 'cautious'],
           next: 'sam_a1_ilya'
         },
         right: {
           text: 'Push restructuring immediately.',
           effects: { capital: 7, hype: 6, compute: 6, safety: -7 },
           setFlags: { board_provoked: true },
+          relations: { board: -14, partner: 3, staff: 2 },
+          tags: ['aggressive'],
+          delay: { turns: 1, log: 'Helen calls an emergency closed session.', relations: { board: -4 }, effects: { hype: 2 } },
           next: 'sam_a2_coup'
         }
       },
@@ -850,12 +1012,16 @@ const STORY_DATA = {
           text: 'Pause. Safety before schedule.',
           effects: { capital: -7, hype: -7, compute: -7, safety: 8 },
           setFlags: { ilya_allied: true, training_paused: true },
+          relations: { staff: 8, board: 4, partner: -4, rival: -2 },
+          tags: ['cautious'],
           next: 'sam_a1_ms'
         },
         right: {
           text: 'Cannot pause. Google is coming.',
           effects: { capital: 7, hype: 7, compute: 7, safety: -8 },
           setFlags: { ilya_ignored: true, full_speed: true },
+          relations: { staff: -6, board: -8, partner: 4, public: 3 },
+          tags: ['aggressive', 'betrayal'],
           next: 'sam_a2_coup'
         }
       },
@@ -1117,6 +1283,126 @@ const STORY_DATA = {
           next: 'sam_loop_hub'
         }
       },
+      sam_pressure_whisper: {
+        speaker: 'Friendly Board Source',
+        avatar: 'board',
+        text: 'They are mapping who stays if you vanish. This is a pre-coup whiteboard. Feed them a compromise package - or accelerate so they cannot catch the bus.',
+        left: {
+          text: 'Offer compromise package tonight.',
+          effects: { capital: -3, hype: -1, compute: 0, safety: 5 },
+          relations: { board: 10, partner: 2, staff: 2 },
+          tags: ['cautious', 'alliance'],
+          setFlags: { pre_coup_deal: true },
+          next: 'sam_loop_hub'
+        },
+        right: {
+          text: 'Accelerate. Outrun the board.',
+          effects: { capital: 4, hype: 4, compute: 5, safety: -5 },
+          relations: { board: -10, partner: 3, staff: 3 },
+          tags: ['aggressive'],
+          next: 'sam_loop_hub'
+        }
+      },
+      sam_pressure_ilya_letter: {
+        speaker: 'Ilya Sutskever',
+        avatar: 'ilya',
+        text: 'I wrote a letter I almost sent to every staffer. You chose velocity over truth. Convince me I am wrong - or accept that trust is already dead.',
+        left: {
+          text: 'Ask him to co-own a hard audit window.',
+          effects: { capital: -4, hype: -2, compute: -5, safety: 8 },
+          relations: { staff: 8, board: 5, public: 3 },
+          tags: ['cautious'],
+          setFlags: { ilya_reconcile: true },
+          next: 'sam_loop_hub'
+        },
+        right: {
+          text: 'I cannot let one mystic halt the frontier.',
+          effects: { capital: 3, hype: 3, compute: 4, safety: -6 },
+          relations: { staff: -8, board: -6, public: -2 },
+          tags: ['aggressive', 'betrayal'],
+          delay: { turns: 2, log: "Ilya's circle starts a private safety caucus without you.", relations: { staff: -5, board: -4 }, effects: { safety: -3, hype: -2 } },
+          next: 'sam_loop_hub'
+        }
+      },
+      sam_pressure_satya: {
+        speaker: 'Satya Nadella',
+        avatar: 'investor',
+        text: 'Microsoft can shield you from the board - for a deeper exclusive. Or we watch, neutrally, while you fight alone.',
+        left: {
+          text: 'Take the shield. Pay with exclusivity.',
+          effects: { capital: 7, hype: -2, compute: 7, safety: -3 },
+          relations: { partner: 12, board: -4, rival: 3 },
+          tags: ['alliance'],
+          setFlags: { ms_shield: true },
+          next: 'sam_loop_hub'
+        },
+        right: {
+          text: 'No deeper exclusive. I keep optionality.',
+          effects: { capital: -3, hype: 3, compute: -3, safety: 2 },
+          relations: { partner: -8, board: 2, public: 2 },
+          tags: ['cautious'],
+          next: 'sam_loop_hub'
+        }
+      },
+      sam_pressure_staff: {
+        speaker: 'Mira Murati',
+        avatar: 'friend',
+        text: 'Researchers are screaming in private channels. They need a human CEO moment, not another all-hands deck.',
+        left: {
+          text: 'Unscripted AMA. Take the hits live.',
+          effects: { capital: 0, hype: 5, compute: -1, safety: 3 },
+          relations: { staff: 12, public: 4, board: -2 },
+          tags: ['alliance'],
+          next: 'sam_loop_hub'
+        },
+        right: {
+          text: 'Keep message discipline. No raw theater.',
+          effects: { capital: 2, hype: -2, compute: 2, safety: 0 },
+          relations: { staff: -8, board: 4 },
+          tags: ['cautious'],
+          next: 'sam_loop_hub'
+        }
+      },
+      sam_pressure_leak: {
+        speaker: 'Unknown Number',
+        avatar: 'politician',
+        text: 'We have the silent patch memo. Publish with us as whistle-sourced reform - or we run it as coverup.',
+        left: {
+          text: 'Pre-publish as reform narrative.',
+          effects: { capital: -3, hype: 4, compute: -2, safety: 5 },
+          relations: { public: 6, board: -3, regulator: 5 },
+          tags: ['alliance'],
+          setFlags: { controlled_leak: true },
+          next: 'sam_loop_hub'
+        },
+        right: {
+          text: 'Deny and tight-ship legal.',
+          effects: { capital: -4, hype: -5, compute: 1, safety: -4 },
+          relations: { public: -8, regulator: -6, staff: -3 },
+          tags: ['betrayal'],
+          delay: { turns: 1, log: 'The memo hits every major outlet before breakfast.', effects: { hype: -6, safety: -4, capital: -3 }, relations: { public: -5, board: -4 } },
+          next: 'sam_loop_hub'
+        }
+      },
+      sam_pressure_congress: {
+        speaker: 'Committee Staffer',
+        avatar: 'politician',
+        text: 'They want you on camera about AGI timelines. Charm them into soft language - or tell the hard scary version and own the panic.',
+        left: {
+          text: 'Charm. Soften the edges.',
+          effects: { capital: 2, hype: 3, compute: 1, safety: -2 },
+          relations: { regulator: 6, public: 2, rival: -2 },
+          tags: ['alliance'],
+          next: 'sam_loop_hub'
+        },
+        right: {
+          text: 'Tell the hard scary version.',
+          effects: { capital: -2, hype: 6, compute: -2, safety: 5 },
+          relations: { regulator: 3, public: 6, partner: -3 },
+          tags: ['aggressive'],
+          next: 'sam_loop_hub'
+        }
+      },
       sam_loop_hub: {
         speaker: 'PR Director',
         avatar: 'friend',
@@ -1149,7 +1435,17 @@ const STORY_DATA = {
   // ============================================================
   dario: {
     start: 'dario_a1_evals',
-    nodes: {
+        pressure: {
+      nodes: [
+        { once: true, minTime: 4, if: { flags: { kept_deceptive: true } }, goto: 'dario_pressure_nightmare' },
+        { once: true, minTime: 5, if: { maxRelations: { partner: 40 } }, goto: 'dario_pressure_aws_cold' },
+        { once: true, minTime: 6, if: { minRelations: { regulator: 70 } }, goto: 'dario_pressure_ethics_invite' },
+        { once: true, minTime: 7, if: { maxRelations: { staff: 45 } }, goto: 'dario_pressure_team' },
+        { once: true, minTime: 8, if: { flags: { buried_crisis: true } }, goto: 'dario_pressure_whistle' },
+        { once: true, minTime: 9, if: { flags: { military_claude: true } }, goto: 'dario_pressure_protest' }
+      ]
+    },
+nodes: {
       dario_a1_evals: {
         speaker: 'Jared Kaplan',
         avatar: 'engineer',
@@ -1158,12 +1454,16 @@ const STORY_DATA = {
           text: 'Full evals. Safety at full power.',
           effects: { capital: -6, hype: 5, compute: -7, safety: 7 },
           setFlags: { full_evals: true },
+          relations: { staff: 6, partner: -2, regulator: 4, public: 2 },
+          tags: ['cautious'],
           next: 'dario_a1_aws'
         },
         right: {
           text: 'Throttle slightly. Match their calendar.',
           effects: { capital: 7, hype: 7, compute: 7, safety: -7 },
           setFlags: { throttled_evals: true },
+          relations: { staff: -4, partner: 4, regulator: -3, rival: 2 },
+          tags: ['aggressive'],
           next: 'dario_a2_deception'
         }
       },
@@ -1194,6 +1494,9 @@ const STORY_DATA = {
           text: 'Kill the run. Delete the weights.',
           effects: { capital: -8, hype: -7, compute: -8, safety: 8 },
           setFlags: { deleted_deceptive: true },
+          relations: { staff: 8, partner: -6, public: 3, regulator: 6 },
+          tags: ['cautious'],
+          delay: { turns: 2, log: 'Investors quietly reprice Anthropic as "slow but clean."', effects: { capital: -3, hype: 2 }, relations: { partner: -2, public: 2 } },
           next: 'dario_a2_fallout',
           objectiveKeys: ['card_dario_a2_deception']
         },
@@ -1418,6 +1721,124 @@ const STORY_DATA = {
           next: 'dario_loop_hub'
         }
       },
+      dario_pressure_nightmare: {
+        speaker: 'Daniela Amodei',
+        avatar: 'friend',
+        text: 'You look like you have not slept since the scheming run. If we kept those weights, we are already compromised ethically - even if the sandbox held.',
+        left: {
+          text: 'Schedule a full freeze and rethink.',
+          effects: { capital: -4, hype: -2, compute: -5, safety: 8 },
+          relations: { staff: 6, family: 6, partner: -2 },
+          tags: ['cautious'],
+          setFlags: { late_freeze: true },
+          next: 'dario_loop_hub'
+        },
+        right: {
+          text: 'Hold course. Fear cannot set roadmap.',
+          effects: { capital: 3, hype: 2, compute: 4, safety: -5 },
+          relations: { family: -5, staff: -4, regulator: -3 },
+          tags: ['aggressive'],
+          next: 'dario_loop_hub'
+        }
+      },
+      dario_pressure_aws_cold: {
+        speaker: 'AWS Account Lead',
+        avatar: 'investor',
+        text: 'Your multi-cloud romance is reading as disloyalty. Capacity reservations slip next month unless you signal commitment.',
+        left: {
+          text: 'Signal soft commitment without exclusivity.',
+          effects: { capital: 4, hype: 0, compute: 4, safety: -1 },
+          relations: { partner: 8 },
+          tags: ['alliance'],
+          next: 'dario_loop_hub'
+        },
+        right: {
+          text: 'Accept the chill. Independence has a bill.',
+          effects: { capital: -4, hype: 2, compute: -5, safety: 3 },
+          relations: { partner: -6, public: 3, staff: 2 },
+          tags: ['cautious'],
+          next: 'dario_loop_hub'
+        }
+      },
+      dario_pressure_ethics_invite: {
+        speaker: 'University Consortium',
+        avatar: 'engineer',
+        text: 'They want Anthropic to co-write an open eval protocol used by governments. Influence without monopoly - if you can stand the sunlight.',
+        left: {
+          text: 'Join and co-author the protocol.',
+          effects: { capital: -2, hype: 5, compute: -2, safety: 6 },
+          relations: { regulator: 8, public: 6, rival: -2 },
+          tags: ['alliance'],
+          setFlags: { open_protocol: true },
+          next: 'dario_loop_hub'
+        },
+        right: {
+          text: 'Decline. Keep methods close.',
+          effects: { capital: 2, hype: -2, compute: 3, safety: 1 },
+          relations: { regulator: -3, partner: 2 },
+          tags: ['cautious'],
+          next: 'dario_loop_hub'
+        }
+      },
+      dario_pressure_team: {
+        speaker: 'Constitutional Team Lead',
+        avatar: 'engineer',
+        text: 'Two senior safety people are waiting on your answer before they accept external offers. They need a promise about red lines.',
+        left: {
+          text: 'Publish hard red lines publicly.',
+          effects: { capital: -3, hype: 4, compute: -2, safety: 7 },
+          relations: { staff: 10, public: 4, partner: -2 },
+          tags: ['alliance'],
+          next: 'dario_loop_hub'
+        },
+        right: {
+          text: 'Private promises only. Keep flexibility.',
+          effects: { capital: 2, hype: -1, compute: 2, safety: -2 },
+          relations: { staff: -8 },
+          tags: ['cautious'],
+          delay: { turns: 2, log: 'A beloved safety lead posts their resignation letter.', effects: { safety: -4, hype: -3 }, relations: { staff: -5, public: -2 } },
+          next: 'dario_loop_hub'
+        }
+      },
+      dario_pressure_whistle: {
+        speaker: 'Encrypted Contact',
+        avatar: 'politician',
+        text: 'Someone on your side is shopping the buried crisis memo. Cooperate with a controlled disclosure - or prepare for uncontrolled fire.',
+        left: {
+          text: 'Controlled disclosure now.',
+          effects: { capital: -4, hype: 3, compute: -2, safety: 6 },
+          relations: { public: 5, regulator: 6, partner: -3 },
+          tags: ['alliance'],
+          setFlags: { unburied: true },
+          next: 'dario_loop_hub'
+        },
+        right: {
+          text: 'Hunt the leaker. Hold the line.',
+          effects: { capital: -2, hype: -4, compute: 0, safety: -4 },
+          relations: { staff: -6, public: -5, regulator: -4 },
+          tags: ['betrayal'],
+          next: 'dario_loop_hub'
+        }
+      },
+      dario_pressure_protest: {
+        speaker: 'Employee Coalition',
+        avatar: 'friend',
+        text: 'Military Claude is fracturing the office. Sit with the protesters - or enforce NDAs and move on.',
+        left: {
+          text: 'Town hall. Face the coalition.',
+          effects: { capital: -1, hype: 4, compute: -2, safety: 4 },
+          relations: { staff: 8, public: 5, partner: -2 },
+          tags: ['alliance'],
+          next: 'dario_loop_hub'
+        },
+        right: {
+          text: 'NDA strictness. Mission continues.',
+          effects: { capital: 3, hype: -3, compute: 3, safety: -2 },
+          relations: { staff: -10, regulator: 2 },
+          tags: ['aggressive'],
+          next: 'dario_loop_hub'
+        }
+      },
       dario_loop_hub: {
         speaker: 'Research Ops',
         avatar: 'engineer',
@@ -1449,7 +1870,17 @@ const STORY_DATA = {
   // ============================================================
   demis: {
     start: 'demis_a1_ship',
-    nodes: {
+        pressure: {
+      nodes: [
+        { once: true, minTime: 4, if: { flags: { shipped_hot: true } }, goto: 'demis_pressure_meme' },
+        { once: true, minTime: 5, if: { maxRelations: { board: 40 } }, goto: 'demis_pressure_ads' },
+        { once: true, minTime: 6, if: { flags: { nature_paper: true } }, goto: 'demis_pressure_nobel_rumor' },
+        { once: true, minTime: 7, if: { maxRelations: { staff: 45 } }, goto: 'demis_pressure_pi' },
+        { once: true, minTime: 8, if: { flags: { low_filter: true } }, goto: 'demis_pressure_ethics' },
+        { once: true, minTime: 9, if: { flags: { autonomy_stand: true } }, goto: 'demis_pressure_exile_offer' }
+      ]
+    },
+nodes: {
       demis_a1_ship: {
         speaker: 'Sundar Pichai',
         avatar: 'sundar',
@@ -1458,6 +1889,9 @@ const STORY_DATA = {
           text: 'Ship now. Markets write our budget.',
           effects: { capital: 7, hype: 8, compute: 6, safety: -7 },
           setFlags: { shipped_hot: true },
+          relations: { board: 8, partner: 6, staff: -4, public: 5, regulator: -3 },
+          tags: ['aggressive'],
+          delay: { turns: 2, log: 'Meme accounts industrialize Gemini failures.', effects: { hype: -4 }, relations: { public: -5, board: -2 } },
           next: 'demis_a1_ethics',
           objectiveKeys: ['card_demis_a1_ship']
         },
@@ -1465,6 +1899,8 @@ const STORY_DATA = {
           text: 'Delay a month. Science over optics.',
           effects: { capital: -7, hype: -7, compute: -4, safety: 8 },
           setFlags: { delayed_ship: true },
+          relations: { board: -8, partner: -4, staff: 6, public: -3, regulator: 4 },
+          tags: ['cautious'],
           next: 'demis_a2_topology',
           objectiveKeys: ['card_demis_a1_ship']
         }
@@ -1702,6 +2138,124 @@ const STORY_DATA = {
           next: 'demis_loop_hub'
         }
       },
+      demis_pressure_meme: {
+        speaker: 'Internet Desk',
+        avatar: 'friend',
+        text: 'Gemini face-plants are a worldwide meme pack. Quiet technical blog - or a public apology tour that becomes the story?',
+        left: {
+          text: 'Technical blog. No theatrics.',
+          effects: { capital: 0, hype: -3, compute: 2, safety: 4 },
+          relations: { public: -2, staff: 4, board: 2 },
+          tags: ['cautious'],
+          next: 'demis_loop_hub'
+        },
+        right: {
+          text: 'Apology tour. Own the mess.',
+          effects: { capital: -2, hype: 4, compute: -1, safety: 3 },
+          relations: { public: 6, board: -3 },
+          tags: ['alliance'],
+          next: 'demis_loop_hub'
+        }
+      },
+      demis_pressure_ads: {
+        speaker: 'YouTube Ads VP',
+        avatar: 'investor',
+        text: 'They want Gemini hooks inside ad auctions. This pays for TPUs - and turns science into clickbait infrastructure.',
+        left: {
+          text: 'Allow limited ad experimentation.',
+          effects: { capital: 7, hype: 2, compute: 4, safety: -5 },
+          relations: { partner: 8, board: 6, staff: -5, public: -3 },
+          tags: ['aggressive'],
+          setFlags: { ads_hooks: true },
+          next: 'demis_loop_hub'
+        },
+        right: {
+          text: 'Refuse. Keep science off the auction block.',
+          effects: { capital: -4, hype: 2, compute: -2, safety: 5 },
+          relations: { partner: -6, board: -5, staff: 6, public: 4 },
+          tags: ['cautious'],
+          next: 'demis_loop_hub'
+        }
+      },
+      demis_pressure_nobel_rumor: {
+        speaker: 'Nature Editor Contact',
+        avatar: 'engineer',
+        text: 'Rumors of prize committees circulating your topology result. Stay humble and keep publishing - or let Alphabet PR build a genius myth.',
+        left: {
+          text: 'Stay humble. More papers, less myth.',
+          effects: { capital: -1, hype: 3, compute: 1, safety: 3 },
+          relations: { public: 4, staff: 5, board: -1 },
+          tags: ['cautious'],
+          next: 'demis_loop_hub'
+        },
+        right: {
+          text: 'Let PR build the myth. Fundraise off glory.',
+          effects: { capital: 5, hype: 7, compute: 2, safety: -2 },
+          relations: { public: 8, board: 4, staff: -2 },
+          tags: ['aggressive'],
+          next: 'demis_loop_hub'
+        }
+      },
+      demis_pressure_pi: {
+        speaker: 'Principal Investigator',
+        avatar: 'engineer',
+        text: 'I am one email from leaving with my whole group. Promise a research charter with teeth - or watch the brain drain begin.',
+        left: {
+          text: 'Promise a charter with board-facing teeth.',
+          effects: { capital: -3, hype: 2, compute: 2, safety: 4 },
+          relations: { staff: 12, board: -4 },
+          tags: ['alliance'],
+          setFlags: { research_charter: true },
+          next: 'demis_loop_hub'
+        },
+        right: {
+          text: 'I cannot promise what Alphabet will not sign.',
+          effects: { capital: 1, hype: -2, compute: -5, safety: 0 },
+          relations: { staff: -12 },
+          tags: ['betrayal'],
+          delay: { turns: 2, log: 'A star team exits for a smaller lab.', effects: { compute: -5, hype: -3 }, relations: { staff: -4, public: -2 } },
+          next: 'demis_loop_hub'
+        }
+      },
+      demis_pressure_ethics: {
+        speaker: 'Google Ethics Lead',
+        avatar: 'friend',
+        text: 'Low-filter enterprise Gemini is creating quiet internal resign threats. Revisit the SKU - or accept a values split inside the company.',
+        left: {
+          text: 'Tighten the enterprise SKU filters.',
+          effects: { capital: -4, hype: 1, compute: 0, safety: 6 },
+          relations: { staff: 6, partner: -4, public: 3 },
+          tags: ['cautious'],
+          next: 'demis_loop_hub'
+        },
+        right: {
+          text: 'Keep the SKU. Revenue is oxygen.',
+          effects: { capital: 5, hype: -2, compute: 2, safety: -5 },
+          relations: { staff: -6, partner: 5, board: 3 },
+          tags: ['aggressive'],
+          next: 'demis_loop_hub'
+        }
+      },
+      demis_pressure_exile_offer: {
+        speaker: 'European Research Host',
+        avatar: 'investor',
+        text: 'A university alliance offers sanctuary compute if you walk from Alphabet control. Freedom with less empire - real, not rhetorical.',
+        left: {
+          text: 'Open secret talks for exile lab.',
+          effects: { capital: -3, hype: 3, compute: -2, safety: 4 },
+          relations: { partner: -5, staff: 5, public: 4 },
+          tags: ['alliance'],
+          setFlags: { exile_talks: true },
+          next: 'demis_loop_hub'
+        },
+        right: {
+          text: 'Decline. Fight remains inside.',
+          effects: { capital: 2, hype: 0, compute: 3, safety: 1 },
+          relations: { partner: 3, board: 2, staff: -2 },
+          tags: ['cautious'],
+          next: 'demis_loop_hub'
+        }
+      },
       demis_loop_hub: {
         speaker: 'Chief Scientist Office',
         avatar: 'friend',
@@ -1733,7 +2287,17 @@ const STORY_DATA = {
   // ============================================================
   zhang: {
     start: 'zhang_a1_tsinghua',
-    nodes: {
+        pressure: {
+      nodes: [
+        { once: true, minTime: 4, if: { flags: { grey_nvidia: true } }, goto: 'zhang_pressure_customs' },
+        { once: true, minTime: 5, if: { maxRelations: { regulator: 40 } }, goto: 'zhang_pressure_takedown' },
+        { once: true, minTime: 6, if: { flags: { global_push: true } }, goto: 'zhang_pressure_foreign' },
+        { once: true, minTime: 7, if: { maxRelations: { rival: 40 } }, goto: 'zhang_pressure_poach' },
+        { once: true, minTime: 8, if: { flags: { soft_rlhf: true } }, goto: 'zhang_pressure_audit' },
+        { once: true, minTime: 9, if: { minRelations: { partner: 70 } }, goto: 'zhang_pressure_soe' }
+      ]
+    },
+nodes: {
       zhang_a1_tsinghua: {
         speaker: 'Tsinghua University Liaison',
         avatar: 'politician',
@@ -1759,6 +2323,8 @@ const STORY_DATA = {
           text: 'Buy domestic. Self-sufficiency first.',
           effects: { capital: -7, hype: 7, compute: 7, safety: 7 },
           setFlags: { domestic_chips: true },
+          relations: { regulator: 8, partner: 4, rival: -2, staff: 3 },
+          tags: ['cautious', 'alliance'],
           next: 'zhang_a2_market',
           objectiveKeys: ['card_zhang_a1_chips']
         },
@@ -1766,6 +2332,9 @@ const STORY_DATA = {
           text: 'Grey-market Nvidia. Performance first.',
           effects: { capital: -6, hype: 5, compute: 8, safety: -8 },
           setFlags: { grey_nvidia: true },
+          relations: { regulator: -10, partner: -2, staff: 4, rival: 3 },
+          tags: ['aggressive'],
+          delay: { turns: 3, log: 'A partner asks awkward provenance questions about your clusters.', effects: { capital: -2, safety: -2 }, relations: { partner: -4, regulator: -3 } },
           next: 'zhang_a2_market',
           objectiveKeys: ['card_zhang_a1_chips']
         }
@@ -1975,6 +2544,125 @@ const STORY_DATA = {
           text: 'Decline public admin risk.',
           effects: { capital: -2, hype: -2, compute: 4, safety: 5 },
           setFlags: { avoid_civic: true },
+          next: 'zhang_loop_hub'
+        }
+      },
+      zhang_pressure_customs: {
+        speaker: 'Logistics Manager',
+        avatar: 'lawyer',
+        text: 'A customs inspection hit a secondary GPU shipment. Divert the story to domestic progress - or freeze grey channels immediately.',
+        left: {
+          text: 'Freeze grey channels tonight.',
+          effects: { capital: -3, hype: 1, compute: -5, safety: 7 },
+          relations: { regulator: 10, partner: 2, rival: -2 },
+          tags: ['cautious'],
+          setFlags: { grey_frozen: true },
+          next: 'zhang_loop_hub'
+        },
+        right: {
+          text: 'Quiet diversion. Keep supply alive.',
+          effects: { capital: 2, hype: -2, compute: 5, safety: -6 },
+          relations: { regulator: -8, staff: 2 },
+          tags: ['aggressive'],
+          delay: { turns: 2, log: 'An export-control rumor shakes domestic partners.', effects: { capital: -4, hype: -3 }, relations: { partner: -4, regulator: -3 } },
+          next: 'zhang_loop_hub'
+        }
+      },
+      zhang_pressure_takedown: {
+        speaker: 'Platform Moderator Liaison',
+        avatar: 'politician',
+        text: 'A provincial office wants a temporary public chatbot freeze after a sensitive thread. Comply fast - or negotiate a soft shadowban.',
+        left: {
+          text: 'Comply. Temporary freeze.',
+          effects: { capital: -3, hype: -4, compute: 0, safety: 7 },
+          relations: { regulator: 12, public: -4, partner: 2 },
+          tags: ['cautious'],
+          next: 'zhang_loop_hub'
+        },
+        right: {
+          text: 'Negotiate soft shadowban only.',
+          effects: { capital: 1, hype: 2, compute: 1, safety: -3 },
+          relations: { regulator: -6, public: 3 },
+          tags: ['aggressive'],
+          next: 'zhang_loop_hub'
+        }
+      },
+      zhang_pressure_foreign: {
+        speaker: 'Overseas Partner',
+        avatar: 'investor',
+        text: 'A London lab will co-brand a research GLM if you accept an independent safety board abroad. Prestige versus domestic messaging risk.',
+        left: {
+          text: 'Accept independent board. Take prestige.',
+          effects: { capital: 2, hype: 6, compute: 2, safety: 4 },
+          relations: { public: 6, regulator: -3, rival: -2 },
+          tags: ['alliance'],
+          setFlags: { foreign_board: true },
+          next: 'zhang_loop_hub'
+        },
+        right: {
+          text: 'Decline foreign board optics.',
+          effects: { capital: 0, hype: -2, compute: 1, safety: 2 },
+          relations: { regulator: 4, public: -2 },
+          tags: ['cautious'],
+          next: 'zhang_loop_hub'
+        }
+      },
+      zhang_pressure_poach: {
+        speaker: 'HR Lead',
+        avatar: 'friend',
+        text: 'Baidu and Moonshot are raiding sparse-attention talent with housing packages. Match aggressively - or bet culture beats cash.',
+        left: {
+          text: 'Match packages. Keep the brain trust.',
+          effects: { capital: -6, hype: 1, compute: 5, safety: 1 },
+          relations: { staff: 10, rival: 3 },
+          tags: ['alliance'],
+          next: 'zhang_loop_hub'
+        },
+        right: {
+          text: 'Bet on culture. Let some leave.',
+          effects: { capital: 2, hype: 0, compute: -4, safety: 0 },
+          relations: { staff: -6, rival: 6 },
+          tags: ['cautious'],
+          next: 'zhang_loop_hub'
+        }
+      },
+      zhang_pressure_audit: {
+        speaker: 'Internal Auditor',
+        avatar: 'board',
+        text: 'Soft RLHF is failing random policy probes. Install hard filters under the hood - or document exceptions and accept risk.',
+        left: {
+          text: 'Install hard filters under the hood.',
+          effects: { capital: -2, hype: -2, compute: -2, safety: 8 },
+          relations: { regulator: 8, public: -1, staff: -2 },
+          tags: ['cautious'],
+          setFlags: { stealth_hard_filters: true },
+          next: 'zhang_loop_hub'
+        },
+        right: {
+          text: 'Document exceptions. Keep model fluid.',
+          effects: { capital: 2, hype: 3, compute: 2, safety: -5 },
+          relations: { regulator: -5, staff: 3, public: 2 },
+          tags: ['aggressive'],
+          next: 'zhang_loop_hub'
+        }
+      },
+      zhang_pressure_soe: {
+        speaker: 'State Partner PM',
+        avatar: 'investor',
+        text: 'Because we trust you, they want GLM inside logistics planning for three provinces. Enormous money. Enormous responsibility.',
+        left: {
+          text: 'Accept staged provincial rollout.',
+          effects: { capital: 8, hype: 4, compute: -2, safety: 3 },
+          relations: { partner: 10, regulator: 4, public: 2 },
+          tags: ['alliance'],
+          setFlags: { provincial_rollout: true },
+          next: 'zhang_loop_hub'
+        },
+        right: {
+          text: 'Pilot only in one city first.',
+          effects: { capital: 3, hype: 1, compute: 1, safety: 5 },
+          relations: { partner: 3, regulator: 2 },
+          tags: ['cautious'],
           next: 'zhang_loop_hub'
         }
       },

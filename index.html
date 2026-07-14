@@ -19,7 +19,7 @@
     <div class="side-panel left-panel">
       <h2>ARCHIVES</h2>
       <div class="stats-summary">
-        <p>Endings: <span id="unlocked-endings-count" class="badge">0 / 55</span></p>
+        <p>Endings: <span id="unlocked-endings-count" class="badge">0 / 35</span></p>
       </div>
       <br>
       <h3>DECISION HISTORY</h3>
@@ -31,43 +31,55 @@
     <!-- Center Viewport (The interactive phone-like layout) -->
     <div class="viewport" id="game-viewport">
       
-      <!-- Top header status indicators - matching Reigns custom icons -->
+      <!-- Top header status indicators -->
       <div class="stats-header">
-        
-        <!-- Safety / Alignment (Ethics cross) -->
-        <div class="stat-indicator" id="stat-safety" title="Safety & Alignment (🛡️)">
-          <span class="icon">†</span>
-          <div class="bar-container">
-            <div class="bar-fill" style="height: 50%;"></div>
-          </div>
+        <div class="stat-indicator" id="stat-safety" title="Safety & Alignment">
           <span class="change-dot"></span>
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="stat-svg">
+              <path d="M12 2l8 3v6c0 5.2-3.4 9.8-8 11-4.6-1.2-8-5.8-8-11V5l8-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M8.5 12.2l2.4 2.4 4.6-4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+          <span class="stat-label">SAFE</span>
         </div>
 
-        <!-- Hype / PR (Stick figure) -->
-        <div class="stat-indicator" id="stat-hype" title="Hype & Public Relations (웃)">
-          <span class="icon">웃</span>
-          <div class="bar-container">
-            <div class="bar-fill" style="height: 50%;"></div>
-          </div>
+        <div class="stat-indicator" id="stat-hype" title="Hype & Public Relations">
           <span class="change-dot"></span>
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="stat-svg">
+              <circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M5.5 19c1.4-3.2 3.7-4.8 6.5-4.8S17.1 15.8 18.5 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+          <span class="stat-label">HYPE</span>
         </div>
 
-        <!-- Compute / Infrastructure (Sword/Power) -->
-        <div class="stat-indicator" id="stat-compute" title="Compute & Scale (🗡)">
-          <span class="icon">🗡</span>
-          <div class="bar-container">
-            <div class="bar-fill" style="height: 50%;"></div>
-          </div>
+        <div class="stat-indicator" id="stat-compute" title="Compute & Scale">
           <span class="change-dot"></span>
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="stat-svg">
+              <rect x="4" y="5" width="16" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M8 20h8M12 16v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M8 9h2M12 9h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+          <span class="stat-label">GPU</span>
         </div>
 
-        <!-- Capital / Funds (Money $) -->
-        <div class="stat-indicator" id="stat-capital" title="Capital & Valuation ($)">
-          <span class="icon">$</span>
-          <div class="bar-container">
-            <div class="bar-fill" style="height: 50%;"></div>
-          </div>
+        <div class="stat-indicator" id="stat-capital" title="Capital & Valuation">
           <span class="change-dot"></span>
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="stat-svg">
+              <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 7v10M9.5 9.2c.7-1 2.8-1.4 3.8-.3.8.9.3 2.1-1.1 2.6l-2.4.8c-1.4.5-1.9 1.7-1.1 2.7 1 1.2 3.2 1 4.1-.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+          <span class="stat-label">CASH</span>
         </div>
       </div>
 
@@ -126,31 +138,29 @@
 
         <!-- Gameplay Screen -->
         <div id="screen-game" class="screen">
-          <!-- Text dialogue prompt -->
           <div class="dialogue-box">
+            <div class="dialogue-speaker" id="speaker-name"></div>
             <p id="dialogue-text"></p>
           </div>
 
-          <!-- The Swipeable Card Container -->
           <div class="card-wrapper">
-            <!-- Choice text displayed directly above card -->
-            <div class="swipe-indicator left" id="indicator-left"></div>
-            <div class="swipe-indicator right" id="indicator-right"></div>
-
             <div class="reigns-card" id="main-card">
-              <div class="card-art" id="card-portrait">
-                <!-- SVG portrait loaded dynamically -->
-              </div>
+              <div class="card-art" id="card-portrait"></div>
               <div class="card-label">
-                <span id="speaker-name"></span>
+                <span id="card-speaker-label"></span>
               </div>
             </div>
           </div>
 
-          <!-- Manual helper buttons underneath -->
-          <div class="manual-controls">
-            <button id="btn-swipe-left" class="swipe-btn" title="Swipe Left (←)">◀</button>
-            <button id="btn-swipe-right" class="swipe-btn" title="Swipe Right (→)">▶</button>
+          <div class="choice-panel">
+            <button type="button" class="choice-btn choice-left" id="btn-swipe-left" title="Choose left (←)">
+              <span class="choice-arrow">◀</span>
+              <span class="choice-text" id="indicator-left"></span>
+            </button>
+            <button type="button" class="choice-btn choice-right" id="btn-swipe-right" title="Choose right (→)">
+              <span class="choice-text" id="indicator-right"></span>
+              <span class="choice-arrow">▶</span>
+            </button>
           </div>
         </div>
 

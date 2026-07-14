@@ -14,6 +14,7 @@ const CHARACTERS = {
       'You sleep beside the Memphis racks and wage wars in memes and lawsuits. Expand Grok, keep Mars on the roadmap, and survive the enemies you create - including yourself.',
     timeUnit: 'Mars quarters',
     initialStats: { capital: 52, hype: 58, compute: 62, safety: 42 },
+    initialRelations: { family: 42, board: 48, rival: 72, regulator: 28, partner: 45, public: 68, staff: 55 },
     objectives: [
       { text: 'Survive 20 Mars Quarters', key: 'time_20' },
       { text: 'Activate Colossus Memphis', key: 'card_elon_a1_power' },
@@ -32,6 +33,7 @@ const CHARACTERS = {
       'You juggle board knives, Microsoft cloud, Apple distribution, and the rumor that AGI is already whispering. Charm, restructure, survive mutiny - or invent a new throne.',
     timeUnit: 'quarters',
     initialStats: { capital: 58, hype: 55, compute: 58, safety: 48 },
+    initialRelations: { family: 50, board: 35, rival: 60, regulator: 48, partner: 70, public: 62, staff: 58 },
     objectives: [
       { text: 'Survive 20 quarters', key: 'time_20' },
       { text: 'Survive or rewrite the board coup', key: 'card_sam_a2_coup' },
@@ -50,6 +52,7 @@ const CHARACTERS = {
       'Constitutional AI is your creed and your cage. Claude must scale without becoming a monster, a monopoly product, or a military subroutine. Every dollar tests your principles.',
     timeUnit: 'quarters',
     initialStats: { capital: 48, hype: 48, compute: 52, safety: 62 },
+    initialRelations: { family: 60, board: 55, rival: 50, regulator: 65, partner: 58, public: 45, staff: 70 },
     objectives: [
       { text: 'Survive 20 quarters', key: 'time_20' },
       { text: 'Choose Amazon exclusivity or independence', key: 'card_dario_a1_aws' },
@@ -68,6 +71,7 @@ const CHARACTERS = {
       "Protect DeepMind's scientific soul inside Alphabet's market machine. Publish breakthroughs, resist ad-driven roadmaps, and decide whether Gemini serves search or the universe.",
     timeUnit: 'quarters',
     initialStats: { capital: 62, hype: 45, compute: 65, safety: 52 },
+    initialRelations: { family: 58, board: 40, rival: 55, regulator: 52, partner: 75, public: 48, staff: 72 },
     objectives: [
       { text: 'Survive 20 quarters', key: 'time_20' },
       { text: 'Ship or delay Gemini under pressure', key: 'card_demis_a1_ship' },
@@ -86,6 +90,7 @@ const CHARACTERS = {
       'Build frontier GLM under export bans, domestic silicon, state guidelines, and global rivalry. Academic roots, political gravity, and market hunger all pull at once.',
     timeUnit: 'quarters',
     initialStats: { capital: 52, hype: 50, compute: 52, safety: 55 },
+    initialRelations: { family: 55, board: 50, rival: 58, regulator: 62, partner: 52, public: 50, staff: 60 },
     objectives: [
       { text: 'Survive 20 quarters', key: 'time_20' },
       { text: 'Source domestic or grey-market chips', key: 'card_zhang_a1_chips' },
@@ -97,7 +102,7 @@ const CHARACTERS = {
 };
 
 const CHARACTER_IDS = Object.keys(CHARACTERS);
-const TOTAL_ENDINGS = CHARACTER_IDS.length * STAT_KEYS.length * 2 + 15;
+const TOTAL_ENDINGS = CHARACTER_IDS.length * STAT_KEYS.length + 15;
 
 function emptyQuizScores() {
   const scores = {};
