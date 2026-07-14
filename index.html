@@ -19,12 +19,12 @@
     <div class="side-panel left-panel">
       <h2>ARCHIVES</h2>
       <div class="stats-summary">
-        <p>Endings: <span id="unlocked-endings-count" class="badge">0 / 8</span></p>
+        <p>Endings: <span id="unlocked-endings-count" class="badge">0 / 40</span></p>
       </div>
       <br>
       <h3>DECISION HISTORY</h3>
       <div id="narrative-log" class="log-list">
-        <div class="log-item">System loaded. Ready for assessment...</div>
+        <div class="log-item">System ready. Start assessment to begin.</div>
       </div>
     </div>
 
@@ -104,11 +104,11 @@
           </div>
           <h3 class="quiz-title">ALIGNMENT ASSESSMENT</h3>
           <div class="quiz-question-container">
-            <p id="quiz-question-text">Analyzing neural pathways...</p>
+            <p id="quiz-question-text"></p>
           </div>
           <div class="quiz-options">
-            <button id="quiz-opt-left" class="btn quiz-btn">Choice A</button>
-            <button id="quiz-opt-right" class="btn quiz-btn">Choice B</button>
+            <button id="quiz-opt-left" class="btn quiz-btn"></button>
+            <button id="quiz-opt-right" class="btn quiz-btn"></button>
           </div>
         </div>
 
@@ -118,9 +118,9 @@
           <div class="reveal-portrait-container" id="reveal-portrait">
             <!-- Dynamic character SVG here -->
           </div>
-          <h2 id="reveal-name">ELON MUSK</h2>
-          <p id="reveal-role" class="reveal-role-tag">CHIEF ACCELERATION OFFICER</p>
-          <p id="reveal-description">Hyper-focused on compute scale, rapid deployment, and defiance of bureaucrats.</p>
+          <h2 id="reveal-name"></h2>
+          <p id="reveal-role" class="reveal-role-tag"></p>
+          <p id="reveal-description"></p>
           <button id="btn-start-game" class="btn">ENTER PROTOCOL</button>
         </div>
 
@@ -128,21 +128,21 @@
         <div id="screen-game" class="screen">
           <!-- Text dialogue prompt -->
           <div class="dialogue-box">
-            <p id="dialogue-text">Dialogue prompt...</p>
+            <p id="dialogue-text"></p>
           </div>
 
           <!-- The Swipeable Card Container -->
           <div class="card-wrapper">
             <!-- Choice text displayed directly above card -->
-            <div class="swipe-indicator left" id="indicator-left">LEFT CHOICE PREVIEW</div>
-            <div class="swipe-indicator right" id="indicator-right">RIGHT CHOICE PREVIEW</div>
+            <div class="swipe-indicator left" id="indicator-left"></div>
+            <div class="swipe-indicator right" id="indicator-right"></div>
 
             <div class="reigns-card" id="main-card">
               <div class="card-art" id="card-portrait">
                 <!-- SVG portrait loaded dynamically -->
               </div>
               <div class="card-label">
-                <span id="speaker-name">SPEAKER</span>
+                <span id="speaker-name"></span>
               </div>
             </div>
           </div>
@@ -160,7 +160,7 @@
           <div class="gameover-art" id="gameover-portrait">
             <!-- Dead/Shutdown SVG -->
           </div>
-          <p id="gameover-text">Ending description...</p>
+          <p id="gameover-text"></p>
           <button id="btn-restart" class="btn">RESTART PROTOCOL</button>
         </div>
 
@@ -169,13 +169,13 @@
       <!-- Bottom HUD status -->
       <div class="hud-footer">
         <div class="player-identity">
-          <span id="hud-player-name">PLAYER</span>
+          <span id="hud-player-name">—</span>
           <span class="separator">/</span>
-          <span id="hud-player-role">ROLE</span>
+          <span id="hud-player-role">—</span>
         </div>
         <div class="time-in-power">
           <span id="hud-time-val">0</span>
-          <span id="hud-time-unit">years</span>
+          <span id="hud-time-unit">quarters</span>
         </div>
       </div>
 
@@ -195,6 +195,7 @@
 
   </div>
 
+  <script src="data.js"></script>
   <script src="story.js"></script>
   <script src="app.js"></script>
 </body>

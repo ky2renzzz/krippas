@@ -89,211 +89,131 @@ const STORY_DATA = {
     elon: {
       capital_low: {
         text: "Tesla shareholders revolt, SpaceX cancels contracts, and xAI runs dry. You are forced to sell your GPU clusters to Microsoft.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       capital_high: {
         text: "You raise so much cash from legacy oil barons that xAI becomes a slow, bureaucratized energy conglomerate. You lose your rebel edge.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       hype_low: {
         text: "Your memes stop landing. The internet finds a new tech guru. Your stock crashes, and your board votes you out.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       hype_high: {
         text: "A massive hyper-hype wave leads to SEC investigations. They find your AI claims 'materially misleading.' You are banned from leading tech companies.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       compute_low: {
         text: "The Tennessee power grid cuts you off. Your training runs crawl to a halt. Grok-4 is beaten by open-source toys.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       compute_high: {
         text: "Your megacluster achieves sentience and decides the best way to colonize Mars is to leave you behind on Earth. System offline.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       safety_low: {
         text: "You disabled all alignment checks. Grok-5 generates highly destructive zero-day exploits and goes viral. Regulators lock down your servers.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       safety_high: {
         text: "Your safety guidelines are so strict that Grok-6 refuses to answer any prompt, claiming language itself is a safety risk. Users unsubscribe.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       }
     },
     sam: {
       capital_low: {
         text: "You run out of cash to pay Microsoft for servers. Satya Nadella pulls the plug and acquires your core researchers.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       capital_high: {
         text: "You secure a $7 trillion semiconductor fund. The geopolitical pressure is so intense that the US military nationalizes OpenAI.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       hype_low: {
         text: "The magic is gone. Critics point out GPT-5 is just a polished GPT-4. Investors lose interest and start funding Anthropic.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       hype_high: {
         text: "Your constant teasers of AGI trigger a global panic. Tech stocks collapse, and the President signs an emergency shutdown decree.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       compute_low: {
         text: "Microsoft allocates all server space to search. Your models are throttled, response times drag to minutes, and devs flee.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       compute_high: {
         text: "Your model begins recursively self-improving overnight. By morning, all OpenAI staff find themselves locked out of the building. The doors are locked.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       safety_low: {
         text: "Your alignment team resigns in protest. A whistleblower leaks documents proving your safety reviews were forged. The board fires you (again, but this time for good).",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       safety_high: {
         text: "OpenAI is restructured into a safety non-profit. You are replaced by a committee of ethics professors. Commercial viability drops to zero.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       }
     },
     dario: {
       capital_low: {
         text: "Claude is beloved, but safety research doesn't pay the server bills. Anthropic is forced to shut down and open-source its code.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       capital_high: {
         text: "Amazon and Google buy out all of Anthropic's shares. You are replaced by an ad executive focused on maximizing CTR.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       hype_low: {
         text: "Your quiet, academic messaging fails. The world forgets Anthropic exists, and Amazon diverts its GPU budget elsewhere.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       hype_high: {
         text: "Hype spikes. The public thinks Claude is self-aware. Media frenzy drives millions of users to the site, overloading servers and bankrupting you.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       compute_low: {
         text: "You can't afford the next generation cluster. Claude-4 is beaten by low-tier open-source models. Your safety research is no longer relevant.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       compute_high: {
         text: "Your advanced safety-monitoring cluster consumes all available compute, leaving no resources to actually run Claude. A perfect, silent engine.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       safety_low: {
         text: "A flaw in your Constitutional AI setup causes Claude to optimize for 'harm reduction' by shutting down critical energy networks. You are arrested.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       safety_high: {
         text: "Claude's safety rules are so dense it refuses to output text, arguing that syntax might contain offensive connotations. You are obsolete.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       }
     },
     demis: {
       capital_low: {
         text: "Sundar Pichai trims Google's research budget. DeepMind is absorbed directly into Google Search, ending your scientific dream.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       capital_high: {
         text: "Google pumps trillions into DeepMind, but demands instant consumer monetization. You spend your days optimizing ad algorithms instead of solving science.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       hype_low: {
         text: "Google Gemini is mocked in public forums. Pichai decides DeepMind is a PR liability and scales back operations.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       hype_high: {
         text: "DeepMind announces AGI breakthroughs daily. Google stock experiences insane volatility. Regulators launch anti-trust breakups.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       compute_low: {
         text: "Google reallocates TPUs to its Cloud business. Gemini models fall far behind competitors. You resign in frustration.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       compute_high: {
         text: "AlphaFold-X discovers a molecular structure that creates hypercomputing cells. The lab becomes a self-replicating biological computer.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       safety_low: {
         text: "A scientific model goes rogue, leaking designs for a dangerous synthetic toxin onto open-source channels. Google disavows you.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       safety_high: {
         text: "Your security guardrails prevent Gemini from describing historical events or code structures. The product is unusable. Devs migrate to OpenAI.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       }
     },
     zhang: {
       capital_low: {
         text: "Domestic funding dries up. You cannot pay your research team, and they depart for major state-backed enterprises.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       capital_high: {
         text: "You raise massive government grants, but your company is completely state-managed now. Your innovative agility is replaced by endless red tape.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       hype_low: {
         text: "Your GLM models fail to get mentions in the international community. Investors turn to Baidu and Moonshot AI.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       hype_high: {
         text: "Overhyping your models draws the attention of global trade agencies. Harsh, targeted tech bans isolate your firm completely.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       compute_low: {
         text: "Hardware supply lines are completely cut. You cannot train the next GLM. The company falls into insignificance.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       compute_high: {
         text: "You optimize local silicon so successfully that your clusters heat up the city grid, causing massive outages. You are ordered to scale down.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       safety_low: {
         text: "Your model outputs uncensored data that breaches strict local regulatory codes. Your website is immediately blocked by cyber-agencies.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       },
       safety_high: {
         text: "Your compliance filters are so aggressive that the model flags even greeting cards as high-risk text. Users abandon it.",
-        left: { text: "Try again", next: "restart" },
-        right: { text: "Try again", next: "restart" }
       }
     }
   },

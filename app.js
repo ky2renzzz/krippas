@@ -304,41 +304,14 @@ const PORTRAITS = {
   </svg>`
 };
 
-// Character Objectives mapping
-const OBJECTIVES = {
-  elon: [
-    { text: "Reach 10 Mars Quarters", key: "time_10", completed: false },
-    { text: "Defeat OpenAI Board", key: "card_elon_6", completed: false },
-    { text: "Build Memphis Cluster", key: "card_elon_1_left", completed: false }
-  ],
-  sam: [
-    { text: "Secure Apple Partnership", key: "card_sam_reign_restored_left", completed: false },
-    { text: "Survive the Board Mutiny", key: "card_sam_reign_restored", completed: false },
-    { text: "Raise $7 Trillion Chip Fund", key: "card_sam_hardware_era_left", completed: false }
-  ],
-  dario: [
-    { text: "Establish Senate Treaty", key: "card_dario_loop_left", completed: false },
-    { text: "Secure Multi-Cloud Access", key: "card_dario_2_right", completed: false },
-    { text: "Verify Claude 3.7 Alignment", key: "card_dario_1_left", completed: false }
-  ],
-  demis: [
-    { text: "Solve Topology Conjecture", key: "card_demis_3_left", completed: false },
-    { text: "Protect Research Autonomy", key: "card_demis_5_right", completed: false },
-    { text: "Integrate Sergey's Compiler", key: "card_demis_6_left", completed: false }
-  ],
-  zhang: [
-    { text: "Succeed in local chip sourcing", key: "card_zhang_2_left", completed: false },
-    { text: "Setup custom supply chain", key: "card_zhang_4_left", completed: false },
-    { text: "Establish real-time moderation", key: "card_zhang_5_left", completed: false }
-  ]
-};
+// Objectives now live on CHARACTERS in data.js
 
 // --- Game Engine Class ---
 class GameEngine {
   constructor() {
     this.state = {
       gameState: 'welcome',
-      quizAnswers: { elon: 0, sam: 0, dario: 0, demis: 0, zhang: 0 },
+      quizAnswers: emptyQuizScores(),
       quizStep: 0,
       currentCharacter: null,
       currentCardNode: null,
@@ -355,7 +328,36 @@ class GameEngine {
     this.initDOM();
     this.bindEvents();
     this.loadStatsFromStorage();
+    this.updateEndingsUI();
     this.applyTheme('welcome');
+  }
+
+  getCharacterConfig(id = this.state.currentCharacter) {
+    return getCharacter(id);
+  }
+
+  getStory(id = this.state.currentCharacter) {
+    return window.STORY_DATA && window.STORY_DATA[id] ? window.STORY_DATA[id] : null;
+  }
+
+  getObjectives(id = this.state.currentCharacter) {
+    const config = this.getCharacterConfig(id);
+    return config && config.objectives ? config.objectives : [];
+  }
+
+  defaultStats() {
+    return { capital: 50, hype: 50, compute: 50, safety: 50 };
+  }
+
+  cloneStats(source) {
+    const base = this.defaultStats();
+    if (!source) return { ...base };
+    STAT_KEYS.forEach((key) => {
+      if (typeof source[key] === 'number') {
+        base[key] = Math.max(0, Math.min(100, source[key]));
+      }
+    });
+    return base;
   }
 
   initDOM() {
@@ -422,7 +424,8 @@ class GameEngine {
   }
 
   updateEndingsUI() {
-    this.endingsBadge.innerText = `${this.state.unlockedEndings.length} / 8`;
+    const total = typeof TOTAL_ENDINGS === 'number' ? TOTAL_ENDINGS : 40;
+    this.endingsBadge.innerText = `${this.state.unlockedEndings.length} / ${total}`;
   }
 
   applyTheme(themeKey) {
@@ -482,48 +485,65 @@ class GameEngine {
     if (screenName === 'quiz') {
       this.applyTheme('welcome');
       this.state.quizStep = 0;
-      this.state.quizAnswers = { elon: 0, sam: 0, dario: 0, demis: 0, zhang: 0 };
+      this.state.quizAnswers = emptyQuizScores();
       this.renderQuizQuestion();
     } else if (screenName === 'game') {
       this.applyTheme(this.state.currentCharacter);
       this.startGameSession();
     } else if (screenName === 'welcome') {
       this.applyTheme('welcome');
+      this.narrativeLog.innerHTML = '<div class="log-item">System ready. Start assessment to begin.</div>';
+      this.objectivesChecklist.innerHTML = '';
+      this.hudPlayerName.innerText = '—';
+      this.hudPlayerRole.innerText = '—';
+      this.hudTimeVal.innerText = '0';
+      this.hudTimeUnit.innerText = 'quarters';
     }
   }
 
   // --- Quiz ---
   renderQuizQuestion() {
-    const question = window.STORY_DATA.quiz[this.state.quizStep];
-    const progress = (this.state.quizStep / window.STORY_DATA.quiz.length) * 100;
+    const quiz = window.STORY_DATA && window.STORY_DATA.quiz;
+    if (!quiz || !quiz[this.state.quizStep]) {
+      console.error('Quiz data missing');
+      return;
+    }
+
+    const question = quiz[this.state.quizStep];
+    const progress = (this.state.quizStep / quiz.length) * 100;
     document.getElementById('quiz-progress').style.width = `${progress}%`;
-    
     document.getElementById('quiz-question-text').innerText = question.text;
-    
+
     const optLeft = document.getElementById('quiz-opt-left');
     const optRight = document.getElementById('quiz-opt-right');
+    const freshLeft = optLeft.cloneNode(true);
+    const freshRight = optRight.cloneNode(true);
+    freshLeft.innerText = question.left.text;
+    freshRight.innerText = question.right.text;
+    optLeft.replaceWith(freshLeft);
+    optRight.replaceWith(freshRight);
 
-    optLeft.innerText = question.left.text;
-    optRight.innerText = question.right.text;
-
-    optLeft.replaceWith(optLeft.cloneNode(true));
-    optRight.replaceWith(optRight.cloneNode(true));
-
-    document.getElementById('quiz-opt-left').addEventListener('click', () => this.quizAnswerSelect('left'));
-    document.getElementById('quiz-opt-right').addEventListener('click', () => this.quizAnswerSelect('right'));
+    freshLeft.addEventListener('click', () => this.quizAnswerSelect('left'));
+    freshRight.addEventListener('click', () => this.quizAnswerSelect('right'));
   }
 
   quizAnswerSelect(choice) {
     audio.playSwipe();
-    const question = window.STORY_DATA.quiz[this.state.quizStep];
-    const points = choice === 'left' ? question.left.points : question.right.points;
+    const quiz = window.STORY_DATA.quiz;
+    const question = quiz[this.state.quizStep];
+    if (!question) return;
+
+    const branch = choice === 'left' ? question.left : question.right;
+    const points = branch && branch.points ? branch.points : {};
 
     for (const key in points) {
-      this.state.quizAnswers[key] += points[key];
+      if (Object.prototype.hasOwnProperty.call(this.state.quizAnswers, key)) {
+        this.state.quizAnswers[key] += points[key];
+      }
     }
 
     this.state.quizStep++;
-    if (this.state.quizStep < window.STORY_DATA.quiz.length) {
+    if (this.state.quizStep < quiz.length) {
       this.renderQuizQuestion();
     } else {
       this.calculateQuizResults();
@@ -531,7 +551,7 @@ class GameEngine {
   }
 
   calculateQuizResults() {
-    let maxChar = 'elon';
+    let maxChar = CHARACTER_IDS[0] || 'elon';
     let maxScore = -1;
 
     for (const key in this.state.quizAnswers) {
@@ -541,36 +561,19 @@ class GameEngine {
       }
     }
 
-    this.state.currentCharacter = maxChar;
-    
-    const revealPort = document.getElementById('reveal-portrait');
-    revealPort.innerHTML = PORTRAITS[maxChar];
-
-    const revealName = document.getElementById('reveal-name');
-    const revealRole = document.getElementById('reveal-role');
-    const revealDesc = document.getElementById('reveal-description');
-
-    if (maxChar === 'elon') {
-      revealName.innerText = "ELON MUSK";
-      revealRole.innerText = "CHIEF ACCELERATION OFFICER (xAI)";
-      revealDesc.innerText = "You prioritize pure horsepower GPU cluster expansion, defying regulators in public, and building Mars-optimized code systems.";
-    } else if (maxChar === 'sam') {
-      revealName.innerText = "SAM ALTMAN";
-      revealRole.innerText = "CHIEF EXECUTIVE OFFICER (OpenAI)";
-      revealDesc.innerText = "You balance board oversight, massive investments, and corporate structural changes while shipping GPT models.";
-    } else if (maxChar === 'dario') {
-      revealName.innerText = "DARIO AMODEI";
-      revealRole.innerText = "FOUNDER / CEO (Anthropic)";
-      revealDesc.innerText = "Your weapon is Constitutional AI. Can you make Claude scale safely without bankrupting the company?";
-    } else if (maxChar === 'demis') {
-      revealName.innerText = "DEMIS HASSABIS";
-      revealRole.innerText = "DIRECTOR (Google DeepMind)";
-      revealDesc.innerText = "You protect DeepMind's academic freedoms against Google's commercial search ads pressure.";
-    } else if (maxChar === 'zhang') {
-      revealName.innerText = "ZHANG PENG";
-      revealRole.innerText = "FOUNDER (Zhipu AI)";
-      revealDesc.innerText = "You navigate local silicon supplies, state content guidelines, and fight to establish Chinese GLM frontier models.";
+    const config = this.getCharacterConfig(maxChar);
+    if (!config) {
+      console.error('Unknown character from quiz:', maxChar);
+      maxChar = CHARACTER_IDS[0];
     }
+
+    this.state.currentCharacter = maxChar;
+    const charConfig = this.getCharacterConfig(maxChar);
+
+    document.getElementById('reveal-portrait').innerHTML = PORTRAITS[maxChar] || PORTRAITS.system;
+    document.getElementById('reveal-name').innerText = charConfig.nameDisplay;
+    document.getElementById('reveal-role').innerText = `${charConfig.role} (${charConfig.company})`;
+    document.getElementById('reveal-description').innerText = charConfig.description;
 
     this.transitionTo('reveal');
   }
@@ -578,19 +581,25 @@ class GameEngine {
   // --- Game Loop ---
   startGameSession() {
     audio.playChime();
-    
-    this.state.stats = { capital: 50, hype: 50, compute: 50, safety: 50 };
+
+    const charConfig = this.getCharacterConfig();
+    const story = this.getStory();
+    if (!charConfig || !story) {
+      console.error('Cannot start session: missing character or story data');
+      this.transitionTo('welcome');
+      return;
+    }
+
+    this.state.stats = this.cloneStats(charConfig.initialStats);
     this.state.timeInPower = 0;
-    
-    const charData = window.STORY_DATA[this.state.currentCharacter];
-    this.state.currentCardNode = charData.start;
+    this.state.currentCardNode = story.start;
+    this.hudTimeVal.innerText = '0';
 
-    // HUD setups
-    this.hudPlayerName.innerText = this.state.currentCharacter.toUpperCase();
-    this.hudPlayerRole.innerText = this.state.currentCharacter === 'zhang' ? 'ZHIPU' : (this.state.currentCharacter === 'demis' ? 'DEEPMIND' : this.state.currentCharacter === 'dario' ? 'ANTHROPIC' : this.state.currentCharacter === 'sam' ? 'OPENAI' : 'xAI');
-    this.hudTimeUnit.innerText = this.state.currentCharacter === 'elon' ? "Mars quarters" : "quarters";
+    this.hudPlayerName.innerText = charConfig.nameDisplay;
+    this.hudPlayerRole.innerText = charConfig.company;
+    this.hudTimeUnit.innerText = charConfig.timeUnit;
 
-    this.narrativeLog.innerHTML = `<div class="log-item">Initialized session for ${this.hudPlayerName.innerText}...</div>`;
+    this.narrativeLog.innerHTML = `<div class="log-item">Initialized session for ${charConfig.nameDisplay}...</div>`;
 
     this.initObjectivesUI();
     this.updateStatsUI();
@@ -598,12 +607,12 @@ class GameEngine {
   }
 
   initObjectivesUI() {
-    const list = OBJECTIVES[this.state.currentCharacter] || [];
-    this.objectivesChecklist.innerHTML = "";
-    list.forEach(obj => {
-      const isCompleted = this.state.completedObjectives.includes(`${this.state.currentCharacter}_${obj.key}`);
-      obj.completed = isCompleted;
-
+    const list = this.getObjectives();
+    this.objectivesChecklist.innerHTML = '';
+    list.forEach((obj) => {
+      const isCompleted = this.state.completedObjectives.includes(
+        `${this.state.currentCharacter}_${obj.key}`
+      );
       const item = document.createElement('div');
       item.className = 'obj-item';
       item.innerHTML = `<span class="obj-checkbox ${isCompleted ? 'checked' : ''}"></span> <span>${obj.text}</span>`;
@@ -612,43 +621,45 @@ class GameEngine {
   }
 
   completeObjective(key) {
-    const list = OBJECTIVES[this.state.currentCharacter] || [];
-    const obj = list.find(o => o.key === key);
+    const list = this.getObjectives();
+    const obj = list.find((o) => o.key === key);
     const storageKey = `${this.state.currentCharacter}_${key}`;
     if (obj && !this.state.completedObjectives.includes(storageKey)) {
       this.state.completedObjectives.push(storageKey);
       try {
         localStorage.setItem('krippas_objectives', JSON.stringify(this.state.completedObjectives));
-      } catch (e) {}
-      
+      } catch (e) {
+        console.warn('Storage write failed', e);
+      }
+
       this.initObjectivesUI();
-      
-      // Flash indicator or notify in log
-      const logMsg = `<div class="log-item system">🏆 OBJECTIVE ACHIEVED: ${obj.text}</div>`;
+
+      const logMsg = `<div class="log-item system">OBJECTIVE ACHIEVED: ${obj.text}</div>`;
       this.narrativeLog.insertAdjacentHTML('afterbegin', logMsg);
     }
   }
 
   renderCurrentCard() {
-    const charData = window.STORY_DATA[this.state.currentCharacter];
-    const node = charData.nodes[this.state.currentCardNode];
+    const story = this.getStory();
+    if (!story) return;
 
+    const node = story.nodes[this.state.currentCardNode];
     if (!node) {
-      this.state.currentCardNode = charData.start;
+      this.state.currentCardNode = story.start;
       this.renderCurrentCard();
       return;
     }
 
     this.dialogueText.innerText = node.text;
     this.speakerName.innerText = node.speaker;
-    
+
     const portraitKey = node.avatar || 'engineer';
     this.cardPortrait.innerHTML = PORTRAITS[portraitKey] || PORTRAITS.engineer;
 
-    this.indicatorLeft.innerText = node.left.text;
-    this.indicatorRight.innerText = node.right.text;
+    this.indicatorLeft.innerText = node.left ? node.left.text : '';
+    this.indicatorRight.innerText = node.right ? node.right.text : '';
 
-    this.mainCard.style.transform = `rotate(0deg) translate(0px, 0px)`;
+    this.mainCard.style.transform = 'rotate(0deg) translate(0px, 0px)';
     this.indicatorLeft.style.opacity = 0;
     this.indicatorRight.style.opacity = 0;
     this.hideChangeDots();
@@ -665,7 +676,7 @@ class GameEngine {
   }
 
   dragMoveHandler(e) {
-    if (!this.isDragging) return;
+    if (!this.isDragging || this.state.gameState !== 'game') return;
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
@@ -675,17 +686,18 @@ class GameEngine {
     const rotation = this.dragOffset.x * 0.08;
     this.mainCard.style.transform = `translate(${this.dragOffset.x}px, ${this.dragOffset.y * 0.15}px) rotate(${rotation}deg)`;
 
-    const charData = window.STORY_DATA[this.state.currentCharacter];
-    const node = charData.nodes[this.state.currentCardNode];
+    const story = this.getStory();
+    const node = story && story.nodes ? story.nodes[this.state.currentCardNode] : null;
+    if (!node) return;
 
     if (this.dragOffset.x > 30) {
       this.indicatorRight.style.opacity = Math.min((this.dragOffset.x - 30) / 70, 1);
       this.indicatorLeft.style.opacity = 0;
-      this.showChangeDots(node.right.effects);
+      this.showChangeDots(node.right && node.right.effects);
     } else if (this.dragOffset.x < -30) {
       this.indicatorLeft.style.opacity = Math.min((-this.dragOffset.x - 30) / 70, 1);
       this.indicatorRight.style.opacity = 0;
-      this.showChangeDots(node.left.effects);
+      this.showChangeDots(node.left && node.left.effects);
     } else {
       this.indicatorLeft.style.opacity = 0;
       this.indicatorRight.style.opacity = 0;
@@ -703,7 +715,7 @@ class GameEngine {
     } else if (this.dragOffset.x < -100) {
       this.performChoice('left');
     } else {
-      this.mainCard.style.transform = `rotate(0deg) translate(0px, 0px)`;
+      this.mainCard.style.transform = 'rotate(0deg) translate(0px, 0px)';
       this.indicatorLeft.style.opacity = 0;
       this.indicatorRight.style.opacity = 0;
       this.hideChangeDots();
@@ -712,20 +724,24 @@ class GameEngine {
   }
 
   performChoice(direction) {
+    if (this.state.gameState !== 'game') return;
+
+    const story = this.getStory();
+    const node = story && story.nodes ? story.nodes[this.state.currentCardNode] : null;
+    if (!node) return;
+
+    const choice = direction === 'left' ? node.left : node.right;
+    if (!choice) return;
+
     audio.playSwipe();
 
-    const charData = window.STORY_DATA[this.state.currentCharacter];
-    const node = charData.nodes[this.state.currentCardNode];
-    const choice = direction === 'left' ? node.left : node.right;
-
-    // Check Objective Completions based on card key and choice direction
     const actionKey = `card_${this.state.currentCardNode}_${direction}`;
     this.completeObjective(actionKey);
     this.completeObjective(`card_${this.state.currentCardNode}`);
 
-    // Apply effects
     if (choice.effects) {
       for (const stat in choice.effects) {
+        if (!Object.prototype.hasOwnProperty.call(this.state.stats, stat)) continue;
         this.state.stats[stat] += choice.effects[stat];
         this.state.stats[stat] = Math.max(0, Math.min(100, this.state.stats[stat]));
       }
@@ -734,12 +750,12 @@ class GameEngine {
     this.state.timeInPower++;
     this.hudTimeVal.innerText = this.state.timeInPower;
 
-    // Time-based objective check
     if (this.state.timeInPower >= 10) {
-      this.completeObjective("time_10");
+      this.completeObjective('time_10');
     }
 
-    const logMsg = `<div class="log-item">"${node.text.slice(0, 30)}..."<br/>→ <span class="player-choice">${choice.text}</span></div>`;
+    const preview = node.text.length > 30 ? `${node.text.slice(0, 30)}...` : node.text;
+    const logMsg = `<div class="log-item">"${preview}"<br/>→ <span class="player-choice">${choice.text}</span></div>`;
     this.narrativeLog.insertAdjacentHTML('afterbegin', logMsg);
 
     this.updateStatsUI();
@@ -750,11 +766,13 @@ class GameEngine {
       return;
     }
 
-    this.state.currentCardNode = choice.next;
+    this.state.currentCardNode = choice.next || story.start;
     this.renderCurrentCard();
   }
 
   showChangeDots(effects) {
+    this.hideChangeDots();
+    if (!effects) return;
     for (const stat in effects) {
       if (effects[stat] !== 0) {
         const query = document.querySelector(`#stat-${stat} .change-dot`);
@@ -764,28 +782,29 @@ class GameEngine {
   }
 
   hideChangeDots() {
-    const dots = document.querySelectorAll('.change-dot');
-    dots.forEach(dot => dot.classList.remove('active'));
+    document.querySelectorAll('.change-dot').forEach((dot) => dot.classList.remove('active'));
   }
 
   updateStatsUI() {
-    for (const stat in this.state.stats) {
-      const val = this.state.stats[stat];
+    for (const stat of STAT_KEYS) {
+      const val = this.state.stats[stat] ?? 50;
       const fill = document.querySelector(`#stat-${stat} .bar-fill`);
       const indicator = document.getElementById(`stat-${stat}`);
 
       if (fill) fill.style.height = `${val}%`;
 
-      if (val <= 15 || val >= 85) {
-        if (indicator) indicator.classList.add('danger');
-      } else {
-        if (indicator) indicator.classList.remove('danger');
+      if (indicator) {
+        if (val <= 15 || val >= 85) {
+          indicator.classList.add('danger');
+        } else {
+          indicator.classList.remove('danger');
+        }
       }
     }
   }
 
   checkGameOverTriggers() {
-    for (const stat in this.state.stats) {
+    for (const stat of STAT_KEYS) {
       const val = this.state.stats[stat];
       if (val <= 0) return `${stat}_low`;
       if (val >= 100) return `${stat}_high`;
@@ -795,19 +814,33 @@ class GameEngine {
 
   triggerGameOverSequence(reasonKey) {
     audio.playGameOver();
-    
+
     const endingSignature = `${this.state.currentCharacter}_${reasonKey}`;
     this.saveEndingToStorage(endingSignature);
 
-    const gameOverData = window.STORY_DATA.game_over[this.state.currentCharacter][reasonKey];
-    
-    document.getElementById('gameover-text').innerText = gameOverData.text;
+    const byChar = window.STORY_DATA && window.STORY_DATA.game_over
+      ? window.STORY_DATA.game_over[this.state.currentCharacter]
+      : null;
+    const gameOverData = byChar ? byChar[reasonKey] : null;
+    const fallback =
+      'Your empire collapses under its own contradictions. The protocol terminates.';
+
+    document.getElementById('gameover-text').innerText =
+      gameOverData && gameOverData.text ? gameOverData.text : fallback;
     document.getElementById('gameover-portrait').innerHTML = PORTRAITS.dead;
 
     this.transitionTo('gameover');
   }
 
   resetGame() {
+    this.state.currentCharacter = null;
+    this.state.currentCardNode = null;
+    this.state.stats = this.defaultStats();
+    this.state.timeInPower = 0;
+    this.state.quizStep = 0;
+    this.state.quizAnswers = emptyQuizScores();
+    this.hideChangeDots();
+    this.updateStatsUI();
     this.transitionTo('welcome');
   }
 }
