@@ -11,13 +11,15 @@ const CHARACTERS = {
     role: 'CHIEF ACCELERATION OFFICER',
     company: 'xAI',
     description:
-      'You prioritize pure horsepower GPU cluster expansion, defying regulators in public, and building Mars-optimized code systems.',
+      'You sleep beside the Memphis racks and wage wars in memes and lawsuits. Expand Grok, keep Mars on the roadmap, and survive the enemies you create - including yourself.',
     timeUnit: 'Mars quarters',
-    initialStats: { capital: 55, hype: 70, compute: 75, safety: 35 },
+    initialStats: { capital: 52, hype: 58, compute: 62, safety: 42 },
     objectives: [
-      { text: 'Reach 10 Mars Quarters', key: 'time_10' },
-      { text: 'Face the OpenAI Board', key: 'card_elon_6' },
-      { text: 'Spin up Memphis power', key: 'card_elon_1' }
+      { text: 'Survive 20 Mars Quarters', key: 'time_20' },
+      { text: 'Activate Colossus Memphis', key: 'card_elon_a1_power' },
+      { text: 'Decide the OpenAI reunion', key: 'card_elon_a2_sam' },
+      { text: 'Unlock a secret Mars path', key: 'ending_mars_covenant' },
+      { text: 'Face the Board of Regulators', key: 'card_elon_a3_regulators' }
     ]
   },
   sam: {
@@ -27,13 +29,15 @@ const CHARACTERS = {
     role: 'CHIEF EXECUTIVE OFFICER',
     company: 'OPENAI',
     description:
-      'You balance board oversight, massive investments, and corporate structural changes while shipping GPT models.',
+      'You juggle board knives, Microsoft cloud, Apple distribution, and the rumor that AGI is already whispering. Charm, restructure, survive mutiny - or invent a new throne.',
     timeUnit: 'quarters',
-    initialStats: { capital: 70, hype: 60, compute: 65, safety: 45 },
+    initialStats: { capital: 58, hype: 55, compute: 58, safety: 48 },
     objectives: [
-      { text: 'Secure Apple distribution deal', key: 'card_sam_reign_restored_left' },
-      { text: 'Survive the Board Mutiny', key: 'card_sam_reign_restored' },
-      { text: 'Fund desert chip foundries', key: 'card_sam_hardware_era_left' }
+      { text: 'Survive 20 quarters', key: 'time_20' },
+      { text: 'Survive or rewrite the board coup', key: 'card_sam_a2_coup' },
+      { text: 'Close the Apple deal branch', key: 'card_sam_a3_apple' },
+      { text: 'Unlock the Hardware Sovereign ending', key: 'ending_desert_foundry' },
+      { text: 'Reach Superalignment crisis', key: 'card_sam_a4_alignment' }
     ]
   },
   dario: {
@@ -43,13 +47,15 @@ const CHARACTERS = {
     role: 'FOUNDER / CEO',
     company: 'ANTHROPIC',
     description:
-      "Your weapon is Constitutional AI. Can you make Claude scale safely without bankrupting the company?",
+      'Constitutional AI is your creed and your cage. Claude must scale without becoming a monster, a monopoly product, or a military subroutine. Every dollar tests your principles.',
     timeUnit: 'quarters',
-    initialStats: { capital: 45, hype: 45, compute: 55, safety: 75 },
+    initialStats: { capital: 48, hype: 48, compute: 52, safety: 62 },
     objectives: [
-      { text: 'Accept Senate audit partnership', key: 'card_dario_loop_left' },
-      { text: 'Stay multi-cloud independent', key: 'card_dario_2_right' },
-      { text: 'Keep full safety evals on Claude', key: 'card_dario_1_left' }
+      { text: 'Survive 20 quarters', key: 'time_20' },
+      { text: 'Choose Amazon exclusivity or independence', key: 'card_dario_a1_aws' },
+      { text: 'Handle the deceptive Claude run', key: 'card_dario_a2_deception' },
+      { text: 'Unlock Senate Auditor path', key: 'ending_safety_throne' },
+      { text: 'Decide military Claude', key: 'card_dario_a3_dod' }
     ]
   },
   demis: {
@@ -59,13 +65,15 @@ const CHARACTERS = {
     role: 'DIRECTOR',
     company: 'DEEPMIND',
     description:
-      "You protect DeepMind's academic freedoms against Google's commercial search and ads pressure.",
+      "Protect DeepMind's scientific soul inside Alphabet's market machine. Publish breakthroughs, resist ad-driven roadmaps, and decide whether Gemini serves search or the universe.",
     timeUnit: 'quarters',
-    initialStats: { capital: 80, hype: 40, compute: 85, safety: 55 },
+    initialStats: { capital: 62, hype: 45, compute: 65, safety: 52 },
     objectives: [
-      { text: 'Publish topology breakthrough', key: 'card_demis_3_left' },
-      { text: 'Defend research autonomy', key: 'card_demis_5_right' },
-      { text: "Merge Sergey's compiler patch", key: 'card_demis_6_left' }
+      { text: 'Survive 20 quarters', key: 'time_20' },
+      { text: 'Ship or delay Gemini under pressure', key: 'card_demis_a1_ship' },
+      { text: 'Publish the topology breakthrough', key: 'card_demis_a2_topology' },
+      { text: 'Defend research autonomy', key: 'card_demis_a3_autonomy' },
+      { text: 'Unlock open science ending', key: 'ending_nature_throne' }
     ]
   },
   zhang: {
@@ -75,19 +83,21 @@ const CHARACTERS = {
     role: 'FOUNDER / CEO',
     company: 'ZHIPU',
     description:
-      'You navigate local silicon supplies, state content guidelines, and fight to establish Chinese GLM frontier models.',
+      'Build frontier GLM under export bans, domestic silicon, state guidelines, and global rivalry. Academic roots, political gravity, and market hunger all pull at once.',
     timeUnit: 'quarters',
-    initialStats: { capital: 55, hype: 50, compute: 55, safety: 60 },
+    initialStats: { capital: 52, hype: 50, compute: 52, safety: 55 },
     objectives: [
-      { text: 'Source domestic AI chips', key: 'card_zhang_2_left' },
-      { text: 'Win enterprise supply-chain deal', key: 'card_zhang_4_left' },
-      { text: 'Deploy real-time moderation', key: 'card_zhang_5_left' }
+      { text: 'Survive 20 quarters', key: 'time_20' },
+      { text: 'Source domestic or grey-market chips', key: 'card_zhang_a1_chips' },
+      { text: 'Win the state enterprise contract', key: 'card_zhang_a2_enterprise' },
+      { text: 'Navigate compliance crisis', key: 'card_zhang_a3_compliance' },
+      { text: 'Unlock dual-track global path', key: 'ending_silk_model' }
     ]
   }
 };
 
 const CHARACTER_IDS = Object.keys(CHARACTERS);
-const TOTAL_ENDINGS = CHARACTER_IDS.length * STAT_KEYS.length * 2;
+const TOTAL_ENDINGS = CHARACTER_IDS.length * STAT_KEYS.length * 2 + 15;
 
 function emptyQuizScores() {
   const scores = {};

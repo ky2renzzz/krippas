@@ -316,6 +316,8 @@ class GameEngine {
       currentCharacter: null,
       currentCardNode: null,
       stats: { capital: 50, hype: 50, compute: 50, safety: 50 },
+      flags: {},
+      visitedNodes: {},
       timeInPower: 0,
       unlockedEndings: [],
       completedObjectives: []
@@ -358,6 +360,172 @@ class GameEngine {
       }
     });
     return base;
+  }
+
+  // --- Narrative condition / adaptation helpers ---
+  evaluateCondition(cond) {
+    if (!cond) return true;
+    if (cond.always) return true;
+
+    if (cond.flags) {
+      for (const key in cond.flags) {
+        const want = !!cond.flags[key];
+        const have = !!this.state.flags[key];
+        if (want !== have) return false;
+      }
+    }
+    if (cond.notFlags) {
+      for (const key in cond.notFlags) {
+        if (cond.notFlags[key] && this.state.flags[key]) return false;
+        if (!cond.notFlags[key] && !this.state.flags[key]) return false;
+      }
+    }
+    if (cond.minStats) {
+      for (const key in cond.minStats) {
+        if ((this.state.stats[key] ?? 0) < cond.minStats[key]) return false;
+      }
+    }
+    if (cond.maxStats) {
+      for (const key in cond.maxStats) {
+        if ((this.state.stats[key] ?? 0) > cond.maxStats[key]) return false;
+      }
+    }
+    if (typeof cond.minTime === 'number' && this.state.timeInPower < cond.minTime) return false;
+    if (typeof cond.maxTime === 'number' && this.state.timeInPower > cond.maxTime) return false;
+    if (cond.visited) {
+      for (const nodeId of cond.visited) {
+        if (!this.state.visitedNodes[nodeId]) return false;
+      }
+    }
+    if (cond.notVisited) {
+      for (const nodeId of cond.notVisited) {
+        if (this.state.visitedNodes[nodeId]) return false;
+      }
+    }
+    if (typeof cond.minVisits === 'object') {
+      for (const nodeId in cond.minVisits) {
+        if ((this.state.visitedNodes[nodeId] || 0) < cond.minVisits[nodeId]) return false;
+      }
+    }
+    return true;
+  }
+
+  pickVariant(list, fallback) {
+    if (!Array.isArray(list) || !list.length) return fallback;
+    for (const item of list) {
+      if (item && this.evaluateCondition(item.if || item.when || null)) {
+        return item;
+      }
+    }
+    return fallback;
+  }
+
+  resolveChoice(rawChoice) {
+    if (!rawChoice) return null;
+    if (Array.isArray(rawChoice.variants)) {
+      const picked = this.pickVariant(rawChoice.variants, null);
+      if (picked) {
+        return {
+          text: picked.text ?? rawChoice.text ?? '',
+          effects: picked.effects || rawChoice.effects || null,
+          setFlags: { ...(rawChoice.setFlags || {}), ...(picked.setFlags || {}) },
+          clearFlags: picked.clearFlags || rawChoice.clearFlags || null,
+          next: picked.next !== undefined ? picked.next : rawChoice.next,
+          specialEnding: picked.specialEnding || rawChoice.specialEnding || null,
+          objectiveKeys: picked.objectiveKeys || rawChoice.objectiveKeys || null,
+          log: picked.log || rawChoice.log || null
+        };
+      }
+    }
+    return {
+      text: rawChoice.text || '',
+      effects: rawChoice.effects || null,
+      setFlags: rawChoice.setFlags || null,
+      clearFlags: rawChoice.clearFlags || null,
+      next: rawChoice.next,
+      specialEnding: rawChoice.specialEnding || null,
+      objectiveKeys: rawChoice.objectiveKeys || null,
+      log: rawChoice.log || null
+    };
+  }
+
+  getResolvedNode(nodeId) {
+    const story = this.getStory();
+    if (!story || !story.nodes) return null;
+    const node = story.nodes[nodeId];
+    if (!node) return null;
+
+    let text = node.text || '';
+    if (Array.isArray(node.textVariants)) {
+      const v = this.pickVariant(node.textVariants, null);
+      if (v && v.text) text = v.text;
+    }
+
+    let speaker = node.speaker || 'Unknown';
+    if (Array.isArray(node.speakerVariants)) {
+      const v = this.pickVariant(node.speakerVariants, null);
+      if (v && v.speaker) speaker = v.speaker;
+    }
+
+    let avatar = node.avatar || 'engineer';
+    if (Array.isArray(node.avatarVariants)) {
+      const v = this.pickVariant(node.avatarVariants, null);
+      if (v && v.avatar) avatar = v.avatar;
+    }
+
+    const left = this.resolveChoice(node.left);
+    const right = this.resolveChoice(node.right);
+
+    return { id: nodeId, raw: node, text, speaker, avatar, left, right };
+  }
+
+  applyFlags(setFlags, clearFlags) {
+    if (setFlags && typeof setFlags === 'object') {
+      for (const key in setFlags) {
+        this.state.flags[key] = !!setFlags[key];
+      }
+    }
+    if (Array.isArray(clearFlags)) {
+      clearFlags.forEach((key) => {
+        delete this.state.flags[key];
+      });
+    } else if (clearFlags && typeof clearFlags === 'object') {
+      for (const key in clearFlags) {
+        if (clearFlags[key]) delete this.state.flags[key];
+      }
+    }
+  }
+
+  resolveNextTarget(nextSpec) {
+    const story = this.getStory();
+    if (!nextSpec) return story ? story.start : null;
+
+    if (typeof nextSpec === 'string') return nextSpec;
+
+    if (Array.isArray(nextSpec)) {
+      for (const branch of nextSpec) {
+        if (!branch) continue;
+        const cond = branch.if || branch.when || null;
+        if (!cond || this.evaluateCondition(cond)) {
+          return branch.goto || branch.next || null;
+        }
+      }
+      return story ? story.start : null;
+    }
+
+    if (typeof nextSpec === 'object') {
+      if (nextSpec.goto || nextSpec.next) {
+        if (!nextSpec.if || this.evaluateCondition(nextSpec.if)) {
+          return nextSpec.goto || nextSpec.next;
+        }
+      }
+    }
+    return story ? story.start : null;
+  }
+
+  markVisited(nodeId) {
+    if (!nodeId) return;
+    this.state.visitedNodes[nodeId] = (this.state.visitedNodes[nodeId] || 0) + 1;
   }
 
   initDOM() {
@@ -591,6 +759,8 @@ class GameEngine {
     }
 
     this.state.stats = this.cloneStats(charConfig.initialStats);
+    this.state.flags = {};
+    this.state.visitedNodes = {};
     this.state.timeInPower = 0;
     this.state.currentCardNode = story.start;
     this.hudTimeVal.innerText = '0';
@@ -643,26 +813,43 @@ class GameEngine {
     const story = this.getStory();
     if (!story) return;
 
-    const node = story.nodes[this.state.currentCardNode];
-    if (!node) {
-      this.state.currentCardNode = story.start;
-      this.renderCurrentCard();
+    let guard = 0;
+    while (guard < 20) {
+      guard++;
+      const node = this.getResolvedNode(this.state.currentCardNode);
+      if (!node) {
+        this.state.currentCardNode = story.start;
+        continue;
+      }
+
+      // Auto-skip gate nodes that route based purely on flags
+      if (node.raw && node.raw.autoRoute) {
+        const route = this.resolveNextTarget(node.raw.autoRoute);
+        if (route && route !== this.state.currentCardNode) {
+          this.state.currentCardNode = route;
+          continue;
+        }
+      }
+
+      this.markVisited(this.state.currentCardNode);
+
+      this.dialogueText.innerText = node.text;
+      this.speakerName.innerText = node.speaker;
+
+      const portraitKey = node.avatar || 'engineer';
+      this.cardPortrait.innerHTML = PORTRAITS[portraitKey] || PORTRAITS.engineer;
+
+      this.indicatorLeft.innerText = node.left ? node.left.text : '';
+      this.indicatorRight.innerText = node.right ? node.right.text : '';
+
+      this.mainCard.style.transform = 'rotate(0deg) translate(0px, 0px)';
+      this.indicatorLeft.style.opacity = 0;
+      this.indicatorRight.style.opacity = 0;
+      this.hideChangeDots();
       return;
     }
 
-    this.dialogueText.innerText = node.text;
-    this.speakerName.innerText = node.speaker;
-
-    const portraitKey = node.avatar || 'engineer';
-    this.cardPortrait.innerHTML = PORTRAITS[portraitKey] || PORTRAITS.engineer;
-
-    this.indicatorLeft.innerText = node.left ? node.left.text : '';
-    this.indicatorRight.innerText = node.right ? node.right.text : '';
-
-    this.mainCard.style.transform = 'rotate(0deg) translate(0px, 0px)';
-    this.indicatorLeft.style.opacity = 0;
-    this.indicatorRight.style.opacity = 0;
-    this.hideChangeDots();
+    this.state.currentCardNode = story.start;
   }
 
   dragStartHandler(e) {
@@ -686,8 +873,7 @@ class GameEngine {
     const rotation = this.dragOffset.x * 0.08;
     this.mainCard.style.transform = `translate(${this.dragOffset.x}px, ${this.dragOffset.y * 0.15}px) rotate(${rotation}deg)`;
 
-    const story = this.getStory();
-    const node = story && story.nodes ? story.nodes[this.state.currentCardNode] : null;
+    const node = this.getResolvedNode(this.state.currentCardNode);
     if (!node) return;
 
     if (this.dragOffset.x > 30) {
@@ -727,17 +913,24 @@ class GameEngine {
     if (this.state.gameState !== 'game') return;
 
     const story = this.getStory();
-    const node = story && story.nodes ? story.nodes[this.state.currentCardNode] : null;
-    if (!node) return;
+    const node = this.getResolvedNode(this.state.currentCardNode);
+    if (!node || !story) return;
 
     const choice = direction === 'left' ? node.left : node.right;
     if (!choice) return;
 
     audio.playSwipe();
 
-    const actionKey = `card_${this.state.currentCardNode}_${direction}`;
+    const nodeId = this.state.currentCardNode;
+    const actionKey = `card_${nodeId}_${direction}`;
     this.completeObjective(actionKey);
-    this.completeObjective(`card_${this.state.currentCardNode}`);
+    this.completeObjective(`card_${nodeId}`);
+
+    if (Array.isArray(choice.objectiveKeys)) {
+      choice.objectiveKeys.forEach((k) => this.completeObjective(k));
+    }
+
+    this.applyFlags(choice.setFlags, choice.clearFlags);
 
     if (choice.effects) {
       for (const stat in choice.effects) {
@@ -750,15 +943,21 @@ class GameEngine {
     this.state.timeInPower++;
     this.hudTimeVal.innerText = this.state.timeInPower;
 
-    if (this.state.timeInPower >= 10) {
-      this.completeObjective('time_10');
-    }
+    if (this.state.timeInPower >= 10) this.completeObjective('time_10');
+    if (this.state.timeInPower >= 20) this.completeObjective('time_20');
+    if (this.state.timeInPower >= 30) this.completeObjective('time_30');
 
-    const preview = node.text.length > 30 ? `${node.text.slice(0, 30)}...` : node.text;
-    const logMsg = `<div class="log-item">"${preview}"<br/>→ <span class="player-choice">${choice.text}</span></div>`;
+    const preview = node.text.length > 36 ? `${node.text.slice(0, 36)}...` : node.text;
+    const choiceText = choice.log || choice.text;
+    const logMsg = `<div class="log-item">"${preview}"<br/>→ <span class="player-choice">${choiceText}</span></div>`;
     this.narrativeLog.insertAdjacentHTML('afterbegin', logMsg);
 
     this.updateStatsUI();
+
+    if (choice.specialEnding) {
+      this.triggerSpecialEnding(choice.specialEnding);
+      return;
+    }
 
     const triggerGameOver = this.checkGameOverTriggers();
     if (triggerGameOver) {
@@ -766,7 +965,7 @@ class GameEngine {
       return;
     }
 
-    this.state.currentCardNode = choice.next || story.start;
+    this.state.currentCardNode = this.resolveNextTarget(choice.next) || story.start;
     this.renderCurrentCard();
   }
 
@@ -832,15 +1031,42 @@ class GameEngine {
     this.transitionTo('gameover');
   }
 
+  triggerSpecialEnding(endingKey) {
+    audio.playGameOver();
+    const endingSignature = `${this.state.currentCharacter}_${endingKey}`;
+    this.saveEndingToStorage(endingSignature);
+    this.completeObjective(endingKey);
+    this.completeObjective(`ending_${endingKey}`);
+
+    const specials = window.STORY_DATA && window.STORY_DATA.special_endings
+      ? window.STORY_DATA.special_endings[this.state.currentCharacter]
+      : null;
+    const data = specials ? specials[endingKey] : null;
+    const fallback = 'A secret path closes behind you. History will debate what you became.';
+
+    document.getElementById('gameover-text').innerText =
+      data && data.text ? data.text : fallback;
+    document.getElementById('gameover-portrait').innerHTML =
+      (data && data.avatar && PORTRAITS[data.avatar]) || PORTRAITS.dead;
+    const title = document.querySelector('.gameover-title');
+    if (title) title.innerText = (data && data.title) || 'PATH COMPLETE';
+
+    this.transitionTo('gameover');
+  }
+
   resetGame() {
     this.state.currentCharacter = null;
     this.state.currentCardNode = null;
     this.state.stats = this.defaultStats();
+    this.state.flags = {};
+    this.state.visitedNodes = {};
     this.state.timeInPower = 0;
     this.state.quizStep = 0;
     this.state.quizAnswers = emptyQuizScores();
     this.hideChangeDots();
     this.updateStatsUI();
+    const title = document.querySelector('.gameover-title');
+    if (title) title.innerText = 'SYSTEM OFFLINE';
     this.transitionTo('welcome');
   }
 }
