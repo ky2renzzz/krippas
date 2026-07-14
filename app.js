@@ -763,14 +763,15 @@ class GameEngine {
     this.btnStartGame = document.getElementById('btn-start-game');
     this.btnRestart = document.getElementById('btn-restart');
     this.btnToggleSound = document.getElementById('btn-toggle-sound');
-    
-    this.btnSwipeLeft = document.getElementById('btn-swipe-left');
-    this.btnSwipeRight = document.getElementById('btn-swipe-right');
 
     this.mainCard = document.getElementById('main-card');
-    this.cardWrapper = document.querySelector('.card-wrapper');
+    this.cardWrapper = document.getElementById('card-wrapper') || document.querySelector('.card-wrapper');
     this.indicatorLeft = document.getElementById('indicator-left');
     this.indicatorRight = document.getElementById('indicator-right');
+    this.stampLeft = document.getElementById('stamp-left');
+    this.stampRight = document.getElementById('stamp-right');
+    this.activeChoiceText = document.getElementById('active-choice-text');
+    this.swipeHint = document.getElementById('swipe-hint');
 
     this.dialogueText = document.getElementById('dialogue-text');
     this.speakerName = document.getElementById('speaker-name');
@@ -839,15 +840,6 @@ class GameEngine {
     this.btnRestart.addEventListener('click', () => this.resetGame());
     this.btnToggleSound.addEventListener('click', () => this.toggleSound());
 
-    this.btnSwipeLeft.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.performChoice('left');
-    });
-    this.btnSwipeRight.addEventListener('click', (e) => {
-      e.preventDefault();
-      this.performChoice('right');
-    });
-
     document.addEventListener('keydown', (e) => {
       if (this.state.gameState !== 'game' || this.choiceLocked) return;
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
@@ -859,7 +851,7 @@ class GameEngine {
       }
     });
 
-    // Pointer events: one path for mouse + touch, fewer mobile bugs
+    // Pointer events: one path for mouse + touch
     if (this.cardWrapper) {
       this.cardWrapper.addEventListener('pointerdown', (e) => this.dragStartHandler(e));
       this.cardWrapper.addEventListener('pointermove', (e) => this.dragMoveHandler(e));
@@ -873,7 +865,7 @@ class GameEngine {
 
   swipeThreshold() {
     const w = this.cardWrapper ? this.cardWrapper.clientWidth : 280;
-    return Math.max(72, Math.min(120, w * 0.28));
+    return Math.max(64, Math.min(110, w * 0.26));
   }
 
   toggleSound() {
@@ -1089,8 +1081,9 @@ class GameEngine {
       if (this.indicatorRight) this.indicatorRight.innerText = node.right ? node.right.text : '';
 
       this.resetCardTransform(false);
-      this.setChoicePreview(null);
+      this.setChoicePreview(null, 0);
       this.hideChangeDots();
+      if (this.swipeHint) this.swipeHint.classList.remove('hidden');
       return;
     }
 
@@ -1100,7 +1093,7 @@ class GameEngine {
   resetCardTransform(animate) {
     if (!this.mainCard) return;
     this.mainCard.style.transition = animate
-      ? 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)'
+      ? 'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease'
       : 'none';
     this.mainCard.style.transform = 'translate3d(0px, 0px, 0) rotate(0deg)';
     this.mainCard.style.opacity = '1';
@@ -1124,6 +1117,7 @@ class GameEngine {
 
     this.mainCard.style.transition = 'none';
     this.mainCard.classList.add('dragging');
+    if (this.swipeHint) this.swipeHint.classList.add('hidden');
   }
 
   dragMoveHandler(e) {
@@ -1133,38 +1127,63 @@ class GameEngine {
     this.dragOffset.x = e.clientX - this.dragStart.x;
     this.dragOffset.y = e.clientY - this.dragStart.y;
 
-    // Avoid vertical page jank while dragging the card
-    if (Math.abs(this.dragOffset.x) > 8) {
+    if (Math.abs(this.dragOffset.x) > 6) {
       e.preventDefault();
     }
 
-    const rot = Math.max(-18, Math.min(18, this.dragOffset.x * 0.06));
-    const y = Math.max(-24, Math.min(36, this.dragOffset.y * 0.12));
+    // Slight resistance curve for smoother feel
+    const x = this.dragOffset.x;
+    const dampX = Math.sign(x) * Math.min(Math.abs(x), 220);
+    const rot = Math.max(-16, Math.min(16, dampX * 0.055));
+    const y = Math.max(-18, Math.min(28, this.dragOffset.y * 0.1));
     this.mainCard.style.transform =
-      `translate3d(${this.dragOffset.x}px, ${y}px, 0) rotate(${rot}deg)`;
+      `translate3d(${dampX}px, ${y}px, 0) rotate(${rot}deg)`;
 
     const node = this.getResolvedNode(this.state.currentCardNode);
     if (!node) return;
 
-    const threshold = this.swipeThreshold() * 0.35;
-    if (this.dragOffset.x > threshold) {
-      this.setChoicePreview('right');
+    const threshold = this.swipeThreshold();
+    const strength = Math.min(1, Math.abs(dampX) / threshold);
+
+    if (dampX > 18) {
+      this.setChoicePreview('right', strength, node.right && node.right.text);
       this.showChangeDots(node.right && node.right.effects);
-    } else if (this.dragOffset.x < -threshold) {
-      this.setChoicePreview('left');
+    } else if (dampX < -18) {
+      this.setChoicePreview('left', strength, node.left && node.left.text);
       this.showChangeDots(node.left && node.left.effects);
     } else {
-      this.setChoicePreview(null);
+      this.setChoicePreview(null, 0);
       this.hideChangeDots();
     }
   }
 
-  setChoicePreview(side) {
-    if (this.btnSwipeLeft) this.btnSwipeLeft.classList.toggle('active-preview', side === 'left');
-    if (this.btnSwipeRight) this.btnSwipeRight.classList.toggle('active-preview', side === 'right');
+  setChoicePreview(side, strength = 0, text = '') {
+    const showLeft = side === 'left';
+    const showRight = side === 'right';
+    const alpha = Math.max(0, Math.min(1, strength));
+
+    if (this.stampLeft) {
+      this.stampLeft.classList.toggle('visible', showLeft);
+      this.stampLeft.style.opacity = showLeft ? String(0.25 + alpha * 0.75) : '0';
+    }
+    if (this.stampRight) {
+      this.stampRight.classList.toggle('visible', showRight);
+      this.stampRight.style.opacity = showRight ? String(0.25 + alpha * 0.75) : '0';
+    }
+
+    if (this.activeChoiceText) {
+      if (side && text) {
+        this.activeChoiceText.innerText = text;
+        this.activeChoiceText.classList.add('visible');
+      } else {
+        this.activeChoiceText.classList.remove('visible');
+        if (!side) this.activeChoiceText.innerText = '';
+      }
+    }
+
     if (this.mainCard) {
-      this.mainCard.classList.toggle('lean-left', side === 'left');
-      this.mainCard.classList.toggle('lean-right', side === 'right');
+      this.mainCard.classList.toggle('lean-left', showLeft);
+      this.mainCard.classList.toggle('lean-right', showRight);
     }
   }
 
@@ -1191,8 +1210,9 @@ class GameEngine {
       this.performChoice('left');
     } else {
       this.resetCardTransform(true);
-      this.setChoicePreview(null);
+      this.setChoicePreview(null, 0);
       this.hideChangeDots();
+      if (this.swipeHint) this.swipeHint.classList.remove('hidden');
     }
     this.dragOffset = { x: 0, y: 0 };
   }
@@ -1204,13 +1224,13 @@ class GameEngine {
         return;
       }
       const dir = direction === 'left' ? -1 : 1;
-      const distance = Math.max(window.innerWidth * 0.85, 360);
+      const distance = Math.max(window.innerWidth * 0.9, 420);
       this.mainCard.style.transition =
-        'transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.28s ease';
+        'transform 0.36s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.28s ease';
       this.mainCard.style.transform =
-        `translate3d(${dir * distance}px, 42px, 0) rotate(${dir * 26}deg)`;
-      this.mainCard.style.opacity = '0.15';
-      window.setTimeout(resolve, 300);
+        `translate3d(${dir * distance}px, 36px, 0) rotate(${dir * 24}deg)`;
+      this.mainCard.style.opacity = '0';
+      window.setTimeout(resolve, 310);
     });
   }
 
@@ -1222,14 +1242,13 @@ class GameEngine {
       }
       this.mainCard.style.transition = 'none';
       this.mainCard.style.opacity = '0';
-      this.mainCard.style.transform = 'translate3d(0px, 18px, 0) scale(0.96)';
-      // Force reflow then animate in
+      this.mainCard.style.transform = 'translate3d(0px, 22px, 0) scale(0.96)';
       void this.mainCard.offsetWidth;
       this.mainCard.style.transition =
-        'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease';
+        'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease';
       this.mainCard.style.transform = 'translate3d(0px, 0px, 0) scale(1)';
       this.mainCard.style.opacity = '1';
-      window.setTimeout(resolve, 260);
+      window.setTimeout(resolve, 280);
     });
   }
 
@@ -1245,7 +1264,7 @@ class GameEngine {
 
     this.choiceLocked = true;
     this.isDragging = false;
-    this.setChoicePreview(direction);
+    this.setChoicePreview(direction, 1, choice.text);
     audio.playSwipe();
 
     await this.flyCardOut(direction);
@@ -1279,7 +1298,7 @@ class GameEngine {
     this.narrativeLog.insertAdjacentHTML('afterbegin', logMsg);
 
     this.updateStatsUI();
-    this.setChoicePreview(null);
+    this.setChoicePreview(null, 0);
     this.hideChangeDots();
 
     if (choice.specialEnding) {
@@ -1444,9 +1463,10 @@ class GameEngine {
     this.activePointerId = null;
     this.dragOffset = { x: 0, y: 0 };
     this.hideChangeDots();
-    this.setChoicePreview(null);
+    this.setChoicePreview(null, 0);
     this.resetCardTransform(false);
     this.updateStatsUI();
+    if (this.swipeHint) this.swipeHint.classList.remove('hidden');
     const title = document.querySelector('.gameover-title');
     if (title) title.innerText = 'SYSTEM OFFLINE';
     this.transitionTo('welcome');

@@ -143,8 +143,20 @@
             <p id="dialogue-text"></p>
           </div>
 
-          <div class="card-wrapper">
+          <div class="swipe-prompt" id="swipe-prompt">
+            <span id="active-choice-text"></span>
+          </div>
+
+          <div class="card-wrapper" id="card-wrapper">
             <div class="reigns-card" id="main-card">
+              <div class="choice-stamp left" id="stamp-left">
+                <span class="stamp-dir">◀</span>
+                <span class="stamp-text" id="indicator-left"></span>
+              </div>
+              <div class="choice-stamp right" id="stamp-right">
+                <span class="stamp-dir">▶</span>
+                <span class="stamp-text" id="indicator-right"></span>
+              </div>
               <div class="card-art" id="card-portrait"></div>
               <div class="card-label">
                 <span id="card-speaker-label"></span>
@@ -152,16 +164,7 @@
             </div>
           </div>
 
-          <div class="choice-panel">
-            <button type="button" class="choice-btn choice-left" id="btn-swipe-left" title="Choose left (←)">
-              <span class="choice-arrow">◀</span>
-              <span class="choice-text" id="indicator-left"></span>
-            </button>
-            <button type="button" class="choice-btn choice-right" id="btn-swipe-right" title="Choose right (→)">
-              <span class="choice-text" id="indicator-right"></span>
-              <span class="choice-arrow">▶</span>
-            </button>
-          </div>
+          <div class="swipe-hint" id="swipe-hint">SWIPE LEFT OR RIGHT</div>
         </div>
 
         <!-- Game Over Screen -->
