@@ -99,210 +99,431 @@ class AudioManager {
 
 const audio = new AudioManager();
 
-// Character Themes (Colors matching the Reigns stylistic screenshots)
+// Character Themes — maps character id or speaker type to a full color palette
 const THEMES = {
   welcome: {
-    bg: '#c2a76f',
-    panel: '#ebd9a0',
-    border: '#362511',
-    textDark: '#221a0f',
-    skyColor: '#121820'
+    bg: '#f5f0e8',
+    panel: '#faf7f0',
+    border: '#2a241a',
+    textDark: '#1a1510',
+    skyColor: '#181410'
   },
-  elon: {
-    bg: '#47312a', // Rust red/brown Mars style
-    panel: '#a38174',
-    border: '#2e1913',
-    textDark: '#1e0f0b',
-    skyColor: '#281510'
-  },
-  sam: {
-    bg: '#253545', // Deep space corporate blue
-    panel: '#67819c',
-    border: '#111b24',
-    textDark: '#081017',
-    skyColor: '#0a141d'
-  },
-  dario: {
-    bg: '#25382b', // Constitutional safety green
-    panel: '#658f71',
-    border: '#0f1c13',
-    textDark: '#07100a',
-    skyColor: '#0d2114'
-  },
-  demis: {
-    bg: '#34233c', // Academic research purple
-    panel: '#7c5e8c',
-    border: '#1e0d24',
-    textDark: '#120517',
-    skyColor: '#1b0f24'
-  },
-  zhang: {
-    bg: '#3c3625', // Tsinghua ochre/stone style
-    panel: '#918667',
-    border: '#221d10',
-    textDark: '#120f08',
-    skyColor: '#1f1a10'
-  }
+  // Character themes — warm retro-minimal palettes
+  elon:       { bg: '#f2e8e4', panel: '#faf4f0', border: '#3d2018', textDark: '#1a1008', skyColor: '#1c1410' },
+  sam:        { bg: '#e8ecf2', panel: '#f2f4f8', border: '#1a2840', textDark: '#0a1018', skyColor: '#101820' },
+  dario:      { bg: '#eaf0ea', panel: '#f4f8f2', border: '#1a3020', textDark: '#081008', skyColor: '#101810' },
+  demis:      { bg: '#f0e8f2', panel: '#f8f2f8', border: '#281a38', textDark: '#100818', skyColor: '#181020' },
+  zhang:      { bg: '#f0ece4', panel: '#f8f4ec', border: '#2a2418', textDark: '#100c08', skyColor: '#1a1810' },
+
+  // Speaker-type themes — subtle, understated
+  engineer:   { bg: '#eceef0', panel: '#f4f6f8', border: '#1c2028', textDark: '#0c1014', skyColor: '#141820' },
+  investor:   { bg: '#eef0ec', panel: '#f6f8f4', border: '#1a2818', textDark: '#0a1008', skyColor: '#101810' },
+  politician: { bg: '#eaecf0', panel: '#f4f6fa', border: '#181c2a', textDark: '#080a14', skyColor: '#101420' },
+  regulator:  { bg: '#eeebe8', panel: '#f6f4f2', border: '#2a2018', textDark: '#100c08', skyColor: '#181410' },
+  staff:      { bg: '#eeeef0', panel: '#f6f6f8', border: '#1c1e22', textDark: '#0c0e10', skyColor: '#16181c' },
+  journalist: { bg: '#eeeaec', panel: '#f6f4f6', border: '#281a20', textDark: '#10080c', skyColor: '#181418' },
+  scientist:  { bg: '#eaecf0', panel: '#f4f6fa', border: '#181c2a', textDark: '#080c14', skyColor: '#121620' },
+  military:   { bg: '#ebe9e4', panel: '#f4f2ee', border: '#2a2418', textDark: '#100c06', skyColor: '#161410' },
+  legal:      { bg: '#ebe8e8', panel: '#f4f2f2', border: '#2a1c1c', textDark: '#0e0808', skyColor: '#161212' },
+  academic:   { bg: '#eaeaee', panel: '#f4f4f8', border: '#1c1e28', textDark: '#0a0c14', skyColor: '#14161c' },
+  board:      { bg: '#ececec', panel: '#f4f4f4', border: '#1c1c1c', textDark: '#080808', skyColor: '#141414' },
 };
 
-// --- Vector SVGs generation for Reigns-like geometric portraits with classic diagonal lighting shafts ---
-const PORTRAIT_SHADOW = `<polygon points="0,0 75,0 35,100 0,100" fill="rgba(255, 255, 255, 0.12)"/>
-  <polygon points="75,0 100,0 60,100 35,100" fill="rgba(0, 0, 0, 0.08)"/>`;
+// Speaker → type mapping drives which theme + portrait each NPC uses
+const SPEAKER_TYPES = {
+  // Engineers / technical
+  'Chief GPU Officer': 'engineer', 'xAI Lead Engineer': 'engineer', 'xAI Night-Shift Lead': 'engineer',
+  'Chief Scientist Office': 'scientist', 'DeepMind Researcher': 'scientist', 'Safety Researcher': 'scientist',
+  'Head of ChatGPT': 'engineer', 'Lead Constitution Author': 'scientist', 'Principal Investigator': 'scientist',
+  'Research Ops': 'scientist', 'Superalignment Lead': 'scientist', 'Constitutional Team Lead': 'scientist',
+  'Red Teamer': 'scientist', 'Jared Kaplan': 'scientist', 'AlphaFold Team Lead': 'scientist',
+  'Internal Auditor': 'engineer', 'Logistics Manager': 'engineer', 'Platform Moderator Liaison': 'engineer',
+
+  // Investors / capital
+  'Abu Dhabi Sovereign Fund': 'investor', 'Secondary Market Investor': 'investor',
+  'Sovereign Fund Partner': 'investor', 'Google Cloud VP': 'investor', 'Microsoft Accountant': 'investor',
+  'CFO': 'investor', 'Tesla CFO': 'investor',
+
+  // Politicians / government
+  'Senate Committee Chairman': 'politician', 'Senate Counsel': 'politician', 'US Senator': 'politician',
+  'Committee Staffer': 'politician', 'DOJ Contact': 'politician', 'State Partner PM': 'politician',
+  'Trade Counsel': 'politician', 'Policy Advisor': 'politician', 'Municipal AI Office': 'politician',
+  'European Research Host': 'politician', 'Tsinghua University Liaison': 'politician',
+  'Royal Society Correspondent': 'politician', 'US Department of Defense': 'military',
+  'SpaceX Flight Director': 'military',
+
+  // Regulators
+  'SEC Chairman': 'regulator', 'Compliance Inspector': 'regulator', 'Joint Regulatory Panel': 'regulator',
+  'Joint Safety Chair': 'regulator', 'Federal Ethics Board': 'regulator',
+
+  // Legal
+  'Legal Advisor': 'legal', 'Trade Counsel': 'legal',
+
+  // Staff / internal
+  'Chief of Staff': 'staff', 'HR Lead': 'staff', 'People Ops': 'staff', 'Recruiting Lead': 'staff',
+  'Marketing Director': 'staff', 'PR Director': 'staff', 'Employee Coalition': 'staff',
+  'Loyal PI Cadre': 'staff', 'Zhipu Strategy Desk': 'staff',
+
+  // Journalists / media
+  'Whistleblower Journalist': 'journalist', 'Documentary Producer': 'journalist', 'Livestream Host': 'journalist',
+  'Nature Editor Contact': 'journalist', 'Internet Desk': 'journalist',
+
+  // Board members
+  'Board Chair (New)': 'board', 'Alphabet Board Member': 'board', 'OpenAI Board Rep': 'board',
+  'Friendly Board Source': 'board',
+
+  // Corporate execs (use investor/politician theme)
+  'Apple Executive': 'investor', 'Microsoft Executive': 'investor', 'Amazon Web Services Rep': 'investor',
+  'AWS Account Lead': 'investor', 'Google Cloud Rep': 'investor', 'Google Ethics Lead': 'board',
+  'YouTube Ads VP': 'investor', 'X Ad Manager': 'investor', 'X Trust & Safety Lead': 'staff',
+  'State-Backed Enterprise CEO': 'investor', 'Domestic Silicon Vendor': 'engineer',
+  'University Consortium': 'academic', 'Overseas Academic Partner': 'academic',
+  'Overseas Partner': 'investor', 'Climate Science Partner': 'scientist',
+  'Competitor Whisper': 'staff', 'Rival Lab Mole': 'staff', 'Anonymous Rival Exec': 'board',
+  'Anonymous Staffer': 'staff', 'Unknown Number': 'staff', 'Encrypted Contact': 'staff',
+  'Conference Chair': 'academic', 'Old Friend (Dinner)': 'staff', 'Former Student / Friend': 'staff',
+  'Partner / Family Call': 'staff',
+
+  // Character cameos — keep their own themes
+  'Shivon Zilis': 'elon', 'Greg Brockman': 'sam', 'Ilya Sutskever': 'ilya',
+  'Mira Murati': 'sam', 'Satya Nadella': 'investor', 'Helen Toner': 'board',
+  'Sundar Pichai': 'board', 'Sergey Brin': 'board', 'Sam Altman': 'sam',
+  'Daniela Amodei': 'dario',
+};
+
+function getSpeakerType(speaker) {
+  if (!speaker) return 'engineer';
+  if (SPEAKER_TYPES[speaker]) return SPEAKER_TYPES[speaker];
+  // Fallback heuristic
+  const s = speaker.toLowerCase();
+  if (s.includes('engineer') || s.includes('developer') || s.includes('tech') || s.includes('lead')) return 'engineer';
+  if (s.includes('investor') || s.includes('fund') || s.includes('capital') || s.includes('cfo') || s.includes('cloud')) return 'investor';
+  if (s.includes('senat') || s.includes('politic') || s.includes('minister') || s.includes('govern')) return 'politician';
+  if (s.includes('regulat') || s.includes('complian') || s.includes('sec ') || s.includes('chairman')) return 'regulator';
+  if (s.includes('journal') || s.includes('media') || s.includes('press') || s.includes('reporter')) return 'journalist';
+  if (s.includes('scientist') || s.includes('research') || s.includes('professor')) return 'scientist';
+  if (s.includes('military') || s.includes('defense') || s.includes('army')) return 'military';
+  if (s.includes('lawyer') || s.includes('counsel') || s.includes('legal') || s.includes('attorney')) return 'legal';
+  if (s.includes('board') || s.includes('director')) return 'board';
+  if (s.includes('staff') || s.includes('officer') || s.includes('advisor') || s.includes('chief')) return 'staff';
+  return 'engineer';
+}
+
+// --- Distinctive Character Portraits (100x100 geometric, retro-minimal) ---
+const PORTRAIT_SHADOW = `<polygon points="0,0 75,0 35,100 0,100" fill="rgba(255,255,255,0.1)"/>
+  <polygon points="75,0 100,0 60,100 35,100" fill="rgba(0,0,0,0.06)"/>`;
 
 const PORTRAITS = {
   system: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#2d2218"/>
-    <polygon points="50,15 85,35 85,75 50,90 15,75 15,35" fill="#4d3b2a" stroke="#ebd9a0" stroke-width="2"/>
-    <circle cx="50" cy="53" r="18" fill="#1b140e" stroke="#8e1c19" stroke-width="1.5"/>
-    <line x1="50" y1="15" x2="50" y2="35" stroke="#ebd9a0" stroke-width="1.5"/>
-    ${PORTRAIT_SHADOW}
+    <rect x="0" y="0" width="100" height="100" fill="#1a1a24"/>
+    <polygon points="50,12 88,34 88,78 50,92 12,78 12,34" fill="#2a2a3d" stroke="#5a5a7a" stroke-width="1"/>
+    <circle cx="50" cy="55" r="16" fill="#11111a" stroke="#cc3333" stroke-width="1.5"/>
+    <circle cx="50" cy="55" r="5" fill="#cc3333" opacity="0.8"/>
+    <line x1="50" y1="12" x2="50" y2="34" stroke="#5a5a7a" stroke-width="1.5"/>
+    <line x1="12" y1="56" x2="88" y2="56" stroke="#5a5a7a" stroke-width="0.6" opacity="0.3"/>
   </svg>`,
-  
+
+  // === MAIN CHARACTERS — recognizable features ===
+
   elon: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#2d221e"/>
-    <polygon points="50,95 15,50 50,20 85,50" fill="#44322c"/>
-    <polygon points="50,20 32,50 50,62 68,50" fill="#fcf6eb"/> <!-- Face -->
-    <polygon points="32,50 50,82 68,50 50,62" fill="#decab2"/> <!-- Chin/Jaw -->
-    <polygon points="40,25 60,25 65,15 35,15" fill="#1f1410"/> <!-- Hair -->
-    <rect x="38" y="44" width="7" height="3" fill="#1f1410"/> <!-- Eyes -->
-    <rect x="55" y="44" width="7" height="3" fill="#1f1410"/>
-    <polygon points="46,54 54,54 50,59" fill="#decab2"/>
+    <rect x="0" y="0" width="100" height="100" fill="#1e2835"/>
+    <rect x="20" y="55" width="60" height="50" fill="#181f28"/> <!-- dark tee -->
+    <polygon points="28,32 72,32 76,58 50,80 24,58" fill="#f0dcc8"/> <!-- face -->
+    <polygon points="26,32 74,32 70,50 30,50" fill="#f5e4d0"/> <!-- upper face highlight -->
+    <polygon points="28,32 72,32 66,16 34,16" fill="#4a3020"/> <!-- short brown hair -->
+    <polygon points="32,42 42,42 38,48" fill="#2a1a10"/> <!-- left brow -->
+    <polygon points="58,42 68,42 62,48" fill="#2a1a10"/> <!-- right brow -->
+    <rect x="34" y="44" width="8" height="3" rx="1" fill="#1a0a05"/> <!-- left eye -->
+    <rect x="58" y="44" width="8" height="3" rx="1" fill="#1a0a05"/> <!-- right eye -->
+    <circle cx="38" cy="45" r="1.5" fill="#6ab"/> <!-- blue iris hint -->
+    <circle cx="62" cy="45" r="1.5" fill="#6ab"/>
+    <polygon points="44,55 56,55 52,61 48,61" fill="#c4a88a"/> <!-- slight smile -->
+    <polygon points="50,58 50,64 46,68 54,68" fill="#d4b898"/> <!-- chin shadow -->
     ${PORTRAIT_SHADOW}
   </svg>`,
 
   sam: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#1d2c3d"/>
-    <polygon points="10,100 50,60 90,100" fill="#283d54"/> <!-- Suit -->
-    <polygon points="50,60 38,80 50,86 62,80" fill="#ffffff"/> <!-- Collar -->
-    <polygon points="30,30 70,30 74,56 50,75 26,56" fill="#ecd2be"/> <!-- Face -->
-    <polygon points="28,30 72,30 65,14 35,14" fill="#6e4c3e"/> <!-- Hair -->
-    <rect x="36" y="43" width="7" height="3" fill="#3a2215"/>
-    <rect x="57" y="43" width="7" height="3" fill="#3a2215"/>
+    <rect x="0" y="0" width="100" height="100" fill="#1a2838"/>
+    <polygon points="12,100 50,60 88,100" fill="#1c3048"/> <!-- suit -->
+    <polygon points="50,60 38,78 50,85 62,78" fill="#ffffff"/> <!-- shirt collar -->
+    <polygon points="46,58 54,58 54,72 46,72" fill="#3a5a8a"/> <!-- tie -->
+    <polygon points="30,28 70,28 74,58 50,78 26,58" fill="#f0dac4"/> <!-- face -->
+    <polygon points="28,28 72,28 66,14 34,14" fill="#5a3828"/> <!-- brown hair -->
+    <path d="M 30 18 Q 50 10 70 18 L 66 16 Q 50 10 34 16 Z" fill="#6a4430"/> <!-- hair highlight -->
+    <rect x="34" y="44" width="9" height="3" rx="1.5" fill="#2a1508"/>
+    <rect x="57" y="44" width="9" height="3" rx="1.5" fill="#2a1508"/>
+    <circle cx="39" cy="45" r="1.5" fill="#5a8a5a"/> <!-- hazel hint -->
+    <circle cx="62" cy="45" r="1.5" fill="#5a8a5a"/>
+    <polygon points="46,56 54,56 50,60" fill="#c8a882"/> <!-- subtle smile -->
     ${PORTRAIT_SHADOW}
   </svg>`,
 
   dario: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#1d3023"/>
-    <polygon points="10,100 50,65 90,100" fill="#2d4a36"/> <!-- Coat -->
-    <polygon points="30,26 70,26 74,55 50,72 26,55" fill="#f0d5c3"/> <!-- Face -->
-    <rect x="31" y="38" width="14" height="11" fill="none" stroke="#362511" stroke-width="2.5"/> <!-- Glasses -->
-    <rect x="55" y="38" width="14" height="11" fill="none" stroke="#362511" stroke-width="2.5"/>
-    <line x1="45" y1="43" x2="55" y2="43" stroke="#362511" stroke-width="2"/>
-    <!-- Curly Hair -->
-    <path d="M 28 26 C 20 16, 40 6, 50 16 C 60 6, 80 16, 72 26 Z" fill="#5c4335"/>
+    <rect x="0" y="0" width="100" height="100" fill="#1a2a20"/>
+    <polygon points="14,100 50,64 86,100" fill="#2a4436"/> <!-- coat -->
+    <polygon points="28,26 72,26 76,56 50,78 24,56" fill="#f0d4c0"/> <!-- face -->
+    <!-- Curly/wavy hair -->
+    <path d="M 28 26 Q 22 10 36 12 Q 48 6 60 12 Q 74 8 72 26" fill="#4a3028"/>
+    <path d="M 24 28 Q 18 18 30 16 Q 40 10 48 14" fill="#5a3a30" opacity="0.5"/>
+    <!-- Rectangular glasses -->
+    <rect x="30" y="40" width="16" height="10" rx="2" fill="none" stroke="#2a1a10" stroke-width="2.2"/>
+    <rect x="54" y="40" width="16" height="10" rx="2" fill="none" stroke="#2a1a10" stroke-width="2.2"/>
+    <line x1="46" y1="44" x2="54" y2="44" stroke="#2a1a10" stroke-width="2"/>
+    <circle cx="36" cy="45" r="1.5" fill="#3a2a1a"/> <!-- eyes behind glasses -->
+    <circle cx="62" cy="45" r="1.5" fill="#3a2a1a"/>
+    <!-- Beard -->
+    <polygon points="34,58 50,64 66,58 60,68 50,72 40,68" fill="#4a3028" opacity="0.7"/>
     ${PORTRAIT_SHADOW}
   </svg>`,
 
   demis: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#2d1c33"/>
-    <polygon points="15,100 50,62 85,100" fill="#3e2947"/>
-    <polygon points="32,26 68,26 71,55 50,72 29,55" fill="#eed1bd"/> <!-- Face -->
-    <polygon points="30,26 70,26 66,15 34,15" fill="#1c0f24"/> <!-- Hair -->
-    <circle cx="42" cy="43" r="3" fill="#221105"/>
-    <circle cx="58" cy="43" r="3" fill="#221105"/>
+    <rect x="0" y="0" width="100" height="100" fill="#241a30"/>
+    <polygon points="18,100 50,62 82,100" fill="#342848"/> <!-- jacket -->
+    <polygon points="30,26 70,26 74,56 50,76 26,56" fill="#e8cfb8"/> <!-- olive/warm skin -->
+    <!-- Dark curly hair -->
+    <path d="M 28 26 Q 20 8 38 10 Q 50 6 62 10 Q 80 8 72 26" fill="#1a1020"/>
+    <path d="M 22 28 Q 16 14 34 12 Q 44 8 52 12" fill="#2a1830" opacity="0.5"/>
+    <circle cx="40" cy="44" r="3.5" fill="#1a0a05"/> <!-- dark eyes -->
+    <circle cx="60" cy="44" r="3.5" fill="#1a0a05"/>
+    <circle cx="41" cy="43" r="1" fill="#fff" opacity="0.4"/> <!-- eye glint -->
+    <circle cx="61" cy="43" r="1" fill="#fff" opacity="0.4"/>
+    <polygon points="42,56 58,56 52,64 48,64" fill="#c4a88a"/> <!-- warm smile -->
     ${PORTRAIT_SHADOW}
   </svg>`,
 
   zhang: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#2e2b1f"/>
-    <polygon points="15,100 50,65 85,100" fill="#3d3725"/>
-    <polygon points="32,28 68,28 72,56 50,72 28,56" fill="#fadcbe"/>
-    <polygon points="30,28 70,28 66,13 34,13" fill="#0d0c08"/>
+    <rect x="0" y="0" width="100" height="100" fill="#221e18"/>
+    <polygon points="16,100 50,64 84,100" fill="#3a3428"/> <!-- suit -->
+    <polygon points="50,64 42,78 50,84 58,78" fill="#f0f0f0"/> <!-- collar -->
+    <polygon points="30,28 70,28 74,56 50,76 26,56" fill="#f5dfc8"/> <!-- face -->
+    <polygon points="28,28 72,28 66,14 34,14" fill="#0c0808"/> <!-- black hair -->
     <!-- Glasses -->
-    <rect x="33" y="40" width="12" height="8" fill="none" stroke="#0d0c08" stroke-width="2"/>
-    <rect x="55" y="40" width="12" height="8" fill="none" stroke="#0d0c08" stroke-width="2"/>
-    <line x1="45" y1="44" x2="55" y2="44" stroke="#0d0c08" stroke-width="2"/>
+    <rect x="32" y="40" width="14" height="8" rx="2" fill="none" stroke="#0c0808" stroke-width="2"/>
+    <rect x="54" y="40" width="14" height="8" rx="2" fill="none" stroke="#0c0808" stroke-width="2"/>
+    <line x1="46" y1="44" x2="54" y2="44" stroke="#0c0808" stroke-width="2"/>
+    <circle cx="37" cy="44" r="1.5" fill="#0c0808"/>
+    <circle cx="60" cy="44" r="1.5" fill="#0c0808"/>
+    <line x1="44" y1="55" x2="56" y2="55" stroke="#c8a888" stroke-width="1.5"/> <!-- neutral mouth -->
     ${PORTRAIT_SHADOW}
   </svg>`,
+
+  // === NPCs — distinct archetypes ===
 
   engineer: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#282a2d"/>
-    <polygon points="25,100 50,70 75,100" fill="#1d2a3d"/>
-    <polygon points="34,35 66,35 68,60 50,72 32,60" fill="#f0dcd0"/>
-    <polygon points="30,35 70,35 65,22 35,22" fill="#8e1c19"/>
-    ${PORTRAIT_SHADOW}
-  </svg>`,
-
-  politician: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#1b1b2a"/>
-    <polygon points="15,100 50,60 85,100" fill="#2c3a5e"/>
-    <polygon points="30,25 70,25 73,55 50,73 27,55" fill="#f2d5c4"/>
-    <polygon points="27,25 73,25 65,10 35,10" fill="#d2d8e0"/>
-    ${PORTRAIT_SHADOW}
+    <rect x="0" y="0" width="100" height="100" fill="#202830"/>
+    <polygon points="22,100 50,68 78,100" fill="#283848"/> <!-- overalls/workwear -->
+    <polygon points="32,32 68,32 72,58 50,76 28,58" fill="#eed8c4"/>
+    <polygon points="30,32 70,32 64,22 36,22" fill="#3a2a20"/> <!-- brown hair -->
+    <rect x="34" y="20" width="32" height="6" rx="2" fill="#cc4422" opacity="0.8"/> <!-- red cap/beanie -->
+    <rect x="36" y="44" width="7" height="2.5" rx="1" fill="#1a0a05"/>
+    <rect x="57" y="44" width="7" height="2.5" rx="1" fill="#1a0a05"/>
+    <circle cx="40" cy="45" r="1" fill="#fff" opacity="0.3"/>
+    <circle cx="61" cy="45" r="1" fill="#fff" opacity="0.3"/>
+    <line x1="45" y1="54" x2="55" y2="54" stroke="#c4a088" stroke-width="1.5"/>
   </svg>`,
 
   investor: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#222b25"/>
-    <polygon points="20,100 50,65 80,100" fill="#2a4d33"/>
-    <polygon points="32,28 68,28 72,56 50,72 28,56" fill="#fcdcbb"/>
-    <circle cx="40" cy="44" r="7" fill="none" stroke="#d4af37" stroke-width="2"/>
-    ${PORTRAIT_SHADOW}
+    <rect x="0" y="0" width="100" height="100" fill="#1a2418"/>
+    <polygon points="16,100 50,60 84,100" fill="#2a3a28"/> <!-- suit -->
+    <polygon points="50,60 40,76 50,82 60,76" fill="#f8f8f0"/> <!-- white shirt -->
+    <polygon points="46,60 54,60 54,72 46,72" fill="#ccaa44"/> <!-- gold tie -->
+    <polygon points="30,28 70,28 74,56 50,76 26,56" fill="#f8e4d0"/>
+    <polygon points="28,28 72,28 66,20 34,20" fill="#c8c0b0"/> <!-- grey/white hair -->
+    <circle cx="39" cy="43" r="2" fill="#2a1a08"/>
+    <circle cx="61" cy="43" r="2" fill="#2a1a08"/>
+    <polygon points="44,54 56,54 50,58" fill="#d4b898"/> <!-- smug smile -->
   </svg>`,
 
-  lawyer: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#2e1b1b"/>
-    <polygon points="20,100 50,65 80,100" fill="#4d2424"/>
-    <polygon points="32,30 68,30 70,55 50,70 30,55" fill="#ecdcd0"/>
-    <polygon points="30,30 70,30 65,20 35,20" fill="#1c0a0a"/>
-    ${PORTRAIT_SHADOW}
-  </svg>`,
-
-  board: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#2b2b2b"/>
-    <polygon points="20,100 50,60 80,100" fill="#151515"/>
-    <polygon points="33,26 67,26 70,54 50,70 30,54" fill="#eed1bd"/>
-    <rect x="35" y="38" width="10" height="6" fill="none" stroke="#8e1c19" stroke-width="2"/>
-    <rect x="55" y="38" width="10" height="6" fill="none" stroke="#8e1c19" stroke-width="2"/>
-    ${PORTRAIT_SHADOW}
+  politician: `<svg viewBox="0 0 100 100">
+    <rect x="0" y="0" width="100" height="100" fill="#182030"/>
+    <polygon points="14,100 50,58 86,100" fill="#1c2840"/> <!-- dark suit -->
+    <polygon points="50,58 40,76 50,82 60,76" fill="#ffffff"/>
+    <polygon points="46,60 54,60 54,70 46,70" fill="#882222"/> <!-- red tie -->
+    <polygon points="30,26 70,26 74,56 50,76 26,56" fill="#f0dcc8"/>
+    <polygon points="28,26 72,26 64,14 36,14" fill="#d0d4e0"/> <!-- silver hair -->
+    <rect x="34" y="42" width="8" height="2.5" rx="1" fill="#1a1008"/>
+    <rect x="58" y="42" width="8" height="2.5" rx="1" fill="#1a1008"/>
+    <circle cx="38" cy="43" r="1" fill="#4466aa" opacity="0.4"/>
+    <circle cx="62" cy="43" r="1" fill="#4466aa" opacity="0.4"/>
+    <polygon points="44,54 56,54 50,58" fill="#c4a888"/>
   </svg>`,
 
   ilya: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#22232b"/>
-    <polygon points="20,100 50,66 80,100" fill="#2f354f"/>
-    <polygon points="32,28 68,28 72,56 50,72 28,56" fill="#eed3bd"/>
-    <path d="M 28 28 Q 20 15, 35 15 Q 50 15, 65 15 Q 80 15, 72 28" fill="#544335"/>
+    <rect x="0" y="0" width="100" height="100" fill="#1c2030"/>
+    <polygon points="18,100 50,64 82,100" fill="#2a3450"/>
+    <polygon points="30,28 70,28 74,58 50,78 26,58" fill="#f0dcc8"/> <!-- face -->
+    <path d="M 32 34 Q 50 42 68 34 L 70 28 L 60 28 Q 50 32 40 28 L 30 28 Z" fill="#5a4a38"/> <!-- receding hairline -->
+    <rect x="33" y="40" width="14" height="9" rx="2" fill="none" stroke="#1a1410" stroke-width="2.2"/> <!-- glasses -->
+    <rect x="53" y="40" width="14" height="9" rx="2" fill="none" stroke="#1a1410" stroke-width="2.2"/>
+    <line x1="47" y1="44" x2="53" y2="44" stroke="#1a1410" stroke-width="2"/>
+    <circle cx="38" cy="45" r="1.5" fill="#1a1410"/>
+    <circle cx="60" cy="45" r="1.5" fill="#1a1410"/>
+    <line x1="44" y1="56" x2="56" y2="56" stroke="#c4a088" stroke-width="1.5"/>
     ${PORTRAIT_SHADOW}
   </svg>`,
 
   sundar: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#122030"/>
-    <polygon points="15,100 50,64 85,100" fill="#25354f"/>
-    <polygon points="33,26 67,26 70,54 50,70 30,54" fill="#d8b29c"/>
-    <polygon points="30,26 70,26 65,16 35,16" fill="#1d1d18"/>
-    <polygon points="30,52 50,70 70,52 70,58 50,74 30,58" fill="#1d1d18"/>
+    <rect x="0" y="0" width="100" height="100" fill="#14202c"/>
+    <polygon points="14,100 50,60 86,100" fill="#1c3044"/> <!-- suit -->
+    <polygon points="50,60 42,76 50,82 58,76" fill="#f0f0f0"/>
+    <polygon points="30,26 70,26 74,56 50,76 26,56" fill="#d4b498"/> <!-- dark skin -->
+    <polygon points="28,26 72,26 66,16 34,16" fill="#14100c"/> <!-- dark hair -->
+    <polygon points="34,52 50,70 66,52 66,58 50,74 34,58" fill="#14100c" opacity="0.6"/> <!-- goatee -->
+    <rect x="33" y="40" width="14" height="8" rx="2" fill="none" stroke="#0a0808" stroke-width="2"/> <!-- glasses -->
+    <rect x="53" y="40" width="14" height="8" rx="2" fill="none" stroke="#0a0808" stroke-width="2"/>
+    <line x1="47" y1="44" x2="53" y2="44" stroke="#0a0808" stroke-width="2"/>
+    <circle cx="38" cy="44" r="1.5" fill="#0a0808"/>
+    <circle cx="60" cy="44" r="1.5" fill="#0a0808"/>
     ${PORTRAIT_SHADOW}
+  </svg>`,
+
+  scientist: `<svg viewBox="0 0 100 100">
+    <rect x="0" y="0" width="100" height="100" fill="#1a2430"/>
+    <polygon points="20,100 50,66 80,100" fill="#f8f8f8" opacity="0.85"/> <!-- lab coat -->
+    <polygon points="36,30 64,30 68,56 50,74 32,56" fill="#f0dcc8"/>
+    <polygon points="34,30 66,30 60,20 40,20" fill="#3a2a1a"/>
+    <rect x="34" y="40" width="12" height="7" rx="2" fill="none" stroke="#1a1410" stroke-width="1.8"/>
+    <rect x="54" y="40" width="12" height="7" rx="2" fill="none" stroke="#1a1410" stroke-width="1.8"/>
+    <line x1="46" y1="43" x2="54" y2="43" stroke="#1a1410" stroke-width="1.8"/>
+    <circle cx="39" cy="43" r="1.5" fill="#1a1410"/>
+    <circle cx="60" cy="43" r="1.5" fill="#1a1410"/>
+    <line x1="46" y1="54" x2="54" y2="54" stroke="#c4a088" stroke-width="1.2"/>
+  </svg>`,
+
+  board: `<svg viewBox="0 0 100 100">
+    <rect x="0" y="0" width="100" height="100" fill="#181818"/>
+    <polygon points="16,100 50,60 84,100" fill="#101010"/> <!-- dark suit -->
+    <polygon points="50,60 42,76 50,82 58,76" fill="#e8e8e8"/> <!-- white shirt -->
+    <polygon points="46,60 54,60 54,68 46,68" fill="#882222"/> <!-- red tie -->
+    <polygon points="30,26 70,26 74,56 50,76 26,56" fill="#e8d8c8"/>
+    <polygon points="28,26 72,26 66,16 34,16" fill="#3a3a3a"/> <!-- grey hair -->
+    <rect x="36" y="42" width="7" height="2.5" rx="1" fill="#1a1a1a"/>
+    <rect x="57" y="42" width="7" height="2.5" rx="1" fill="#1a1a1a"/>
+    <line x1="44" y1="54" x2="56" y2="54" stroke="#b8a088" stroke-width="1.5"/>
+    ${PORTRAIT_SHADOW}
+  </svg>`,
+
+  journalist: `<svg viewBox="0 0 100 100">
+    <rect x="0" y="0" width="100" height="100" fill="#1c1820"/>
+    <polygon points="20,100 50,66 80,100" fill="#2a2430"/>
+    <polygon points="32,28 68,28 72,56 50,74 28,56" fill="#f0dac4"/>
+    <polygon points="30,28 70,28 64,16 36,16" fill="#3a2830"/> <!-- messy dark hair -->
+    <polygon points="32,18 40,14 44,18" fill="#3a2830"/>
+    <polygon points="56,18 64,14 68,18" fill="#3a2830"/>
+    <rect x="36" y="42" width="7" height="2.5" rx="1" fill="#1a0810"/>
+    <rect x="57" y="42" width="7" height="2.5" rx="1" fill="#1a0810"/>
+    <polygon points="44,54 56,54 50,60" fill="#c4a088"/> <!-- slight smirk -->
+  </svg>`,
+
+  military: `<svg viewBox="0 0 100 100">
+    <rect x="0" y="0" width="100" height="100" fill="#181410"/>
+    <polygon points="16,100 50,58 84,100" fill="#282018"/> <!-- uniform -->
+    <polygon points="50,58 40,72 50,78 60,72" fill="#3a3028"/> <!-- collar -->
+    <polygon points="30,28 70,28 74,56 50,76 26,56" fill="#e8d4bc"/>
+    <polygon points="28,30 72,30 66,22 34,22" fill="#1a1810"/> <!-- cap/hair -->
+    <rect x="30" y="20" width="40" height="8" rx="2" fill="#2a2418"/> <!-- beret/cap -->
+    <rect x="36" y="44" width="6" height="2" rx="1" fill="#1a0a05"/>
+    <rect x="58" y="44" width="6" height="2" rx="1" fill="#1a0a05"/>
+    <line x1="46" y1="56" x2="54" y2="56" stroke="#c4a088" stroke-width="1.5"/>
+  </svg>`,
+
+  regulator: `<svg viewBox="0 0 100 100">
+    <rect x="0" y="0" width="100" height="100" fill="#1c1a18"/>
+    <polygon points="14,100 50,62 86,100" fill="#282420"/>
+    <polygon points="50,62 42,76 50,82 58,76" fill="#e8e8e0"/>
+    <polygon points="46,63 54,63 54,70 46,70" fill="#554433"/>
+    <polygon points="30,28 70,28 74,56 50,76 26,56" fill="#ecd8c4"/>
+    <polygon points="28,28 72,28 66,20 34,20" fill="#3a3028"/>
+    <rect x="34" y="40" width="12" height="7" rx="2" fill="none" stroke="#1a1410" stroke-width="1.8"/>
+    <rect x="54" y="40" width="12" height="7" rx="2" fill="none" stroke="#1a1410" stroke-width="1.8"/>
+    <line x1="46" y1="43" x2="54" y2="43" stroke="#1a1410" stroke-width="1.8"/>
+    <line x1="43" y1="56" x2="57" y2="56" stroke="#c4a088" stroke-width="1.5"/>
+  </svg>`,
+
+  staff: `<svg viewBox="0 0 100 100">
+    <rect x="0" y="0" width="100" height="100" fill="#1c1e24"/>
+    <polygon points="22,100 50,70 78,100" fill="#2a2e36"/>
+    <polygon points="34,32 66,32 70,58 50,76 30,58" fill="#eedcc8"/>
+    <polygon points="32,32 68,32 62,20 38,20" fill="#4a3628"/>
+    <circle cx="42" cy="44" r="2.5" fill="#1a1008"/>
+    <circle cx="58" cy="44" r="2.5" fill="#1a1008"/>
+    <circle cx="43" cy="43" r="0.8" fill="#fff" opacity="0.3"/>
+    <circle cx="59" cy="43" r="0.8" fill="#fff" opacity="0.3"/>
+    <polygon points="46,54 54,54 50,58" fill="#c8b098"/>
+  </svg>`,
+
+  academic: `<svg viewBox="0 0 100 100">
+    <rect x="0" y="0" width="100" height="100" fill="#181c24"/>
+    <polygon points="18,100 50,64 82,100" fill="#282e3a"/>
+    <polygon points="50,64 42,78 50,84 58,78" fill="#e8e4dc"/>
+    <polygon points="30,28 70,28 74,56 50,76 26,56" fill="#f0dcc8"/>
+    <path d="M 30 28 Q 50 34 70 28 L 72 22 Q 50 28 28 22 Z" fill="#c8ccd8"/> <!-- white/grey hair -->
+    <rect x="34" y="40" width="12" height="7" rx="2" fill="none" stroke="#1a1818" stroke-width="1.8"/>
+    <rect x="54" y="40" width="12" height="7" rx="2" fill="none" stroke="#1a1818" stroke-width="1.8"/>
+    <line x1="46" y1="43" x2="54" y2="43" stroke="#1a1818" stroke-width="1.8"/>
+    <polygon points="44,54 56,54 50,59" fill="#c4a888"/>
+  </svg>`,
+
+  legal: `<svg viewBox="0 0 100 100">
+    <rect x="0" y="0" width="100" height="100" fill="#1a1618"/>
+    <polygon points="16,100 50,62 84,100" fill="#282024"/> <!-- dark suit -->
+    <polygon points="50,62 42,78 50,84 58,78" fill="#f0ece8"/> <!-- white shirt -->
+    <polygon points="46,63 54,63 54,70 46,70" fill="#663333"/> <!-- burgundy tie -->
+    <polygon points="32,28 68,28 72,56 50,74 28,56" fill="#ecd8c4"/>
+    <polygon points="30,28 70,28 64,18 36,18" fill="#1a0e0e"/>
+    <circle cx="42" cy="44" r="2.5" fill="#1a0e0e"/>
+    <circle cx="58" cy="44" r="2.5" fill="#1a0e0e"/>
+    <line x1="43" y1="55" x2="57" y2="55" stroke="#c4a088" stroke-width="1.5"/>
   </svg>`,
 
   friend: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#222e3f"/>
-    <polygon points="20,100 50,70 80,100" fill="#4d648d"/>
-    <polygon points="34,35 66,35 68,60 50,72 32,60" fill="#ecdcd0"/>
-    <circle cx="50" cy="28" r="14" fill="#e2b27d"/>
-    ${PORTRAIT_SHADOW}
+    <rect x="0" y="0" width="100" height="100" fill="#1c2a38"/>
+    <polygon points="22,100 50,72 78,100" fill="#2a4058"/>
+    <polygon points="34,34 66,34 70,60 50,76 30,60" fill="#f0dcc8"/>
+    <circle cx="50" cy="26" r="12" fill="#c8a878"/> <!-- bald/round head -->
+    <polygon points="38,34 62,34 58,26 42,26" fill="#c8a878"/>
+    <circle cx="42" cy="44" r="2.5" fill="#1a0a05"/>
+    <circle cx="58" cy="44" r="2.5" fill="#1a0a05"/>
+    <circle cx="43" cy="43" r="0.8" fill="#fff" opacity="0.35"/>
+    <circle cx="59" cy="43" r="0.8" fill="#fff" opacity="0.35"/>
+    <polygon points="44,54 56,54 50,60" fill="#c4a088"/> <!-- friendly smile -->
   </svg>`,
 
   sam_npc: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#1d2c3d"/>
-    <polygon points="15,100 50,60 85,100" fill="#283d54"/>
-    <polygon points="30,30 70,30 74,56 50,75 26,56" fill="#ecd2be"/>
-    <polygon points="28,30 72,30 65,14 35,14" fill="#6e4c3e"/>
-    <!-- Glowing blue cybereyes -->
-    <circle cx="40" cy="43" r="2.5" fill="#00ffaa"/>
-    <circle cx="60" cy="43" r="2.5" fill="#00ffaa"/>
+    <rect x="0" y="0" width="100" height="100" fill="#182838"/>
+    <polygon points="14,100 50,60 86,100" fill="#1c3048"/>
+    <polygon points="50,60 38,78 50,85 62,78" fill="#f0ece8"/>
+    <polygon points="30,28 70,28 74,58 50,78 26,58" fill="#f0dac4"/>
+    <polygon points="28,28 72,28 66,14 34,14" fill="#5a3828"/>
+    <!-- Glowing cyber eyes -->
+    <circle cx="39" cy="44" r="3" fill="#00ffaa" opacity="0.9"/>
+    <circle cx="61" cy="44" r="3" fill="#00ffaa" opacity="0.9"/>
+    <circle cx="39" cy="44" r="5" fill="#00ffaa" opacity="0.1"/>
+    <circle cx="61" cy="44" r="5" fill="#00ffaa" opacity="0.1"/>
+    <line x1="44" y1="55" x2="56" y2="55" stroke="#c8a882" stroke-width="1.2"/>
     ${PORTRAIT_SHADOW}
   </svg>`,
 
   dead: `<svg viewBox="0 0 100 100">
-    <rect x="0" y="0" width="100" height="100" fill="#110508"/>
-    <polygon points="50,10 85,30 85,70 50,90 15,70 15,30" fill="#2d050c" stroke="#8e1c19" stroke-width="2"/>
-    <line x1="30" y1="35" x2="45" y2="50" stroke="#8e1c19" stroke-width="3"/>
-    <line x1="45" y1="35" x2="30" y2="50" stroke="#8e1c19" stroke-width="3"/>
-    <line x1="55" y1="35" x2="70" y2="50" stroke="#8e1c19" stroke-width="3"/>
-    <line x1="70" y1="35" x2="55" y2="50" stroke="#8e1c19" stroke-width="3"/>
-    <path d="M 35 70 Q 50 55, 65 70" fill="none" stroke="#8e1c19" stroke-width="3"/>
-    ${PORTRAIT_SHADOW}
-  </svg>`
+    <rect x="0" y="0" width="100" height="100" fill="#0a0204"/>
+    <polygon points="50,10 85,30 85,70 50,92 15,70 15,30" fill="#1a0410" stroke="#88ff3366" stroke-width="1"/>
+    <line x1="28" y1="34" x2="44" y2="50" stroke="#ccff3366" stroke-width="2.5"/>
+    <line x1="44" y1="34" x2="28" y2="50" stroke="#ccff3366" stroke-width="2.5"/>
+    <line x1="56" y1="34" x2="72" y2="50" stroke="#ccff3366" stroke-width="2.5"/>
+    <line x1="72" y1="34" x2="56" y2="50" stroke="#ccff3366" stroke-width="2.5"/>
+    <path d="M 34 72 Q 50 58, 66 72" fill="none" stroke="#ccff3366" stroke-width="2.5"/>
+    <circle cx="50" cy="52" r="3" fill="#ccff3366" opacity="0.4"/>
+  </svg>`,
 };
+
+// Resolve a background SVG by speaker or type, falling back to character theme
+function getBackground(speaker, currentCharacter) {
+  const type = getSpeakerType(speaker);
+  const B = window.BACKGROUNDS || {};
+  if (currentCharacter && B[currentCharacter]) return B[currentCharacter];
+  if (B[type]) return B[type];
+  return B.default || '';
+}
 
 // Objectives now live on CHARACTERS in data.js
 
@@ -770,7 +991,6 @@ class GameEngine {
     this.indicatorRight = document.getElementById('indicator-right');
     this.stampLeft = document.getElementById('stamp-left');
     this.stampRight = document.getElementById('stamp-right');
-    this.activeChoiceText = document.getElementById('active-choice-text');
     this.swipeHint = document.getElementById('swipe-hint');
 
     this.dialogueText = document.getElementById('dialogue-text');
@@ -820,17 +1040,28 @@ class GameEngine {
     this.endingsBadge.innerText = `${this.state.unlockedEndings.length} / ${total}`;
   }
 
-  applyTheme(themeKey) {
-    const theme = THEMES[themeKey] || THEMES.welcome;
+  applyTheme(themeKey, speaker) {
+    // Resolve the best theme: speaker-type > character > welcome
+    let theme;
+    if (speaker) {
+      const speakerType = getSpeakerType(speaker);
+      theme = THEMES[speakerType] || THEMES[themeKey] || THEMES.welcome;
+    } else {
+      theme = THEMES[themeKey] || THEMES.welcome;
+    }
+
     document.documentElement.style.setProperty('--bg-color', theme.bg);
     document.documentElement.style.setProperty('--panel-bg', theme.panel);
     document.documentElement.style.setProperty('--card-border', theme.border);
     document.documentElement.style.setProperty('--text-dark', theme.textDark);
+    document.documentElement.style.setProperty('--sky-color', theme.skyColor);
 
-    // Apply background sky color dynamically
+    // Apply background sky color + dynamic landscape SVG
     const bgScene = document.getElementById('bg-scene');
     if (bgScene) {
       bgScene.style.backgroundColor = theme.skyColor;
+      const bgSvg = getBackground(speaker, themeKey);
+      bgScene.innerHTML = bgSvg + '<div class="grain"></div>';
     }
   }
 
@@ -1074,8 +1305,13 @@ class GameEngine {
       this.speakerName.innerText = node.speaker;
       if (this.cardSpeakerLabel) this.cardSpeakerLabel.innerText = node.speaker;
 
-      const portraitKey = node.avatar || 'engineer';
-      this.cardPortrait.innerHTML = PORTRAITS[portraitKey] || PORTRAITS.engineer;
+      // Dynamic portrait: try speaker-type portrait first, then explicit avatar
+      const speakerType = getSpeakerType(node.speaker);
+      const portraitKey = node.avatar || speakerType || 'engineer';
+      this.cardPortrait.innerHTML = PORTRAITS[portraitKey] || PORTRAITS[speakerType] || PORTRAITS.engineer;
+
+      // Dynamic theme per speaker
+      this.applyTheme(this.state.currentCharacter, node.speaker);
 
       if (this.indicatorLeft) this.indicatorLeft.innerText = node.left ? node.left.text : '';
       if (this.indicatorRight) this.indicatorRight.innerText = node.right ? node.right.text : '';
@@ -1169,16 +1405,6 @@ class GameEngine {
     if (this.stampRight) {
       this.stampRight.classList.toggle('visible', showRight);
       this.stampRight.style.opacity = showRight ? String(0.25 + alpha * 0.75) : '0';
-    }
-
-    if (this.activeChoiceText) {
-      if (side && text) {
-        this.activeChoiceText.innerText = text;
-        this.activeChoiceText.classList.add('visible');
-      } else {
-        this.activeChoiceText.classList.remove('visible');
-        if (!side) this.activeChoiceText.innerText = '';
-      }
     }
 
     if (this.mainCard) {
