@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OG Render</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@700&display=swap" rel="stylesheet">
+<style>
+html, body { margin: 0; padding: 0; width: 1200px; height: 630px; overflow: hidden; background: #080808; }
+canvas { display: block; width: 1200px; height: 630px; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1200" height="630"></canvas>
+<script>
+async function main() {
+  const c = document.getElementById('c');
+  const ctx = c.getContext('2d');
+  const W = 1200, H = 630;
+
+  // Load photo
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  await new Promise((res, rej) => {
+    img.onload = res;
+    img.onerror = () => { console.warn('no photo, using dark bg'); res(); };
+    img.src = 'user-photo.jpg';
+  });
+
+  // Background
+  if (img.complete && img.naturalWidth) {
+    const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+    const dw = img.naturalWidth * scale;
+    const dh = img.naturalHeight * scale;
+    ctx.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+  } else {
+    const g = ctx.createRadialGradient(600, 315, 80, 600, 315, 720);
+    g.addColorStop(0, '#141414'); g.addColorStop(1, '#050505');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // Scanlines
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 2);
+
+  // Grid dots
+  ctx.fillStyle = 'rgba(37,37,37,0.12)';
+  for (let x = 0; x < W; x += 32)
+    for (let y = 0; y < H; y += 32)
+      ctx.fillRect(x, y, 1, 1);
+
+  // Border frame
+  const b = 4;
+  ctx.strokeStyle = 'rgba(240,237,232,0.10)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(b + 0.5, b + 0.5, W - b*2 - 1, H - b*2 - 1);
+
+  // Corner brackets
+  const cs = 16;
+  ctx.strokeStyle = 'rgba(240,237,232,0.25)';
+  ctx.lineWidth = 2;
+  const dc = (x, y, dx, dy) => {
+    ctx.beginPath(); ctx.moveTo(x + dx * cs, y);
+    ctx.lineTo(x, y); ctx.lineTo(x, y + dy * cs);
+    ctx.stroke();
+  };
+  dc(b, b, 1, 1); dc(W - b, b, -1, 1);
+  dc(b, H - b, 1, -1); dc(W - b, H - b, -1, -1);
+
+  // Decorative dots
+  ctx.fillStyle = 'rgba(240,237,232,0.07)';
+  [[40,40],[1160,40],[40,590],[1160,590],
+   [80,80],[1120,80],[80,550],[1120,550]].forEach(([x,y]) => ctx.fillRect(x-2, y-2, 4, 4));
+
+  // Wait for Geist font to load from Google Fonts
+  await document.fonts.load('700 130px "Geist"');
+
+  // MAIN TITLE — KRIPPAS
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '700 130px "Geist", sans-serif';
+  ctx.fillStyle = '#F0EDE8';
+  ctx.fillText('KRIPPAS', 600, 320);
+
+  // Corner watermarks
+  ctx.fillStyle = 'rgba(240,237,232,0.05)';
+  ctx.font = '10px monospace';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+  ctx.fillText('◆ krippas', W - 16, H - 12);
+
+  ctx.font = '8px monospace';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillStyle = 'rgba(240,237,232,0.07)';
+  ctx.fillText('KRP', 14, 12);
+
+  // Bottom line
+  ctx.fillStyle = 'rgba(37,37,37,0.3)';
+  ctx.fillRect(200, H - 18, W - 400, 1);
+  ctx.fillStyle = 'rgba(240,237,232,0.06)';
+  for (let x = 220; x < W - 220; x += 40) ctx.fillRect(x, H - 14, 1, 5);
+
+  // Signal ready for headless capture
+  document.title = 'OG_READY';
+}
+
+main();
+</script>
+</body>
+</html>
