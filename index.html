@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>KRIPPAS - Reigns of the AI Emperors</title>
+  <title>KRIPPAS — AI REIGNS PROTOCOL</title>
   <meta name="description" content="A Reigns-style deep narrative branching game where you become Elon Musk, Sam Altman, Dario Amodei, Demis Hassabis, or Zhipu AI founder. Make critical choices to balance tech, safety, hype, and money.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,70 +18,71 @@
   <!-- Game Container -->
   <div class="game-container">
     
-    <!-- Left panel: Archive Logs -->
-    <div class="side-panel left-panel">
-      <h2>ARCHIVES</h2>
-      <div class="stats-summary">
-        <p>Endings: <span id="unlocked-endings-count" class="badge">0 / 35</span></p>
-      </div>
-      <br>
-      <h3>DECISION HISTORY</h3>
-      <div id="narrative-log" class="log-list">
-        <div class="log-item">System ready. Start assessment to begin.</div>
-      </div>
-    </div>
 
-    <!-- Center Viewport (The interactive phone-like layout) -->
+
+    <!-- Center Viewport (The interactive terminal-like layout) -->
     <div class="viewport" id="game-viewport">
       
-      <!-- Top header status indicators -->
+      <!-- Top header status indicators — rack LED style -->
       <div class="stats-header">
         <div class="stat-indicator" id="stat-safety" title="Safety & Alignment">
           <span class="change-dot"></span>
           <span class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" class="stat-svg">
-              <path d="M12 2l8 3v6c0 5.2-3.4 9.8-8 11-4.6-1.2-8-5.8-8-11V5l8-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-              <path d="M8.5 12.2l2.4 2.4 4.6-4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg viewBox="0 0 24 24" class="stat-svg" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3L4 7v5c0 4.5 3.2 8.5 8 9.5 4.8-1 8-5 8-9.5V7l-8-4z"/>
+              <path d="M9 12l2 2 4-4"/>
             </svg>
           </span>
-          <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+          <div class="bar-track">
+            <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+
+          </div>
           <span class="stat-label">SAFE</span>
         </div>
 
         <div class="stat-indicator" id="stat-hype" title="Hype & Public Relations">
           <span class="change-dot"></span>
           <span class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" class="stat-svg">
-              <circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
-              <path d="M5.5 19c1.4-3.2 3.7-4.8 6.5-4.8S17.1 15.8 18.5 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <svg viewBox="0 0 24 24" class="stat-svg" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="3"/>
+              <path d="M5.5 19c1.4-3 3.7-4.5 6.5-4.5s5.1 1.5 6.5 4.5"/>
             </svg>
           </span>
-          <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+          <div class="bar-track">
+            <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+
+          </div>
           <span class="stat-label">HYPE</span>
         </div>
 
         <div class="stat-indicator" id="stat-compute" title="Compute & Scale">
           <span class="change-dot"></span>
           <span class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" class="stat-svg">
-              <rect x="4" y="5" width="16" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/>
-              <path d="M8 20h8M12 16v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M8 9h2M12 9h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <svg viewBox="0 0 24 24" class="stat-svg" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="4" width="14" height="12" rx="1"/>
+              <path d="M9 16v4M15 16v4"/>
+              <path d="M7 8h10M7 11h10"/>
             </svg>
           </span>
-          <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+          <div class="bar-track">
+            <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+
+          </div>
           <span class="stat-label">GPU</span>
         </div>
 
         <div class="stat-indicator" id="stat-capital" title="Capital & Valuation">
           <span class="change-dot"></span>
           <span class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" class="stat-svg">
-              <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
-              <path d="M12 7v10M9.5 9.2c.7-1 2.8-1.4 3.8-.3.8.9.3 2.1-1.1 2.6l-2.4.8c-1.4.5-1.9 1.7-1.1 2.7 1 1.2 3.2 1 4.1-.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <svg viewBox="0 0 24 24" class="stat-svg" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="7"/>
+              <path d="M12 7v10M9.5 9.5c.7-1 2.8-1.4 3.8-.3.8.9.3 2-1.1 2.5l-2.4.8c-1.4.5-1.8 1.7-1 2.7 1 1.2 3.2.9 4.1-.2"/>
             </svg>
           </span>
-          <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+          <div class="bar-track">
+            <div class="bar-container"><div class="bar-fill" style="height: 50%;"></div></div>
+
+          </div>
           <span class="stat-label">CASH</span>
         </div>
       </div>
@@ -86,19 +90,20 @@
       <!-- Center Deck Area -->
       <div class="deck-area">
         
-        <!-- Welcome Screen -->
+        <!-- Welcome Screen — terminal boot sequence feel -->
         <div id="screen-welcome" class="screen active">
           <div class="brand">
             <h1>KRIPPAS</h1>
-            <p class="subtitle">AI REIGNS EDITION</p>
+            <p class="subtitle">AI REIGNS PROTOCOL</p>
           </div>
           
           <div class="intro-art">
             <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
-              <rect x="0" y="0" width="100" height="100" fill="#f7edd4"/>
-              <polygon points="50,15 80,45 50,75 20,45" fill="#362511" opacity="0.15"/>
-              <polygon points="50,22 72,45 50,68 28,45" fill="#362511" opacity="0.3"/>
-              <circle cx="50" cy="45" r="10" fill="#362511"/>
+              <rect x="0" y="0" width="100" height="100" fill="#080808"/>
+              <rect x="0" y="0" width="100" height="100" fill="none" stroke="#252525" stroke-width="1"/>
+              <polygon points="50,20 74,38 74,64 50,82 26,64 26,38" fill="none" stroke="#A09890" stroke-width="0.8"/>
+              <polygon points="50,28 66,42 66,60 50,72 34,60 34,42" fill="none" stroke="#F0EDE8" stroke-width="0.6" opacity="0.3"/>
+              <circle cx="50" cy="50" r="3" fill="#F0EDE8" opacity="0.5"/>
             </svg>
           </div>
 
@@ -106,15 +111,15 @@
             AGI approaches. The race to define human consciousness is in the hands of five emperors. Take the assessment to claim your destiny.
           </p>
           
-          <button id="btn-start-quiz" class="btn">START ASSESSMENT</button>
+          <button id="btn-start-quiz" class="btn btn-filled">START ASSESSMENT</button>
         </div>
 
-        <!-- Quiz Screen -->
+        <!-- Quiz Screen — diagnostic mode -->
         <div id="screen-quiz" class="screen">
           <div class="quiz-progress-bar">
             <div class="progress-fill" id="quiz-progress" style="width: 0%;"></div>
           </div>
-          <h3 class="quiz-title">ALIGNMENT ASSESSMENT</h3>
+          <h3 class="quiz-title">ALIGNMENT</h3>
           <div class="quiz-question-container">
             <p id="quiz-question-text"></p>
           </div>
@@ -126,17 +131,17 @@
 
         <!-- Assignment / Character Reveal Screen -->
         <div id="screen-reveal" class="screen">
-          <h3>ASSESSMENT RESULT</h3>
+
           <div class="reveal-portrait-container" id="reveal-portrait">
             <!-- Dynamic character SVG here -->
           </div>
           <h2 id="reveal-name"></h2>
           <p id="reveal-role" class="reveal-role-tag"></p>
           <p id="reveal-description"></p>
-          <button id="btn-start-game" class="btn">ENTER PROTOCOL</button>
+          <button id="btn-start-game" class="btn btn-filled">ENTER PROTOCOL</button>
         </div>
 
-        <!-- Gameplay Screen -->
+        <!-- Gameplay Screen — terminal interaction -->
         <div id="screen-game" class="screen">
           <div class="dialogue-box">
             <div class="dialogue-speaker" id="speaker-name"></div>
@@ -146,11 +151,11 @@
           <div class="card-wrapper" id="card-wrapper">
             <div class="reigns-card" id="main-card">
               <div class="choice-stamp left" id="stamp-left">
-                <span class="stamp-dir">◀</span>
+                <span class="stamp-dir">&#9664;</span>
                 <span class="stamp-text" id="indicator-left"></span>
               </div>
               <div class="choice-stamp right" id="stamp-right">
-                <span class="stamp-dir">▶</span>
+                <span class="stamp-dir">&#9654;</span>
                 <span class="stamp-text" id="indicator-right"></span>
               </div>
               <div class="card-art" id="card-portrait"></div>
@@ -160,17 +165,17 @@
             </div>
           </div>
 
-          <div class="swipe-hint" id="swipe-hint">SWIPE LEFT OR RIGHT</div>
+          <div class="swipe-hint" id="swipe-hint">&lt; &mdash; &gt;</div>
         </div>
 
-        <!-- Game Over Screen -->
+        <!-- Game Over Screen — system crash -->
         <div id="screen-gameover" class="screen">
-          <h2 class="gameover-title">SYSTEM OFFLINE</h2>
+          <h2 class="gameover-title">OFFLINE</h2>
           <div class="gameover-art" id="gameover-portrait">
             <!-- Dead/Shutdown SVG -->
           </div>
           <p id="gameover-text"></p>
-          <button id="btn-restart" class="btn">RESTART PROTOCOL</button>
+          <button id="btn-restart" class="btn btn-filled">REBOOT PROTOCOL</button>
         </div>
 
       </div>
@@ -184,7 +189,7 @@
         </div>
         <div class="time-in-power">
           <span id="hud-time-val">0</span>
-          <span id="hud-time-unit">quarters</span>
+          <span id="hud-time-unit">QUARTERS</span>
         </div>
       </div>
 
@@ -192,13 +197,13 @@
 
     <!-- Right panel: Objectives and controls -->
     <div class="side-panel right-panel">
-      <h2>OBJECTIVES</h2>
-      <div class="objectives-checklist" id="objectives-checklist">
-        <!-- Generated objectives based on character -->
+      <div class="noise-content">
+        <div class="objectives-checklist" id="objectives-checklist">
+          <!-- Generated objectives based on character -->
+        </div>
       </div>
-      <br><br>
       <div class="audio-control">
-        <button id="btn-toggle-sound">🔊 SOUND ON</button>
+        <button id="btn-toggle-sound">ON</button>
       </div>
     </div>
 
