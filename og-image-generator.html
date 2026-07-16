@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KRIPPAS — OG Image Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Geist:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #080808;
+      --surface: #0F0F0F;
+      --border: #252525;
+      --text: #F0EDE8;
+      --text-dim: #504A44;
+      --text-mid: #A09890;
+      --accent: #F0EDE8;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text-mid);
+      font-family: 'Geist', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1 {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1.2rem;
+      color: var(--text);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.3rem;
+      text-align: center;
+    }
+    .subtitle {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1200 / 630;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+      justify-content: center;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .control-group label {
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      font-family: monospace;
+    }
+    .btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      padding: 0.7rem 1.2rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .btn:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+    .btn:active {
+      background: var(--border);
+    }
+    .btn-primary {
+      border-color: var(--text-mid);
+    }
+    .btn-primary:hover {
+      border-color: var(--text);
+      background: rgba(240, 237, 232, 0.05);
+    }
+    .btn-row {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+      margin: 1rem 0 2rem;
+      flex-wrap: wrap;
+    }
+    input[type="file"] { display: none; }
+    .file-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      padding: 0.7rem 1.2rem;
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .file-label:hover { border-color: var(--text); }
+    .file-label.has-photo { border-color: var(--text-mid); }
+    .drop-zone {
+      border: 1px dashed var(--border);
+      padding: 0.7rem 1.2rem;
+      font-size: 0.5rem;
+      font-family: 'Press Start 2P', monospace;
+      color: var(--text-dim);
+      transition: all 0.2s;
+      cursor: pointer;
+      text-align: center;
+      letter-spacing: 0.04em;
+      display: inline-block;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--text-mid);
+      color: var(--text-mid);
+    }
+    .text-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+      justify-content: center;
+      margin: 0.5rem 0 0;
+    }
+    .text-row input[type="range"] {
+      width: 120px;
+      height: 2px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--border);
+      outline: none;
+    }
+    .text-row input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 10px;
+      height: 10px;
+      background: var(--text);
+      border: none;
+      cursor: pointer;
+    }
+    .text-row input[type="range"]::-moz-range-thumb {
+      width: 10px;
+      height: 10px;
+      background: var(--text);
+      border: none;
+      cursor: pointer;
+    }
+    .value-display {
+      font-family: monospace;
+      font-size: 0.5rem;
+      color: var(--text-mid);
+      min-width: 30px;
+      text-align: center;
+    }
+    .options-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .option-item label {
+      font-size: 0.5rem;
+      color: var(--text-dim);
+      font-family: monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .option-item select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-mid);
+      padding: 0.4rem 0.5rem;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem;
+      cursor: pointer;
+    }
+    .option-item select:focus {
+      outline: none;
+      border-color: var(--text-mid);
+    }
+    .info-text {
+      text-align: center;
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-top: 1rem;
+    }
+    .info-text code {
+      font-family: monospace;
+      background: var(--surface);
+      padding: 0.1rem 0.4rem;
+      border: 1px solid var(--border);
+    }
+    .separator {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin: 0.5rem 0;
+    }
+    .photo-indicator {
+      font-size: 0.45rem;
+      color: var(--text-dim);
+      font-family: monospace;
+    }
+    .pixel-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+    .pixel-checkbox input[type="checkbox"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+    }
+    .pixel-checkbox input[type="checkbox"]:checked {
+      background: var(--text);
+      border-color: var(--text);
+    }
+    .pixel-checkbox input[type="checkbox"]:checked::after {
+      content: "✦";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 8px;
+      color: var(--bg);
+    }
+    @media (max-width: 600px) {
+      body { padding: 1rem 0.5rem; }
+      h1 { font-size: 0.9rem; }
+      .btn, .file-label { font-size: 0.4rem; padding: 0.5rem 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <h1>KRIPPAS</h1>
+  <p class="subtitle">OG Image Generator</p>
+
+  <div class="container">
+    <!-- Preview Canvas -->
+    <div class="canvas-wrapper">
+      <canvas id="og-canvas" width="1200" height="630"></canvas>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="control-group">
+        <label>Photo</label>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <label class="file-label" id="file-label" for="photo-input">+ LOAD PHOTO</label>
+          <input type="file" id="photo-input" accept="image/*">
+          <span class="photo-indicator" id="photo-status">No photo</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>Photo Fit</label>
+        <select id="photo-fit">
+          <option value="cover">Cover</option>
+          <option value="contain">Contain</option>
+          <option value="stretch">Stretch</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="options-grid">
+      <div class="option-item">
+        <label>Text Size</label>
+        <input type="range" id="text-size" min="60" max="220" value="130" step="5">
+        <span class="value-display" id="text-size-val">130</span>
+      </div>
+      <div class="option-item">
+        <label>Text Y</label>
+        <input type="range" id="text-y" min="100" max="500" value="315" step="5">
+        <span class="value-display" id="text-y-val">315</span>
+      </div>
+      <div class="option-item">
+        <label>Photo Darken</label>
+        <input type="range" id="photo-darken" min="0" max="100" value="50" step="5">
+        <span class="value-display" id="photo-darken-val">50</span>
+      </div>
+      <div class="option-item">
+        <label>Text Color</label>
+        <select id="text-color">
+          <option value="#F0EDE8">White</option>
+          <option value="#080808">Black</option>
+          <option value="#00FF00">Matrix Green</option>
+          <option value="#FF4444">Red Alert</option>
+          <option value="#4488FF">Neon Blue</option>
+          <option value="#FF8800">Amber</option>
+        </select>
+      </div>
+      <div class="option-item pixel-checkbox">
+        <input type="checkbox" id="pixel-border" checked>
+        <label for="pixel-border">Pixel Border</label>
+      </div>
+      <div class="option-item pixel-checkbox">
+        <input type="checkbox" id="show-grid" checked>
+        <label for="show-grid">Scanlines</label>
+      </div>
+      <div class="option-item pixel-checkbox">
+        <input type="checkbox" id="show-subtitle" checked>
+        <label for="show-subtitle">Subtitle</label>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-download">⬇ DOWNLOAD OG IMAGE</button>
+      <button class="btn" id="btn-reset">⟲ RESET</button>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="info-text">
+      <p>1. Click <strong>"+ LOAD PHOTO"</strong> to upload your photo as the OG cover background</p>
+      <p>2. Adjust text size, position, darken level, and colors to your liking</p>
+      <p>3. Click <strong>"DOWNLOAD OG IMAGE"</strong> to save the 1200×630 OG image</p>
+      <p style="margin-top:0.8rem;color:var(--text-mid);">
+        After uploading, host the image and update these meta tags in <code>index.html</code>:<br>
+        <code style="font-size:0.5rem;">og:image</code> &amp; <code style="font-size:0.5rem;">twitter:image</code>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('og-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // DOM refs
+    const fileInput = document.getElementById('photo-input');
+    const fileLabel = document.getElementById('file-label');
+    const photoStatus = document.getElementById('photo-status');
+    const photoFit = document.getElementById('photo-fit');
+    const textSizeSlider = document.getElementById('text-size');
+    const textSizeVal = document.getElementById('text-size-val');
+    const textYSlider = document.getElementById('text-y');
+    const textYVal = document.getElementById('text-y-val');
+    const photoDarkenSlider = document.getElementById('photo-darken');
+    const photoDarkenVal = document.getElementById('photo-darken-val');
+    const textColorSelect = document.getElementById('text-color');
+    const pixelBorderCb = document.getElementById('pixel-border');
+    const showGridCb = document.getElementById('show-grid');
+    const showSubtitleCb = document.getElementById('show-subtitle');
+    const btnDownload = document.getElementById('btn-download');
+    const btnReset = document.getElementById('btn-reset');
+
+    // State
+    let userPhoto = null;
+    let fontLoaded = false;
+
+    // Render function
+    function render() {
+      const W = 1200, H = 630;
+      ctx.clearRect(0, 0, W, H);
+
+      // --- Background ---
+      // Draw photo or fallback gradient
+      if (userPhoto) {
+        drawPhotoBackground();
+      } else {
+        // Fallback: dark gradient with pixel grid
+        const grad = ctx.createRadialGradient(600, 315, 100, 600, 315, 700);
+        grad.addColorStop(0, '#1a1a1a');
+        grad.addColorStop(0.5, '#0a0a0a');
+        grad.addColorStop(1, '#080808');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      // --- Scanlines / Grid ---
+      if (showGridCb.checked) {
+        drawScanlines();
+      }
+
+      // --- Pixel Border Frame ---
+      if (pixelBorderCb.checked) {
+        drawPixelBorder();
+      }
+
+      // --- Pixel decorative elements ---
+      drawPixelDecorations();
+
+      // --- Main Title: KRIPPAS ---
+      const textStr = 'KRIPPAS';
+      const fontSize = parseInt(textSizeSlider.value);
+      const textY = parseInt(textYSlider.value);
+      const textColor = textColorSelect.value;
+
+      ctx.save();
+
+      // Pixel-style title
+      if (fontLoaded) {
+        ctx.font = `bold ${fontSize}px "Press Start 2P", monospace`;
+      } else {
+        ctx.font = `bold ${fontSize}px monospace`;
+      }
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Pixel shadow layers (retro depth)
+      const shadowSteps = 4;
+      for (let i = shadowSteps; i >= 1; i--) {
+        ctx.fillStyle = i === shadowSteps ? '#000000' : `rgba(0,0,0,${0.6 - i * 0.1})`;
+        const offset = i * 3;
+        ctx.fillText(textStr, 600 + offset, textY + offset);
+      }
+
+      // Main text
+      ctx.fillStyle = textColor;
+      ctx.fillText(textStr, 600, textY);
+
+      // Pixel highlight (top-left pixel edge)
+      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.fillText(textStr, 600 - 1, textY - 1);
+
+      ctx.restore();
+
+      // --- Subtitle ---
+      if (showSubtitleCb.checked) {
+        const subSize = Math.max(12, Math.floor(fontSize * 0.18));
+        ctx.save();
+        if (fontLoaded) {
+          ctx.font = `${subSize}px "Press Start 2P", monospace`;
+        } else {
+          ctx.font = `${subSize}px monospace`;
+        }
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const subY = textY + fontSize * 0.55 + 16;
+
+        // Pixel underline
+        const subText = 'AI REIGNS PROTOCOL';
+        const subMetrics = ctx.measureText(subText);
+        const subWidth = subMetrics.width;
+        ctx.fillStyle = 'rgba(37,37,37,0.4)';
+        ctx.fillRect(600 - subWidth/2 - 8, subY + subSize * 0.35 - 1, subWidth + 16, 1);
+
+        // Subtitle text
+        ctx.fillStyle = textColor === '#080808' ? '#504A44' : '#A09890';
+        ctx.fillText(subText, 600, subY);
+        ctx.restore();
+      }
+
+      // --- Bottom corner pixel markers ---
+      drawCornerMarkers();
+    }
+
+    function drawPhotoBackground() {
+      const W = 1200, H = 630;
+      const fit = photoFit.value;
+      const darken = parseInt(photoDarkenSlider.value) / 100;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, 0, W, H);
+      ctx.clip();
+
+      const imgW = userPhoto.width;
+      const imgH = userPhoto.height;
+      let sx, sy, sw, sh, dx, dy, dw, dh;
+
+      if (fit === 'cover') {
+        const scale = Math.max(W / imgW, H / imgH);
+        sw = imgW;
+        sh = imgH;
+        dw = imgW * scale;
+        dh = imgH * scale;
+        dx = (W - dw) / 2;
+        dy = (H - dh) / 2;
+        ctx.drawImage(userPhoto, dx, dy, dw, dh);
+      } else if (fit === 'contain') {
+        const scale = Math.min(W / imgW, H / imgH);
+        sw = imgW;
+        sh = imgH;
+        dw = imgW * scale;
+        dh = imgH * scale;
+        dx = (W - dw) / 2;
+        dy = (H - dh) / 2;
+        // Fill gaps with black
+        ctx.fillStyle = '#080808';
+        ctx.fillRect(0, 0, W, H);
+        ctx.drawImage(userPhoto, dx, dy, dw, dh);
+      } else { // stretch
+        ctx.drawImage(userPhoto, 0, 0, W, H);
+      }
+
+      // Darken overlay
+      if (darken > 0) {
+        ctx.fillStyle = `rgba(0,0,0,${darken})`;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      ctx.restore();
+    }
+
+    function drawScanlines() {
+      const W = 1200, H = 630;
+      ctx.save();
+      for (let y = 0; y < H; y += 4) {
+        ctx.fillStyle = 'rgba(0,0,0,0.06)';
+        ctx.fillRect(0, y, W, 2);
+      }
+      // Subtle grid dots
+      ctx.fillStyle = 'rgba(37,37,37,0.15)';
+      for (let x = 0; x < W; x += 40) {
+        for (let y = 0; y < H; y += 40) {
+          ctx.fillRect(x, y, 1, 1);
+        }
+      }
+      ctx.restore();
+    }
+
+    function drawPixelBorder() {
+      const W = 1200, H = 630;
+      const b = 3; // border thickness in px
+      ctx.save();
+      ctx.strokeStyle = 'rgba(240,237,232,0.08)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(b + 0.5, b + 0.5, W - b*2 - 1, H - b*2 - 1);
+
+      // Corner pixel brackets
+      const cSize = 12;
+      ctx.strokeStyle = 'rgba(240,237,232,0.2)';
+      ctx.lineWidth = 2;
+      // Top-left
+      ctx.beginPath();
+      ctx.moveTo(b + cSize, b);
+      ctx.lineTo(b, b);
+      ctx.lineTo(b, b + cSize);
+      ctx.stroke();
+      // Top-right
+      ctx.beginPath();
+      ctx.moveTo(W - b - cSize, b);
+      ctx.lineTo(W - b - 1, b);
+      ctx.lineTo(W - b - 1, b + cSize);
+      ctx.stroke();
+      // Bottom-left
+      ctx.beginPath();
+      ctx.moveTo(b + cSize, H - b - 1);
+      ctx.lineTo(b, H - b - 1);
+      ctx.lineTo(b, H - b - cSize);
+      ctx.stroke();
+      // Bottom-right
+      ctx.beginPath();
+      ctx.moveTo(W - b - cSize, H - b - 1);
+      ctx.lineTo(W - b - 1, H - b - 1);
+      ctx.lineTo(W - b - 1, H - b - cSize);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawPixelDecorations() {
+      const W = 1200, H = 630;
+      ctx.save();
+
+      // Small pixel dots in corners
+      ctx.fillStyle = 'rgba(240,237,232,0.06)';
+      const dots = [
+        [40, 40], [1160, 40], [40, 590], [1160, 590],
+        [80, 80], [1120, 80], [80, 550], [1120, 550]
+      ];
+      dots.forEach(([x, y]) => {
+        ctx.fillRect(x - 2, y - 2, 4, 4);
+      });
+
+      // Center diamond (subtle)
+      ctx.strokeStyle = 'rgba(240,237,232,0.04)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(600, 280);
+      ctx.lineTo(630, 315);
+      ctx.lineTo(600, 350);
+      ctx.lineTo(570, 315);
+      ctx.closePath();
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawCornerMarkers() {
+      const W = 1200, H = 630;
+      ctx.save();
+      ctx.fillStyle = 'rgba(240,237,232,0.03)';
+      // Bottom-right "v1.0" pixel marker
+      ctx.font = '8px monospace';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText('◆ v1.0', W - 14, H - 10);
+
+      // Top-left KRIPPAS micro
+      ctx.font = '7px "Press Start 2P", monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = 'rgba(240,237,232,0.05)';
+      ctx.fillText('KRP', 14, 12);
+
+      ctx.restore();
+    }
+
+    // --- Events ---
+    function updateValueDisplays() {
+      textSizeVal.textContent = textSizeSlider.value;
+      textYVal.textContent = textYSlider.value;
+      photoDarkenVal.textContent = photoDarkenSlider.value;
+    }
+
+    function attachSliderListeners() {
+      [textSizeSlider, textYSlider, photoDarkenSlider].forEach(slider => {
+        slider.addEventListener('input', () => {
+          updateValueDisplays();
+          render();
+        });
+      });
+    }
+
+    // Photo upload
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      loadPhoto(file);
+    });
+
+    // Drag & drop on the file label (scoped, not on document)
+    const dropZone = document.querySelector('.file-label');
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove('dragover');
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && files[0].type.startsWith('image/')) {
+        loadPhoto(files[0]);
+      }
+    });
+
+    function loadPhoto(file) {
+      // File size validation: reject > 10MB
+      const MAX_SIZE = 10 * 1024 * 1024;
+      if (file.size > MAX_SIZE) {
+        photoStatus.textContent = `❌ File too large (max 10MB)`;
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          userPhoto = img;
+          fileLabel.classList.add('has-photo');
+          photoStatus.textContent = `Loaded: ${file.name.length > 20 ? file.name.slice(0, 17) + '...' : file.name}`;
+          render();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Download
+    btnDownload.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'krippas-og-image.png';
+      // Use JPEG with quality 0.95 for smaller files (OG images don't need lossless)
+      link.href = canvas.toDataURL('image/jpeg', 0.95);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    // Reset
+    btnReset.addEventListener('click', () => {
+      userPhoto = null;
+      fileInput.value = '';
+      fileLabel.classList.remove('has-photo');
+      photoStatus.textContent = 'No photo';
+      textSizeSlider.value = '130';
+      textYSlider.value = '315';
+      photoDarkenSlider.value = '50';
+      textColorSelect.value = '#F0EDE8';
+      pixelBorderCb.checked = true;
+      showGridCb.checked = true;
+      showSubtitleCb.checked = true;
+      photoFit.value = 'cover';
+      updateValueDisplays();
+      render();
+    });
+
+    // Other controls
+    photoFit.addEventListener('change', render);
+    textColorSelect.addEventListener('change', render);
+    pixelBorderCb.addEventListener('change', render);
+    showGridCb.addEventListener('change', render);
+    showSubtitleCb.addEventListener('change', render);
+
+    // Init
+    attachSliderListeners();
+    updateValueDisplays();
+
+    // Initial render with fallback monospace (font may not be loaded yet)
+    render();
+
+    // When pixel font loads, re-render
+    document.fonts.ready.then(() => {
+      // Check if Press Start 2P is actually loaded
+      if (document.fonts.check('1em "Press Start 2P"')) {
+        fontLoaded = true;
+        render();
+      }
+    });
+    // Also try loading it explicitly
+    document.fonts.load('1em "Press Start 2P"').then(() => {
+      fontLoaded = true;
+      render();
+    }).catch(() => {
+      // Font failed to load — fallback monospace is fine
+      console.warn('Press Start 2P font failed to load, using fallback');
+    });
+
+    console.log('KRIPPAS OG Image Generator ready!');
+  </script>
+</body>
+</html>
