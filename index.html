@@ -242,21 +242,29 @@
   <script src="app.js"></script>
 
   <script>
-    // Theme toggle
+    // Theme toggle — also clears inline styles from app.js applyTheme
     (function() {
       var btn = document.getElementById('btn-toggle-theme');
       if (!btn) return;
       var html = document.documentElement;
+      var bgScene = document.getElementById('bg-scene');
 
-      // Update button text based on current theme
       function updateBtn() {
         btn.textContent = html.classList.contains('light') ? '☀' : '☾';
       }
       updateBtn();
 
+      function clearInlineThemeStyles() {
+        // Remove inline CSS vars set by applyTheme() that override :root/.light
+        var props = ['--bg-color', '--panel-bg', '--card-border', '--text-dark', '--sky-color'];
+        props.forEach(function(p) { html.style.removeProperty(p); });
+        if (bgScene) bgScene.style.removeProperty('background-color');
+      }
+
       btn.addEventListener('click', function() {
         html.classList.toggle('light');
         var isLight = html.classList.contains('light');
+        if (isLight) clearInlineThemeStyles();
         localStorage.setItem('krippas-theme', isLight ? 'light' : 'dark');
         updateBtn();
       });
