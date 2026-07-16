@@ -22,8 +22,7 @@ async function main() {
 
   // Load photo
   const img = new Image();
-  img.crossOrigin = 'anonymous';
-  await new Promise((res, rej) => {
+  await new Promise((res) => {
     img.onload = res;
     img.onerror = () => { console.warn('no photo, using dark bg'); res(); };
     img.src = 'user-photo.jpg';
