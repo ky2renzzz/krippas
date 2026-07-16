@@ -1044,7 +1044,17 @@ class GameEngine {
   }
 
   applyTheme(themeKey, speaker) {
-    // Resolve the best theme: speaker-type > character > welcome
+    // If light mode is active, skip inline styles — let CSS .light class handle it
+    if (document.documentElement.classList.contains('light')) {
+      const bgScene = document.getElementById('bg-scene');
+      if (bgScene) {
+        const bgSvg = getBackground(speaker, themeKey);
+        bgScene.innerHTML = bgSvg + '<div class="grain"></div>';
+      }
+      return;
+    }
+
+    // Resolve the best theme: speaker-type > character > welcome (dark mode only)
     let theme;
     if (speaker) {
       const speakerType = getSpeakerType(speaker);
