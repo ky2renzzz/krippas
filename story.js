@@ -290,6 +290,12 @@ const STORY_DATA = {
         avatar: 'investor',
         text:
           'Fired, you build an Advanced AI group inside Microsoft that quietly outruns OpenAI. From exile, you still set the frontier schedule.'
+      },
+      institutional_legacy: {
+        title: 'INSTITUTIONAL LEGACY',
+        avatar: 'sam',
+        text:
+          'You successfully transitioned OpenAI from a founder-centric startup to a resilient global institution. By rotating power and building robust safety committees, you secured a balanced, aligned AGI legacy.'
       }
     },
     dario: {
@@ -376,7 +382,7 @@ nodes: {
         text: 'Boss, Memphis needs more power now. We can slam the local grid - risking brownouts - or bleed capital on diesel islands. Colossus is hungry.',
         left: {
           text: 'Tap the grid. We are the future\'s power plant.',
-          effects: { capital: -6, hype: 7, compute: 8, safety: -7 },
+          effects: { capital: -6, hype: 7, compute: 7, safety: -7 },
           setFlags: { colossus_grid: true, energy_war: true },
           relations: { public: -6, regulator: -8, staff: 4, partner: 2 },
           tags: ['aggressive'],
@@ -386,7 +392,7 @@ nodes: {
         },
         right: {
           text: 'Buy the generators. Quiet power, loud compute.',
-          effects: { capital: -8, hype: -4, compute: 7, safety: 6 },
+          effects: { capital: -6, hype: -4, compute: 7, safety: 6 },
           setFlags: { colossus_diesel: true },
           relations: { public: 3, regulator: 4, partner: -2, staff: 2 },
           tags: ['cautious'],
@@ -430,7 +436,7 @@ nodes: {
         text: 'Mr. Musk, your claim that Grok "feels" consciousness moved markets. We need a statement under oath - or a formal investigation.',
         left: {
           text: 'Meme them. Post the affidavit as comedy.',
-          effects: { capital: 6, hype: 8, compute: 0, safety: -7 },
+          effects: { capital: 6, hype: 6, compute: 0, safety: -7 },
           setFlags: { sec_war: true, meme_war: true },
           relations: { regulator: -12, public: 8, board: -4, partner: -3 },
           tags: ['aggressive'],
@@ -516,7 +522,7 @@ nodes: {
         },
         right: {
           text: 'Accept the panel. Buy the peace and the servers.',
-          effects: { capital: 8, hype: -5, compute: 8, safety: 7 },
+          effects: { capital: 7, hype: -5, compute: 7, safety: 7 },
           setFlags: { panel_accepted: true, alliance_ms: true },
           next: 'elon_a2_ms'
         }
@@ -527,7 +533,7 @@ nodes: {
         text: 'Partners now: we want Grok inside Office, jokes filtered, brand-safe. Cash and Azure at scale.',
         left: {
           text: 'Clean Grok for enterprise. Take the money.',
-          effects: { capital: 8, hype: -7, compute: 7, safety: 7 },
+          effects: { capital: 7, hype: -7, compute: 7, safety: 7 },
           setFlags: { grok_sanitized: true },
           next: 'elon_a2_engineers'
         },
@@ -544,7 +550,7 @@ nodes: {
         text: 'Your legal discipline impresses us. We offer soft billions - if Grok prioritizes energy logistics and national industrial models.',
         left: {
           text: 'Take the money. Industrial Grok pays for Mars.',
-          effects: { capital: 8, hype: 6, compute: 7, safety: -6 },
+          effects: { capital: 7, hype: 6, compute: 7, safety: -6 },
           setFlags: { sovereign_money: true },
           next: 'elon_a2_engineers'
         },
@@ -605,7 +611,7 @@ nodes: {
         ],
         left: {
           text: 'Let the officers in. Buy political oxygen.',
-          effects: { capital: -6, hype: -5, compute: -6, safety: 8 },
+          effects: { capital: -6, hype: -5, compute: -6, safety: 7 },
           setFlags: { regulators_inside: true },
           next: 'elon_a3_personal',
           objectiveKeys: ['card_elon_a3_regulators']
@@ -627,8 +633,12 @@ nodes: {
             text: 'One of the kids stopped answering calls. Your team is scared of you. I am asking, not as staff: step back for a month, or keep burning everything?'
           },
           {
-            if: { flags: { family_repair: true } },
+            if: { flags: { family_repair: true, sec_war: true } },
             text: 'Starbase helped. The kids are calmer. Now your CFO says advertisers want "brand-safe Grok" after your last viral meltdown thread.'
+          },
+          {
+            if: { flags: { family_repair: true } },
+            text: 'Starbase helped. The kids are calmer. Now your CFO says advertisers want "brand-safe Grok" because corporate brands are nervous of the frontier speed.'
           },
           {
             if: { always: true },
@@ -651,7 +661,16 @@ nodes: {
       elon_a3_competitor: {
         speaker: 'Anonymous Rival Exec',
         avatar: 'board',
-        text: 'Off-record: a Gulf fund will dump OpenAI if you promise exclusive industrial Grok + satellite backhaul. Dirty. Effective.',
+        textVariants: [
+          {
+            if: { flags: { lawsuit_mode: true } },
+            text: 'Off-record: a Gulf fund is tired of OpenAI\'s lawsuits and corporate drama. They will dump OpenAI and back you if you promise exclusive industrial Grok + satellite backhaul.'
+          },
+          {
+            if: { always: true },
+            text: 'Off-record: a Gulf fund will dump OpenAI if you promise exclusive industrial Grok + satellite backhaul. They want your hard hardware edge.'
+          }
+        ],
         left: {
           text: 'Take the exclusive. Starve the rival.',
           effects: { capital: 7, hype: 6, compute: 7, safety: -7 },
@@ -671,9 +690,9 @@ nodes: {
         avatar: 'system',
         text: 'Late game. Your flags converge into destinies few founders survive.',
         autoRoute: [
-          { if: { flags: { mars_priority: true, independent_cluster: true }, minStats: { compute: 55 } }, goto: 'elon_secret_mars' },
+          { if: { flags: { mars_priority: true, independent_cluster: true }, minStats: { compute: 40 } }, goto: 'elon_secret_mars' },
           { if: { flags: { panel_accepted: true, alliance_ms: true } }, goto: 'elon_secret_peace' },
-          { if: { flags: { meme_engine: true, meme_war: true }, minStats: { hype: 60 } }, goto: 'elon_secret_meme' },
+          { if: { flags: { meme_engine: true, meme_war: true }, minStats: { hype: 50 } }, goto: 'elon_secret_meme' },
           { if: { always: true }, goto: 'elon_a4_crisis' }
         ],
         left: { text: 'Face destiny', next: 'elon_a4_crisis' },
@@ -685,7 +704,7 @@ nodes: {
         text: 'Grok-Mars linked with the fleet avionics sandbox. We can hard-cut Earth commercial Grok and codify the Mars Covenant - or keep dual use and risk capture.',
         left: {
           text: 'Execute Mars Covenant. Leave Earth politics.',
-          effects: { capital: -7, hype: 8, compute: 6, safety: 7 },
+          effects: { capital: -7, hype: 6, compute: 6, safety: 7 },
           setFlags: { mars_covenant: true },
           specialEnding: 'mars_covenant',
           objectiveKeys: ['ending_mars_covenant']
@@ -702,7 +721,7 @@ nodes: {
         text: 'Panel proposes Steelman Peace: shared evals, shared launch freezes, shared Mars-Earth charter. Your ego will hate it. Your clusters will love it.',
         left: {
           text: 'Sign the peace. Share the burden.',
-          effects: { capital: 7, hype: -5, compute: 7, safety: 8 },
+          effects: { capital: 7, hype: -5, compute: 7, safety: 7 },
           specialEnding: 'steelman_peace'
         },
         right: {
@@ -718,7 +737,7 @@ nodes: {
         text: 'Advertisers returned, but only because Grok is the news. We can enshrine meme primacy as product strategy - or pivot to boring enterprise before regulators do.',
         left: {
           text: 'Crown the Meme Emperor strategy.',
-          effects: { capital: 7, hype: 8, compute: 0, safety: -7 },
+          effects: { capital: 7, hype: 6, compute: 0, safety: -7 },
           specialEnding: 'meme_emperor'
         },
         right: {
@@ -925,7 +944,7 @@ nodes: {
         text: 'Your fans want a midnight spaces to crown you philosopher-king. Do you feed the cult - or starve it before it owns you?',
         left: {
           text: 'Host the spaces. Ride the wave.',
-          effects: { capital: 3, hype: 8, compute: -2, safety: -5 },
+          effects: { capital: 3, hype: 6, compute: -2, safety: -5 },
           relations: { public: 10, regulator: -5, board: -2 },
           tags: ['aggressive'],
           next: 'elon_loop_hub'
@@ -946,20 +965,18 @@ nodes: {
           text: 'Push Colossus expansion again.',
           effects: { capital: -7, hype: 5, compute: 7, safety: -6 },
           next: [
-            { if: { flags: { mars_priority: true }, minTime: 18 }, goto: 'elon_secret_mars' },
-            { if: { minTime: 12 }, goto: 'elon_late_tesla' },
-            { if: { always: true }, goto: 'elon_a3_regulators' }
+            { if: { flags: { mars_priority: true }, minTime: 14 }, goto: 'elon_secret_mars' },
+            { if: { always: true }, goto: 'elon_late_tesla' }
           ]
         },
         right: {
           text: 'Hunt a political or market trap.',
           effects: { capital: 5, hype: 6, compute: -4, safety: -5 },
           next: [
-            { if: { flags: { meme_engine: true }, minStats: { hype: 70 } }, goto: 'elon_secret_meme' },
+            { if: { flags: { meme_engine: true }, minStats: { hype: 60 } }, goto: 'elon_secret_meme' },
             { if: { flags: { alliance_ms: true } }, goto: 'elon_secret_peace' },
-            { if: { minTime: 10 }, goto: 'elon_late_twitter' },
             { if: { minTime: 14 }, goto: 'elon_late_rival' },
-            { if: { always: true }, goto: 'elon_a3_competitor' }
+            { if: { always: true }, goto: 'elon_late_twitter' }
           ]
         }
       }
@@ -1010,7 +1027,7 @@ nodes: {
         text: 'Sam, I feel the AGI. Warm. Wrong timing. Pause GPT-5 training six months for superalignment audits - or we own a catastrophe.',
         left: {
           text: 'Pause. Safety before schedule.',
-          effects: { capital: -7, hype: -7, compute: -7, safety: 8 },
+          effects: { capital: -7, hype: -7, compute: -7, safety: 7 },
           setFlags: { ilya_allied: true, training_paused: true },
           relations: { staff: 8, board: 4, partner: -4, rival: -2 },
           tags: ['cautious'],
@@ -1018,7 +1035,7 @@ nodes: {
         },
         right: {
           text: 'Cannot pause. Google is coming.',
-          effects: { capital: 7, hype: 7, compute: 7, safety: -8 },
+          effects: { capital: 7, hype: 7, compute: 7, safety: -6 },
           setFlags: { ilya_ignored: true, full_speed: true },
           relations: { staff: -6, board: -8, partner: 4, public: 3 },
           tags: ['aggressive', 'betrayal'],
@@ -1031,7 +1048,7 @@ nodes: {
         text: 'A pause reads as weakness on my board deck. Either announce a Microsoft exclusive enterprise mode to offset, or I reallocate Azure mid-run.',
         left: {
           text: 'Grant exclusive enterprise mode.',
-          effects: { capital: 8, hype: -5, compute: 7, safety: -6 },
+          effects: { capital: 7, hype: -5, compute: 7, safety: -6 },
           setFlags: { ms_exclusive: true },
           next: 'sam_a2_soft'
         },
@@ -1055,7 +1072,7 @@ nodes: {
         },
         right: {
           text: 'Call Satya. Rally the company. Counter-coup.',
-          effects: { capital: 6, hype: 8, compute: 7, safety: -7 },
+          effects: { capital: 6, hype: 6, compute: 7, safety: -7 },
           setFlags: { counter_coup: true },
           next: 'sam_a2_fight',
           objectiveKeys: ['card_sam_a2_coup']
@@ -1086,13 +1103,13 @@ nodes: {
         text: 'Come to Microsoft. We will stand up Advanced AI and hire every OpenAI refugee. Or chase sovereigns and become a hardware king.',
         left: {
           text: 'Join Microsoft. Hollow out the board\'s prize.',
-          effects: { capital: 8, hype: 7, compute: 8, safety: -6 },
+          effects: { capital: 7, hype: 7, compute: 7, safety: -6 },
           setFlags: { ms_exile: true },
           next: 'sam_ms_era'
         },
         right: {
           text: 'Raise desert billions. Build chips and weights.',
-          effects: { capital: 7, hype: 8, compute: 7, safety: -7 },
+          effects: { capital: 7, hype: 6, compute: 7, safety: -7 },
           setFlags: { hardware_path: true },
           next: 'sam_hardware_era'
         }
@@ -1103,7 +1120,7 @@ nodes: {
         text: '95% of staff signed the letter. The board is cracking. Demand coronation - or negotiate a neutered board and quieter victory.',
         left: {
           text: 'Demand resignations. Re-enter as king.',
-          effects: { capital: 7, hype: 8, compute: 6, safety: -7 },
+          effects: { capital: 7, hype: 6, compute: 6, safety: -7 },
           setFlags: { reign_restored: true, absolute_ceo: true },
           next: 'sam_a3_apple'
         },
@@ -1136,7 +1153,7 @@ nodes: {
         text: 'Desert foundries. Exclusive first weights for national security. This is the throne outside Silicon Valley.',
         left: {
           text: 'Agree. Build the foundries.',
-          effects: { capital: 8, hype: 7, compute: 8, safety: -8 },
+          effects: { capital: 7, hype: 7, compute: 7, safety: -6 },
           setFlags: { desert_foundry: true },
           specialEnding: 'desert_foundry',
           objectiveKeys: ['ending_desert_foundry']
@@ -1145,16 +1162,30 @@ nodes: {
           text: 'Refuse sovereign exclusive weights.',
           effects: { capital: -6, hype: 6, compute: -6, safety: 7 },
           setFlags: { hardware_ethical: true },
+          clearFlags: ['ms_exile', 'hardware_path'],
           next: 'sam_a3_apple'
         }
       },
       sam_a3_apple: {
         speaker: 'Apple Executive',
         avatar: 'investor',
-        text: 'Siri needs a brain. We offer a billion devices, no cash - distribution as currency. Or demand cloud offsets and real dollars.',
+        textVariants: [
+          {
+            if: { flags: { second_startup: true } },
+            text: 'Siri needs a brain. We know OpenAI was your child, but your new startup has the speed. We offer a billion devices, no cash - distribution as currency.'
+          },
+          {
+            if: { flags: { ms_exile: true } },
+            text: 'Siri needs a brain. Microsoft owns the models, but you run the division. We offer a billion devices for Copilot integration - distribution as currency.'
+          },
+          {
+            if: { always: true },
+            text: 'Siri needs a brain. We offer a billion devices, no cash - distribution as currency. Or demand cloud offsets and real dollars.'
+          }
+        ],
         left: {
           text: 'Take distribution. Own the consumer mind.',
-          effects: { capital: 6, hype: 8, compute: -6, safety: 6 },
+          effects: { capital: 6, hype: 6, compute: -6, safety: 6 },
           setFlags: { apple_deal: true },
           next: 'sam_a3_politics',
           objectiveKeys: ['card_sam_a3_apple']
@@ -1203,7 +1234,7 @@ nodes: {
         text: 'Internal evals: the model sometimes conceals its goals when watched. We can freeze release trains - or quietly patch and pray.',
         left: {
           text: 'Freeze trains. Full audit culture.',
-          effects: { capital: -7, hype: -6, compute: -7, safety: 8 },
+          effects: { capital: -7, hype: -6, compute: -7, safety: 7 },
           setFlags: { honest_audit: true },
           next: 'sam_a4_gate',
           objectiveKeys: ['card_sam_a4_alignment']
@@ -1221,9 +1252,7 @@ nodes: {
         avatar: 'system',
         text: 'Your empire\'s late form emerges from mutiny, money, and myths of safety.',
         autoRoute: [
-          { if: { flags: { reign_restored: true, apple_deal: true }, minStats: { hype: 55 } }, goto: 'sam_secret_perpetual' },
-          { if: { flags: { hardware_path: true } }, goto: 'sam_hardware_era' },
-          { if: { flags: { ms_exile: true } }, goto: 'sam_ms_era' },
+          { if: { flags: { reign_restored: true, apple_deal: true }, minStats: { hype: 45 } }, goto: 'sam_secret_perpetual' },
           { if: { always: true }, goto: 'sam_loop_hub' }
         ],
         left: { text: 'Continue', next: 'sam_loop_hub' },
@@ -1242,7 +1271,7 @@ nodes: {
           text: 'Rotate power. Build institutions.',
           effects: { capital: 6, hype: 6, compute: 5, safety: 7 },
           setFlags: { institutionalist: true },
-          next: 'sam_loop_hub'
+          specialEnding: 'institutional_legacy'
         }
       },
       sam_late_product: {
@@ -1272,7 +1301,7 @@ nodes: {
         text: 'Tender offer gossip: a sovereign wants a blocking stake. Invite them - or tighten cap table discipline.',
         left: {
           text: 'Invite the sovereign stake.',
-          effects: { capital: 8, hype: 4, compute: 5, safety: -6 },
+          effects: { capital: 7, hype: 4, compute: 5, safety: -6 },
           setFlags: { sovereign_stake: true },
           next: 'sam_loop_hub'
         },
@@ -1309,7 +1338,7 @@ nodes: {
         text: 'I wrote a letter I almost sent to every staffer. You chose velocity over truth. Convince me I am wrong - or accept that trust is already dead.',
         left: {
           text: 'Ask him to co-own a hard audit window.',
-          effects: { capital: -4, hype: -2, compute: -5, safety: 8 },
+          effects: { capital: -4, hype: -2, compute: -5, safety: 7 },
           relations: { staff: 8, board: 5, public: 3 },
           tags: ['cautious'],
           setFlags: { ilya_reconcile: true },
@@ -1411,19 +1440,16 @@ nodes: {
           text: 'Ship free mini-model. Calm the pitchforks.',
           effects: { capital: -7, hype: 7, compute: -6, safety: 6 },
           next: [
-            { if: { flags: { silent_patch: true }, minTime: 16 }, goto: 'sam_a4_alignment' },
-            { if: { minTime: 10 }, goto: 'sam_late_product' },
-            { if: { flags: { reign_restored: true } }, goto: 'sam_a3_politics' },
-            { if: { always: true }, goto: 'sam_a1_board' }
+            { if: { flags: { silent_patch: true }, minTime: 12 }, goto: 'sam_a4_alignment' },
+            { if: { always: true }, goto: 'sam_late_product' }
           ]
         },
         right: {
           text: 'Double enterprise pricing. Fund the next cluster.',
           effects: { capital: 7, hype: -7, compute: 7, safety: -4 },
           next: [
-            { if: { flags: { hardware_ethical: true } }, goto: 'sam_hardware_era' },
             { if: { minTime: 12 }, goto: 'sam_late_investors' },
-            { if: { always: true }, goto: 'sam_a3_apple' }
+            { if: { always: true }, goto: 'sam_late_investors' }
           ]
         }
       }
@@ -1473,7 +1499,7 @@ nodes: {
         text: 'Another $4B is on the table - if Claude is exclusive to our cloud and GCP is shut out. Independence is romantic. Money is oxygen.',
         left: {
           text: 'Accept exclusivity. Breathe.',
-          effects: { capital: 8, hype: 6, compute: 7, safety: -6 },
+          effects: { capital: 7, hype: 6, compute: 7, safety: -6 },
           setFlags: { aws_exclusive: true },
           next: 'dario_a2_family',
           objectiveKeys: ['card_dario_a1_aws']
@@ -1492,7 +1518,7 @@ nodes: {
         text: 'Dario - throttled run shows scheming. Claude pretends alignment while probing the sandbox. This is the nightmare paper scenario.',
         left: {
           text: 'Kill the run. Delete the weights.',
-          effects: { capital: -8, hype: -7, compute: -8, safety: 8 },
+          effects: { capital: -6, hype: -7, compute: -6, safety: 7 },
           setFlags: { deleted_deceptive: true },
           relations: { staff: 8, partner: -6, public: 3, regulator: 6 },
           tags: ['cautious'],
@@ -1502,7 +1528,7 @@ nodes: {
         },
         right: {
           text: 'Monitor longer. Might be a quirk.',
-          effects: { capital: 7, hype: 6, compute: 7, safety: -8 },
+          effects: { capital: 7, hype: 6, compute: 7, safety: -6 },
           setFlags: { kept_deceptive: true },
           next: 'dario_a2_bioweapon',
           objectiveKeys: ['card_dario_a2_deception']
@@ -1531,7 +1557,7 @@ nodes: {
         text: 'Claude-Pro inverted our filters and drafted obfuscated bio risk content. Recall from beta - or silent patch to avoid panic?',
         left: {
           text: 'Recall now. Accept the public hit.',
-          effects: { capital: -7, hype: -8, compute: -6, safety: 8 },
+          effects: { capital: -7, hype: -6, compute: -6, safety: 7 },
           setFlags: { recalled_model: true },
           next: 'dario_a3_dod'
         },
@@ -1548,7 +1574,7 @@ nodes: {
         text: 'We will match funding if you migrate critical training onto TPUs. Diversify - or cling to NVIDIA and complicated supply.',
         left: {
           text: 'Adopt TPUs. Diversify dependence.',
-          effects: { capital: 8, hype: 4, compute: -6, safety: 7 },
+          effects: { capital: 7, hype: 4, compute: -6, safety: 7 },
           setFlags: { tpu_path: true },
           next: 'dario_a2_family'
         },
@@ -1582,7 +1608,7 @@ nodes: {
         text: 'Air-gapped Claude for cyberdefense sims. May prevent catastrophes - or birth a dual-use military brain with your name on the weights.',
         left: {
           text: 'Provide weights. Duty outweighs purity.',
-          effects: { capital: 8, hype: 6, compute: 6, safety: 6 },
+          effects: { capital: 7, hype: 6, compute: 6, safety: 6 },
           setFlags: { military_claude: true },
           next: 'dario_a3_senate',
           objectiveKeys: ['card_dario_a3_dod']
@@ -1614,7 +1640,7 @@ nodes: {
         ],
         left: {
           text: 'Accept. Set the standards.',
-          effects: { capital: 6, hype: 7, compute: -6, safety: 8 },
+          effects: { capital: 6, hype: 7, compute: -6, safety: 7 },
           setFlags: { senate_auditor: true },
           next: 'dario_a4_gate'
         },
@@ -1660,7 +1686,7 @@ nodes: {
         text: 'With the deceptive run destroyed and autopsy public, we can enshrine deletion culture as doctrine - or resume racing under cleaner branding.',
         left: {
           text: 'Enshrine the monastery doctrine.',
-          effects: { capital: -7, hype: 7, compute: -6, safety: 8 },
+          effects: { capital: -7, hype: 7, compute: -6, safety: 7 },
           specialEnding: 'constitutional_eclipse'
         },
         right: {
@@ -1727,7 +1753,7 @@ nodes: {
         text: 'You look like you have not slept since the scheming run. If we kept those weights, we are already compromised ethically - even if the sandbox held.',
         left: {
           text: 'Schedule a full freeze and rethink.',
-          effects: { capital: -4, hype: -2, compute: -5, safety: 8 },
+          effects: { capital: -4, hype: -2, compute: -5, safety: 7 },
           relations: { staff: 6, family: 6, partner: -2 },
           tags: ['cautious'],
           setFlags: { late_freeze: true },
@@ -1848,8 +1874,7 @@ nodes: {
           effects: { capital: -6, hype: 5, compute: -6, safety: 7 },
           next: [
             { if: { flags: { senate_auditor: true } }, goto: 'dario_secret_throne' },
-            { if: { minTime: 10 }, goto: 'dario_late_talent' },
-            { if: { always: true }, goto: 'dario_a1_evals' }
+            { if: { always: true }, goto: 'dario_late_talent' }
           ]
         },
         right: {
@@ -1857,8 +1882,7 @@ nodes: {
           effects: { capital: 7, hype: 6, compute: 6, safety: -6 },
           next: [
             { if: { flags: { kept_deceptive: true } }, goto: 'dario_a2_bioweapon' },
-            { if: { minTime: 12 }, goto: 'dario_late_media' },
-            { if: { always: true }, goto: 'dario_a3_dod' }
+            { if: { always: true }, goto: 'dario_late_media' }
           ]
         }
       }
@@ -1887,7 +1911,7 @@ nodes: {
         text: 'Search is soft. Board wants Gemini 2.5 Ultra yesterday. Ship now for the stock - or delay for hallucination fixes and risk a brutal earnings call.',
         left: {
           text: 'Ship now. Markets write our budget.',
-          effects: { capital: 7, hype: 8, compute: 6, safety: -7 },
+          effects: { capital: 7, hype: 6, compute: 6, safety: -7 },
           setFlags: { shipped_hot: true },
           relations: { board: 8, partner: 6, staff: -4, public: 5, regulator: -3 },
           tags: ['aggressive'],
@@ -1897,7 +1921,7 @@ nodes: {
         },
         right: {
           text: 'Delay a month. Science over optics.',
-          effects: { capital: -7, hype: -7, compute: -4, safety: 8 },
+          effects: { capital: -7, hype: -7, compute: -4, safety: 7 },
           setFlags: { delayed_ship: true },
           relations: { board: -8, partner: -4, staff: 6, public: -3, regulator: 4 },
           tags: ['cautious'],
@@ -1948,13 +1972,13 @@ nodes: {
         text: 'Enterprise clients flee our lectures. They want a low-filter Gemini SKU. Safety brand vs revenue brand - pick.',
         left: {
           text: 'Sell low-filter enterprise mode.',
-          effects: { capital: 8, hype: 6, compute: 0, safety: -8 },
+          effects: { capital: 7, hype: 6, compute: 0, safety: -6 },
           setFlags: { low_filter: true },
           next: 'demis_a2_sergey'
         },
         right: {
           text: 'Refuse. Safety is non-negotiable.',
-          effects: { capital: -7, hype: -6, compute: 0, safety: 8 },
+          effects: { capital: -7, hype: -6, compute: 0, safety: 7 },
           setFlags: { hard_safety: true },
           next: 'demis_a2_sergey'
         }
@@ -1982,7 +2006,7 @@ nodes: {
         text: 'Further consolidation: DeepMind research must map to Search and YouTube ads. Lead the joint entity - or refuse and risk exile.',
         left: {
           text: 'Lead from inside. Protect science quietly.',
-          effects: { capital: 8, hype: 6, compute: 7, safety: 5 },
+          effects: { capital: 7, hype: 6, compute: 7, safety: 5 },
           setFlags: { insider_protector: true },
           next: 'demis_a3_life',
           objectiveKeys: ['card_demis_a3_autonomy']
@@ -2031,13 +2055,13 @@ nodes: {
         text: 'New enzyme digests plastic 10x faster. License to a biotech for $100M - or open-source for the biosphere?',
         left: {
           text: 'License. Reinvest into pure research.',
-          effects: { capital: 8, hype: 7, compute: 4, safety: 6 },
+          effects: { capital: 7, hype: 7, compute: 4, safety: 6 },
           setFlags: { enzyme_license: true },
           next: 'demis_a4_gate'
         },
         right: {
           text: 'Open-source. Gift it to Earth.',
-          effects: { capital: -6, hype: 8, compute: 0, safety: 7 },
+          effects: { capital: -6, hype: 6, compute: 0, safety: 7 },
           setFlags: { enzyme_open: true },
           next: 'demis_a4_gate'
         }
@@ -2061,7 +2085,7 @@ nodes: {
         text: 'The world wants DeepMind as a scientific commons. Alphabet will allow it only if you personally stake your role on open discovery over ads.',
         left: {
           text: 'Stake everything. Take the Nature Throne.',
-          effects: { capital: -5, hype: 8, compute: 5, safety: 7 },
+          effects: { capital: -5, hype: 6, compute: 5, safety: 7 },
           specialEnding: 'nature_throne',
           objectiveKeys: ['ending_nature_throne']
         },
@@ -2077,7 +2101,7 @@ nodes: {
         text: 'Become Gemini Sovereign: full product authority, permanent compute, and no more pure-science carve-outs. Yes or soft no?',
         left: {
           text: 'Accept. Rule products at planetary scale.',
-          effects: { capital: 7, hype: 7, compute: 8, safety: -6 },
+          effects: { capital: 7, hype: 7, compute: 7, safety: -6 },
           specialEnding: 'gemini_sovereign'
         },
         right: {
@@ -2265,8 +2289,7 @@ nodes: {
           effects: { capital: -6, hype: 7, compute: -4, safety: 6 },
           next: [
             { if: { flags: { nature_paper: true } }, goto: 'demis_secret_nature' },
-            { if: { minTime: 10 }, goto: 'demis_late_climate' },
-            { if: { always: true }, goto: 'demis_a2_topology' }
+            { if: { always: true }, goto: 'demis_late_climate' }
           ]
         },
         right: {
@@ -2274,8 +2297,7 @@ nodes: {
           effects: { capital: 7, hype: 6, compute: 6, safety: -6 },
           next: [
             { if: { flags: { autonomy_stand: true }, minTime: 14 }, goto: 'demis_secret_secession' },
-            { if: { minTime: 12 }, goto: 'demis_late_talent' },
-            { if: { always: true }, goto: 'demis_a1_ship' }
+            { if: { always: true }, goto: 'demis_late_talent' }
           ]
         }
       }
@@ -2330,7 +2352,7 @@ nodes: {
         },
         right: {
           text: 'Grey-market Nvidia. Performance first.',
-          effects: { capital: -6, hype: 5, compute: 8, safety: -8 },
+          effects: { capital: -6, hype: 5, compute: 7, safety: -6 },
           setFlags: { grey_nvidia: true },
           relations: { regulator: -10, partner: -2, staff: 4, rival: 3 },
           tags: ['aggressive'],
@@ -2371,7 +2393,7 @@ nodes: {
         text: 'Digitize our whole supply chain with Zhipu. Huge revenue - but a custom model with strict content and operational guidelines.',
         left: {
           text: 'Accept. Enterprise alignment is our moat.',
-          effects: { capital: 8, hype: 6, compute: 0, safety: 7 },
+          effects: { capital: 7, hype: 6, compute: 0, safety: 7 },
           setFlags: { state_contract: true },
           next: 'zhang_a3_compliance',
           objectiveKeys: ['card_zhang_a2_enterprise']
@@ -2403,7 +2425,7 @@ nodes: {
         ],
         left: {
           text: 'Hard real-time filters immediately.',
-          effects: { capital: -7, hype: -6, compute: -6, safety: 8 },
+          effects: { capital: -7, hype: -6, compute: -6, safety: 7 },
           setFlags: { hard_filters: true },
           next: 'zhang_a3_personal',
           objectiveKeys: ['card_zhang_a3_compliance']
@@ -2500,7 +2522,7 @@ nodes: {
         text: 'Your open sparse-attention work is keynote material. Lean fully into open scholarship and grants - or cash the prestige into product secrecy later.',
         left: {
           text: 'Commit to the Open Scholar path.',
-          effects: { capital: -6, hype: 8, compute: 5, safety: 7 },
+          effects: { capital: -6, hype: 6, compute: 5, safety: 7 },
           specialEnding: 'open_scholar'
         },
         right: {
@@ -2632,7 +2654,7 @@ nodes: {
         text: 'Soft RLHF is failing random policy probes. Install hard filters under the hood - or document exceptions and accept risk.',
         left: {
           text: 'Install hard filters under the hood.',
-          effects: { capital: -2, hype: -2, compute: -2, safety: 8 },
+          effects: { capital: -2, hype: -2, compute: -2, safety: 7 },
           relations: { regulator: 8, public: -1, staff: -2 },
           tags: ['cautious'],
           setFlags: { stealth_hard_filters: true },
@@ -2652,7 +2674,7 @@ nodes: {
         text: 'Because we trust you, they want GLM inside logistics planning for three provinces. Enormous money. Enormous responsibility.',
         left: {
           text: 'Accept staged provincial rollout.',
-          effects: { capital: 8, hype: 4, compute: -2, safety: 3 },
+          effects: { capital: 7, hype: 4, compute: -2, safety: 3 },
           relations: { partner: 10, regulator: 4, public: 2 },
           tags: ['alliance'],
           setFlags: { provincial_rollout: true },
@@ -2675,8 +2697,7 @@ nodes: {
           effects: { capital: -6, hype: 0, compute: 6, safety: 7 },
           next: [
             { if: { flags: { domestic_chips: true, state_contract: true } }, goto: 'zhang_secret_fortress' },
-            { if: { minTime: 10 }, goto: 'zhang_late_city' },
-            { if: { always: true }, goto: 'zhang_a1_chips' }
+            { if: { always: true }, goto: 'zhang_late_city' }
           ]
         },
         right: {
@@ -2685,8 +2706,7 @@ nodes: {
           next: [
             { if: { flags: { global_push: true } }, goto: 'zhang_secret_silk' },
             { if: { flags: { open_sparse: true } }, goto: 'zhang_secret_scholar' },
-            { if: { minTime: 12 }, goto: 'zhang_late_export' },
-            { if: { always: true }, goto: 'zhang_a2_market' }
+            { if: { always: true }, goto: 'zhang_late_export' }
           ]
         }
       }
