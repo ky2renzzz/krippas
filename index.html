@@ -112,12 +112,12 @@
         
         <!-- Welcome Screen — terminal boot sequence feel -->
         <div id="screen-welcome" class="screen active">
-          <div class="brand">
+          <div class="brand animate-reveal">
             <h1>KRIPPAS</h1>
             <p class="subtitle">AI REIGNS PROTOCOL</p>
           </div>
           
-          <div class="intro-art">
+          <div class="intro-art animate-reveal reveal-delay-1">
             <svg viewBox="0 0 100 100" style="width:100%; height:100%;">
               <rect x="0" y="0" width="100" height="100" fill="var(--background)"/>
               <rect x="0" y="0" width="100" height="100" fill="none" stroke="var(--border)" stroke-width="1"/>
@@ -127,23 +127,23 @@
             </svg>
           </div>
 
-          <p class="flavor-text">
+          <p class="flavor-text animate-reveal reveal-delay-2">
             AGI approaches. The race to define human consciousness is in the hands of five emperors. Take the assessment to claim your destiny.
           </p>
           
-          <button id="btn-start-quiz" class="btn btn-filled">START ASSESSMENT</button>
+          <button id="btn-start-quiz" class="btn btn-filled animate-reveal reveal-delay-3">START ASSESSMENT</button>
         </div>
 
         <!-- Quiz Screen — diagnostic mode -->
         <div id="screen-quiz" class="screen">
-          <div class="quiz-progress-bar">
+          <div class="quiz-progress-bar animate-reveal">
             <div class="progress-fill" id="quiz-progress" style="width: 0%;"></div>
           </div>
-          <h3 class="quiz-title">ALIGNMENT</h3>
-          <div class="quiz-question-container">
+          <h3 class="quiz-title animate-reveal reveal-delay-1">ALIGNMENT</h3>
+          <div class="quiz-question-container animate-reveal reveal-delay-2">
             <p id="quiz-question-text"></p>
           </div>
-          <div class="quiz-options">
+          <div class="quiz-options animate-reveal reveal-delay-3">
             <button id="quiz-opt-left" class="btn quiz-btn"></button>
             <button id="quiz-opt-right" class="btn quiz-btn"></button>
           </div>
@@ -151,24 +151,23 @@
 
         <!-- Assignment / Character Reveal Screen -->
         <div id="screen-reveal" class="screen">
-
-          <div class="reveal-portrait-container" id="reveal-portrait">
+          <div class="reveal-portrait-container animate-reveal" id="reveal-portrait">
             <!-- Dynamic character SVG here -->
           </div>
-          <h2 id="reveal-name"></h2>
-          <p id="reveal-role" class="reveal-role-tag"></p>
-          <p id="reveal-description"></p>
-          <button id="btn-start-game" class="btn btn-filled">ENTER PROTOCOL</button>
+          <h2 id="reveal-name" class="animate-reveal reveal-delay-1"></h2>
+          <p id="reveal-role" class="reveal-role-tag animate-reveal reveal-delay-1"></p>
+          <p id="reveal-description" class="animate-reveal reveal-delay-2"></p>
+          <button id="btn-start-game" class="btn btn-filled animate-reveal reveal-delay-3">ENTER PROTOCOL</button>
         </div>
 
         <!-- Gameplay Screen — terminal interaction -->
         <div id="screen-game" class="screen">
-          <div class="dialogue-box">
+          <div class="dialogue-box animate-reveal">
             <div class="dialogue-speaker" id="speaker-name"></div>
             <p id="dialogue-text"></p>
           </div>
 
-          <div class="card-wrapper" id="card-wrapper">
+          <div class="card-wrapper animate-reveal reveal-delay-1" id="card-wrapper">
             <div class="reigns-card" id="main-card">
               <div class="choice-stamp left" id="stamp-left">
                 <span class="stamp-dir">&#9664;</span>
@@ -185,17 +184,17 @@
             </div>
           </div>
 
-          <div class="swipe-hint" id="swipe-hint">&lt; &mdash; &gt;</div>
+          <div class="swipe-hint animate-reveal reveal-delay-2" id="swipe-hint">&lt; &mdash; &gt;</div>
         </div>
 
         <!-- Game Over Screen — system crash -->
         <div id="screen-gameover" class="screen">
-          <h2 class="gameover-title">OFFLINE</h2>
-          <div class="gameover-art" id="gameover-portrait">
+          <h2 class="gameover-title animate-reveal">OFFLINE</h2>
+          <div class="gameover-art animate-reveal reveal-delay-1" id="gameover-portrait">
             <!-- Dead/Shutdown SVG -->
           </div>
-          <p id="gameover-text"></p>
-          <button id="btn-restart" class="btn btn-filled">REBOOT PROTOCOL</button>
+          <p id="gameover-text" class="animate-reveal reveal-delay-2"></p>
+          <button id="btn-restart" class="btn btn-filled animate-reveal reveal-delay-3">REBOOT PROTOCOL</button>
         </div>
 
       </div>
