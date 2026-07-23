@@ -363,10 +363,11 @@ body {
 .screen.active { opacity: 1; pointer-events: auto; }
 
 #screen-game {
-  justify-content: flex-start;
+  justify-content: space-between;
   padding: 10px 14px 6px;
   overflow-x: hidden; overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  gap: 0;
 }
 
 /* -- Welcome Screen --- */
@@ -579,7 +580,7 @@ body {
   padding: 10px 12px;
   border: 1px solid var(--border);
   background: var(--background);
-  margin-bottom: 36px;
+  margin-bottom: 12px;
   flex-shrink: 0;
   transition: background var(--transition-speed) var(--transition-timing);
 }
@@ -611,7 +612,8 @@ body {
   height: var(--card-h);
   cursor: grab; touch-action: none;
   flex-shrink: 0;
-  margin-bottom: 6px;
+  flex-grow: 0;
+  margin-bottom: 0;
 }
 
 .card-wrapper:active { cursor: grabbing; }
@@ -831,13 +833,15 @@ body {
   .stat-svg { width: 12px; height: 12px; }
   .bar-container { width: 12px; height: 20px; }
   .stat-label { font-size: 0.45rem; }
-  #screen-game { padding: 8px 10px 6px; }
-  .dialogue-box { margin-bottom: 20px; padding: 8px 10px; }
-  .dialogue-box p { font-size: 0.72rem; max-height: 68px; }
+  /* Game screen: distribute space evenly between text, card, hint */
+  #screen-game { padding: 8px 10px 4px; justify-content: space-between; }
+  .dialogue-box { margin-bottom: 0; padding: 8px 10px; }
+  .dialogue-box p { font-size: 0.72rem; max-height: 72px; }
   .dialogue-speaker { font-size: 0.5rem; }
-  .card-wrapper { width: min(300px, 90vw); height: clamp(200px, 38vh, 300px); }
-  .swipe-hint { font-size: 0.38rem; }
-  .hud-footer { padding: 6px 10px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+  /* Card fills available vertical space between text and swipe-hint */
+  .card-wrapper { width: min(300px, 90vw); height: clamp(220px, 42vh, 320px); margin: 8px 0; }
+  .swipe-hint { font-size: 0.38rem; margin-bottom: 2px; }
+  .hud-footer { padding: 6px 10px; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
   #hud-player-name { font-size: 0.5rem; }
   #hud-player-role { font-size: 0.45rem; }
   #hud-time-val { font-size: 0.8rem; }
@@ -859,14 +863,19 @@ body {
   .btn { font-size: 0.55rem; padding: 5px 10px; }
 }
 
-/* Small phones */
+/* Small phones (≤420px) */
 @media (max-width: 420px) {
   .stat-indicator { min-height: 52px; padding: 6px 2px 4px; gap: 3px; }
   .bar-container { width: 10px; height: 16px; }
   .brand h1 { font-size: 1.8rem; }
   .intro-art { width: 56px; height: 56px; }
   .flavor-text { font-size: 0.6rem; max-width: 190px; }
-  .card-wrapper { height: clamp(170px, 34vh, 248px); }
+  /* Tighter spacing for small screens */
+  #screen-game { padding: 6px 8px 2px; }
+  .dialogue-box { padding: 7px 9px; }
+  .dialogue-box p { max-height: 64px; font-size: 0.68rem; }
+  .card-wrapper { height: clamp(190px, 40vh, 260px); margin: 6px 0; }
+  .swipe-hint { font-size: 0.35rem; }
 }
 
 /* Landscape phones & small tablets */
