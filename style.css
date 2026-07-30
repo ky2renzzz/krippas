@@ -600,8 +600,7 @@ body {
   font-size: 0.75rem;
   line-height: 1.48;
   color: var(--text-secondary);
-  max-height: 76px;
-  overflow-y: auto;
+  overflow: visible;
   padding-right: 2px;
 }
 
@@ -609,7 +608,7 @@ body {
 .card-wrapper {
   position: relative;
   width: min(var(--card-w), 88vw);
-  height: var(--card-h);
+  min-height: var(--card-h);
   cursor: grab; touch-action: none;
   flex-shrink: 0;
   flex-grow: 0;
@@ -619,7 +618,9 @@ body {
 .card-wrapper:active { cursor: grabbing; }
 
 .reigns-card {
-  position: absolute; inset: 0;
+  position: relative;
+  width: 100%;
+  min-height: var(--card-h);
   background: var(--background);
   border: 1px solid var(--border);
   display: flex; flex-direction: column;
@@ -842,7 +843,7 @@ body {
 
   /* Dialogue box — readable like a real game */
   .dialogue-box { margin-bottom: 0; padding: 12px 14px; }
-  .dialogue-box p { font-size: 1rem; line-height: 1.5; max-height: 96px; }
+  .dialogue-box p { font-size: 1rem; line-height: 1.5; overflow: visible; }
   .dialogue-speaker { font-size: 0.7rem; letter-spacing: 0.06em; margin-bottom: 6px; }
 
   /* Card — takes up the main area */
@@ -899,7 +900,7 @@ body {
 
   #screen-game { padding: 10px 12px 4px; }
   .dialogue-box { padding: 10px 12px; }
-  .dialogue-box p { font-size: 0.9rem; max-height: 88px; }
+  .dialogue-box p { font-size: 0.9rem; overflow: visible; }
   .dialogue-speaker { font-size: 0.62rem; }
   .card-wrapper { height: clamp(240px, 46vh, 340px); margin: 8px 0; }
   .swipe-hint { font-size: 0.52rem; }
@@ -926,7 +927,7 @@ body {
   .stat-label { display: none; }
   .card-wrapper { height: clamp(110px, 44vh, 190px); }
   .dialogue-box { margin-bottom: 0; padding: 6px 10px; }
-  .dialogue-box p { max-height: 36px; font-size: 0.75rem; }
+  .dialogue-box p { overflow: visible; font-size: 0.75rem; }
   .dialogue-speaker { font-size: 0.58rem; }
   .brand h1 { font-size: 1.6rem; }
   .brand .subtitle { font-size: 0.55rem; }
