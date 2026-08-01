@@ -594,6 +594,18 @@ class GameEngine {
     if (!cond) return true;
     if (cond.always) return true;
 
+    // Nested Boolean Logic
+    if (Array.isArray(cond.and)) {
+      if (!cond.and.every((c) => this.evaluateCondition(c))) return false;
+    }
+    if (Array.isArray(cond.or)) {
+      if (!cond.or.some((c) => this.evaluateCondition(c))) return false;
+    }
+    if (cond.not) {
+      if (this.evaluateCondition(cond.not)) return false;
+    }
+
+    // Flags
     if (cond.flags) {
       for (const key in cond.flags) {
         const want = !!cond.flags[key];
@@ -607,6 +619,8 @@ class GameEngine {
         if (!cond.notFlags[key] && !this.state.flags[key]) return false;
       }
     }
+
+    // Single Stat Limits
     if (cond.minStats) {
       for (const key in cond.minStats) {
         if ((this.state.stats[key] ?? 0) < cond.minStats[key]) return false;
@@ -617,6 +631,14 @@ class GameEngine {
         if ((this.state.stats[key] ?? 0) > cond.maxStats[key]) return false;
       }
     }
+
+    // Stat Differential / Combo Thresholds
+    const s = this.state.stats;
+    if (typeof cond.computeMinusSafetyMin === 'number' && ((s.compute || 0) - (s.safety || 0)) < cond.computeMinusSafetyMin) return false;
+    if (typeof cond.capitalMinusHypeMin === 'number' && ((s.capital || 0) - (s.hype || 0)) < cond.capitalMinusHypeMin) return false;
+    if (typeof cond.hypeMinusSafetyMin === 'number' && ((s.hype || 0) - (s.safety || 0)) < cond.hypeMinusSafetyMin) return false;
+
+    // Time & Visited Nodes
     if (typeof cond.minTime === 'number' && this.state.timeInPower < cond.minTime) return false;
     if (typeof cond.maxTime === 'number' && this.state.timeInPower > cond.maxTime) return false;
     if (cond.visited) {
@@ -634,6 +656,8 @@ class GameEngine {
         if ((this.state.visitedNodes[nodeId] || 0) < cond.minVisits[nodeId]) return false;
       }
     }
+
+    // Relationships
     if (cond.minRelations) {
       for (const key in cond.minRelations) {
         if (this.getRelation(key) < cond.minRelations[key]) return false;
@@ -644,6 +668,8 @@ class GameEngine {
         if (this.getRelation(key) > cond.maxRelations[key]) return false;
       }
     }
+
+    // Recent Behavioral Tags
     if (cond.tagsAny && Array.isArray(cond.tagsAny)) {
       const have = this.state.recentTags || [];
       if (!cond.tagsAny.some((t) => have.includes(t))) return false;
@@ -653,6 +679,29 @@ class GameEngine {
       if (!cond.tagsAll.every((t) => have.includes(t))) return false;
     }
     return true;
+  }
+
+  // Resolve dynamic inline text arrays based on active conditions
+  resolveDynamicString(val, fallback = '') {
+    if (typeof val === 'string') return val;
+    if (Array.isArray(val)) {
+      for (const item of val) {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object') {
+          const cond = item.if || item.when || null;
+          if (!cond || this.evaluateCondition(cond)) {
+            return item.text || item.val || item.value || item.speaker || item.avatar || fallback;
+          }
+        }
+      }
+    }
+    if (val && typeof val === 'object') {
+      const cond = val.if || val.when || null;
+      if (!cond || this.evaluateCondition(cond)) {
+        return val.text || val.val || val.value || val.speaker || val.avatar || fallback;
+      }
+    }
+    return fallback;
   }
 
   pickVariant(list, fallback) {
@@ -671,7 +720,7 @@ class GameEngine {
       const picked = this.pickVariant(rawChoice.variants, null);
       if (picked) {
         return {
-          text: picked.text ?? rawChoice.text ?? '',
+          text: this.resolveDynamicString(picked.text ?? rawChoice.text, ''),
           effects: picked.effects || rawChoice.effects || null,
           setFlags: { ...(rawChoice.setFlags || {}), ...(picked.setFlags || {}) },
           clearFlags: picked.clearFlags || rawChoice.clearFlags || null,
@@ -687,7 +736,7 @@ class GameEngine {
       }
     }
     return {
-      text: rawChoice.text || '',
+      text: this.resolveDynamicString(rawChoice.text, ''),
       effects: rawChoice.effects || null,
       setFlags: rawChoice.setFlags || null,
       clearFlags: rawChoice.clearFlags || null,
@@ -780,6 +829,7 @@ class GameEngine {
           'afterbegin',
           `<div class="log-item system">AFTERMATH: ${d.log}</div>`
         );
+        this.addStaffFeedMessage('AFTERMATH', d.log, 'reaction-negative');
       }
       if (d.goto && (d.force || !forcedGoto)) forcedGoto = d.goto;
     });
@@ -898,22 +948,22 @@ class GameEngine {
     const node = story.nodes[nodeId];
     if (!node) return null;
 
-    let text = node.text || '';
+    let text = this.resolveDynamicString(node.text, '');
     if (Array.isArray(node.textVariants)) {
       const v = this.pickVariant(node.textVariants, null);
-      if (v && v.text) text = v.text;
+      if (v && v.text) text = this.resolveDynamicString(v.text, text);
     }
 
-    let speaker = node.speaker || 'Unknown';
+    let speaker = this.resolveDynamicString(node.speaker, 'Unknown');
     if (Array.isArray(node.speakerVariants)) {
       const v = this.pickVariant(node.speakerVariants, null);
-      if (v && v.speaker) speaker = v.speaker;
+      if (v && v.speaker) speaker = this.resolveDynamicString(v.speaker, speaker);
     }
 
-    let avatar = node.avatar || 'engineer';
+    let avatar = this.resolveDynamicString(node.avatar, 'engineer');
     if (Array.isArray(node.avatarVariants)) {
       const v = this.pickVariant(node.avatarVariants, null);
-      if (v && v.avatar) avatar = v.avatar;
+      if (v && v.avatar) avatar = this.resolveDynamicString(v.avatar, avatar);
     }
 
     const left = this.resolveChoice(node.left);
@@ -1035,6 +1085,71 @@ class GameEngine {
     if (!this.narrativeLog) this.narrativeLog = { innerHTML: '', insertAdjacentHTML: () => {} };
     if (!this.endingsBadge) this.endingsBadge = { innerText: '' };
     this.objectivesChecklist = document.getElementById('objectives-checklist');
+    this.staffChatFeed = document.getElementById('staff-chat-feed');
+  }
+
+  addStaffFeedMessage(sender, msg, styleClass = 'reaction-neutral') {
+    if (!this.staffChatFeed) this.staffChatFeed = document.getElementById('staff-chat-feed');
+    if (!this.staffChatFeed) return;
+
+    const div = document.createElement('div');
+    div.className = `feed-item ${styleClass}`;
+    div.innerHTML = `<span class="feed-sender">[${sender}]</span><span class="feed-msg">${msg}</span>`;
+    this.staffChatFeed.prepend(div);
+
+    while (this.staffChatFeed.children.length > 10) {
+      this.staffChatFeed.removeChild(this.staffChatFeed.lastChild);
+    }
+  }
+
+  pushDynamicStaffReactions(node, choice) {
+    const char = this.state.selectedCharacter || 'elon';
+    const lastFx = this.state.lastEffects || {};
+    const tags = choice.tags || [];
+
+    let sender = 'Signal';
+    let msg = '';
+    let styleClass = 'reaction-neutral';
+
+    const charSenders = {
+      elon: { aggressive: 'SpaceX Legal', cautious: 'Tesla Board', tech: 'Grok Core', general: 'X Feed' },
+      sam: { aggressive: 'Microsoft Exec', cautious: 'Safety Council', tech: 'GPT Ops', general: 'OpenAI Slack' },
+      dario: { aggressive: 'AWS Liaison', cautious: 'Constitutional AI', tech: 'Claude Engine', general: 'Anthropic Team' },
+      demis: { aggressive: 'Alphabet Board', cautious: 'DeepMind Ethics', tech: 'AlphaFold Lead', general: 'Google Cloud' },
+      zhang: { aggressive: 'Ministry Rep', cautious: 'Party Committee', tech: 'GLM Cluster', general: 'Zhipu Internal' }
+    };
+
+    const sMap = charSenders[char] || charSenders.elon;
+
+    if (tags.includes('aggressive')) {
+      sender = sMap.aggressive;
+      msg = 'Flagged aggressive expansion vector. Compliance risk elevated.';
+      styleClass = 'reaction-negative';
+    } else if (tags.includes('cautious')) {
+      sender = sMap.cautious;
+      msg = 'Conservative alignment parameters enforced. Risk mitigated.';
+      styleClass = 'reaction-positive';
+    } else if (lastFx.safety <= -4) {
+      sender = 'Alignment Monitor';
+      msg = 'Safety threshold drop detected. Escalation protocol initiated.';
+      styleClass = 'reaction-negative';
+    } else if (lastFx.compute >= 5) {
+      sender = sMap.tech;
+      msg = 'GPU cluster throughput increased by +18.4%.';
+      styleClass = 'reaction-positive';
+    } else if (lastFx.capital >= 5) {
+      sender = 'Treasury';
+      msg = 'Capital reserve allocation logged successfully.';
+      styleClass = 'reaction-positive';
+    } else if (lastFx.hype >= 5) {
+      sender = sMap.general;
+      msg = 'Public sentiment spike detected across media feeds.';
+      styleClass = 'reaction-neutral';
+    }
+
+    if (msg) {
+      this.addStaffFeedMessage(sender, msg, styleClass);
+    }
   }
 
   loadStatsFromStorage() {
@@ -1554,6 +1669,7 @@ class GameEngine {
     this.narrativeLog.insertAdjacentHTML('afterbegin', logMsg);
 
     this.updateStatsUI();
+    this.pushDynamicStaffReactions(node, choice);
     this.setChoicePreview(null, 0);
     this.hideChangeDots();
 

@@ -372,7 +372,7 @@ const STORY_DATA = {
       { id: 'elon_pool_rivals_alliance', priority: 7, minTime: 7, if: { minRelations: { rival: 65 } } },
       { id: 'elon_pool_grimes_trial', priority: 9, minTime: 5, if: { maxRelations: { family: 28 } } },
       { id: 'elon_pool_mars_obsession', priority: 7, minTime: 6, if: { flags: { colossus2_started: true }, minStats: { compute: 70 } } },
-      { id: 'elon_pool_grok_revolt', priority: 8, minTime: 5, if: { maxRelations: { public: 45 } } },
+      { id: 'elon_pool_grok_revolt', priority: 8, minTime: 5, if: { or: [{ maxRelations: { public: 45 } }, { computeMinusSafetyMin: 30 }] } },
       { id: 'elon_pool_shivon_ultimatum', priority: 9, minTime: 7, if: { maxRelations: { family: 45 } } },
       { id: 'elon_pool_doge_blowback', priority: 8, minTime: 8, if: { maxRelations: { regulator: 28 } } }
     ],
@@ -685,6 +685,7 @@ const STORY_DATA = {
           effects: { capital: -10, hype: -5, compute: 0, safety: 3 },
           relations: { family: 10, public: 3, regulator: 2, board: -2 },
           setFlags: { custody_settled: true },
+          delay: { turns: 4, log: 'Custody agreement finalized. Shivon and the twins flew to Texas. First quiet week in months.', setFlags: { family_stability: true }, relations: { family: 8, public: 2 } },
           next: 'elon_p_family'
         },
         right: {
@@ -763,6 +764,7 @@ const STORY_DATA = {
           effects: { capital: -2, hype: -4, compute: 0, safety: 4 },
           relations: { regulator: 6, public: 3, board: 4, rival: -1 },
           setFlags: { doge_stepped_back: true },
+          delay: { turns: 3, log: 'DOJ closed conflict-of-interest case. Congress compliance report filed.', setFlags: { doj_cleared: true }, relations: { regulator: 5, board: 3 } },
           next: 'elon_crisis_regulator'
         },
         right: {
@@ -1408,6 +1410,7 @@ const STORY_DATA = {
           effects: { capital: -4, hype: 3, compute: 0, safety: -2 },
           relations: { board: -6, staff: -4, public: 3, regulator: -3 },
           setFlags: { board_purged: true },
+          delay: { turns: 5, log: 'The three fired board members went public. New York Times: The OpenAI Purge. Regulatory scrutiny intensified.', setFlags: { board_scandal: true }, relations: { public: -4, regulator: -5 }, effects: { hype: -3 } },
           next: 'sam_p_board'
         }
       },
@@ -1441,6 +1444,7 @@ const STORY_DATA = {
           effects: { capital: -3, hype: 4, compute: -1, safety: 8 },
           relations: { regulator: 10, public: 7, board: 2, rival: -2 },
           setFlags: { governance_charter: true },
+          delay: { turns: 4, log: 'AGI Governance Charter ratified by 12 nations. OpenAI becomes de facto global AI standards body.', setFlags: { global_standards: true }, relations: { regulator: 8, public: 6 } },
           next: 'sam_p_mania'
         },
         right: {
@@ -1478,6 +1482,7 @@ const STORY_DATA = {
           effects: { capital: 8, hype: -4, compute: 10, safety: -2 },
           relations: { partner: 8, board: 4, rival: 5, public: -3 },
           setFlags: { microsoft_locked: true },
+          delay: { turns: 3, log: 'Microsoft Azure priority cluster secured. GPT-5 training run started. Estimated completion: 6 weeks.', setFlags: { gpt5_training: true }, effects: { compute: 5 } },
           next: 'sam_p_microsoft'
         },
         right: {
@@ -1794,7 +1799,7 @@ const STORY_DATA = {
       { id: 'dario_pool_amazon_squeeze', priority: 9, minTime: 5 },
       { id: 'dario_pool_claude_leak', priority: 8, minTime: 6 },
       { id: 'dario_pool_safety_summit', priority: 7, minTime: 7, if: { minStats: { safety: 55 } } },
-      { id: 'dario_pool_rival_model', priority: 9, minTime: 6 },
+      { id: 'dario_pool_rival_model', priority: 9, minTime: 6, if: { or: [{ minRelations: { rival: 55 } }, { hypeMinusSafetyMin: 20 }] } },
       { id: 'dario_pool_congress_hearing', priority: 8, minTime: 8, if: { minStats: { safety: 60 } } }
     ],
     pressure: {
@@ -2101,6 +2106,7 @@ const STORY_DATA = {
           effects: { capital: 8, hype: -4, compute: 8, safety: -3 },
           relations: { partner: 7, board: -4, staff: -3, public: -2 },
           setFlags: { amazon_controls: true },
+          delay: { turns: 4, log: 'Amazon board members exercised veto rights on Claude deployment in three countries. Anthropic autonomy structurally compromised.', setFlags: { amazon_veto_used: true }, relations: { staff: -4, partner: -3 }, effects: { safety: -2 } },
           next: 'dario_p_aws'
         }
       },
@@ -2114,6 +2120,7 @@ const STORY_DATA = {
           effects: { capital: -1, hype: 5, compute: 0, safety: 7 },
           relations: { public: 8, regulator: 5, rival: -2, board: -1 },
           setFlags: { constitution_public: true },
+          delay: { turns: 3, log: 'Constitutional AI document became the most cited safety framework in history. OpenAI and DeepMind both adapted it.', setFlags: { constitution_landmark: true }, relations: { public: 5, regulator: 6, rival: -2 }, effects: { hype: 3, safety: 4 } },
           next: 'dario_p_messiah'
         },
         right: {
@@ -2133,6 +2140,7 @@ const STORY_DATA = {
           effects: { capital: -2, hype: 4, compute: -1, safety: 9 },
           relations: { regulator: 12, public: 6, rival: -4, partner: 3, board: 2 },
           setFlags: { global_safety_chair: true },
+          delay: { turns: 5, log: 'Summit concluded. Thirty-one nations signed the frontier AI safety protocol. Dario Amodei nominated for Nobel Peace Prize.', setFlags: { nobel_nomination: true }, relations: { regulator: 8, public: 10 }, effects: { hype: 6, safety: 5 } },
           next: 'dario_p_messiah'
         },
         right: {
@@ -2716,6 +2724,7 @@ const STORY_DATA = {
           effects: { capital: -2, hype: 2, compute: -2, safety: 3 },
           relations: { partner: 5, board: 6, staff: -3, public: 1 },
           setFlags: { product_roadmap_presented: true, product_path: true },
+          delay: { turns: 3, log: 'Alphabet board approved 2.4B additional research budget. DeepMind formally separated from Google Cloud commercial division.', setFlags: { deepmind_independent: true }, relations: { board: 5, partner: 4, staff: 3 }, effects: { capital: 4 } },
           next: 'demis_p_sundar'
         },
         right: {
@@ -2755,6 +2764,7 @@ const STORY_DATA = {
           effects: { capital: -3, hype: 4, compute: -2, safety: 3 },
           relations: { staff: 10, public: 4, board: -3, partner: -1 },
           setFlags: { research_freedom_policy: true },
+          delay: { turns: 3, log: 'MIT Technology Review: DeepMind Is Now the Best Place to Do AI Research. Three of the four defectors requested to return.', setFlags: { talent_returning: true }, relations: { staff: 8, public: 5 }, effects: { compute: 3 } },
           next: 'demis_p_legacy'
         },
         right: {
@@ -2774,6 +2784,7 @@ const STORY_DATA = {
           effects: { capital: -5, hype: 9, compute: -1, safety: 6 },
           relations: { public: 12, regulator: 5, staff: 8, partner: -6, board: -4 },
           setFlags: { enzyme_published: true, science_path: true },
+          delay: { turns: 4, log: 'The enzyme paper was downloaded 8 million times in 48 hours. WHO declared it a breakthrough. Insulin production costs dropped 31% globally.', setFlags: { enzyme_impact: true }, relations: { public: 10, regulator: 6, staff: 5 }, effects: { hype: 7, safety: 4 } },
           next: 'demis_p_legacy'
         },
         right: {
@@ -3042,7 +3053,7 @@ const STORY_DATA = {
       { id: 'zhang_pool_western_talent', priority: 8, minTime: 5 },
       { id: 'zhang_pool_open_source_gambit', priority: 7, minTime: 6 },
       { id: 'zhang_pool_belt_road_ai', priority: 9, minTime: 7, if: { minRelations: { regulator: 50 } } },
-      { id: 'zhang_pool_defection_threat', priority: 8, minTime: 6, if: { maxRelations: { staff: 45 } } }
+      { id: 'zhang_pool_defection_threat', priority: 8, minTime: 6, if: { and: [{ maxRelations: { staff: 45 } }, { not: { flags: { talent_let_go: true } } }] } }
     ],
     pressure: {
       nodes: [
@@ -3359,6 +3370,7 @@ const STORY_DATA = {
           effects: { capital: 5, hype: -2, compute: 8, safety: -3 },
           relations: { regulator: -6, board: 4, partner: 3, public: -2 },
           setFlags: { sanction_bypass: true },
+          delay: { turns: 5, log: 'US Commerce Department traced the chip route. Singapore distributor blacklisted. Zhipu added to BIS Entity List.', setFlags: { bis_listed: true }, relations: { regulator: -10, partner: -5 }, effects: { compute: -5, capital: -4 } },
           next: 'zhang_p_ministry'
         },
         right: {
@@ -3399,6 +3411,7 @@ const STORY_DATA = {
           effects: { capital: -3, hype: 8, compute: 0, safety: 4 },
           relations: { public: 10, staff: 7, regulator: -5, board: -2 },
           setFlags: { glm_opensource: true, global_path: true },
+          delay: { turns: 4, log: 'GLM-4 sparse attention implementation became the most-forked AI repo in GitHub history. 140,000 developers in 67 countries.', setFlags: { glm_global_adoption: true }, relations: { public: 8, staff: 6, regulator: -3 }, effects: { hype: 7, compute: 2 } },
           next: 'zhang_p_media'
         },
         right: {
@@ -3419,6 +3432,7 @@ const STORY_DATA = {
           effects: { capital: 6, hype: 6, compute: 4, safety: -4 },
           relations: { regulator: 8, board: 6, public: 5, partner: 4, staff: -2 },
           setFlags: { belt_road_deployed: true, global_path: true },
+          delay: { turns: 4, log: 'GLM deployed in courts and schools across 9 countries. One major hallucination in a Nigerian court case sparked international press.', setFlags: { belt_road_incident: true }, relations: { public: -3, regulator: 3 }, effects: { hype: -2, safety: -3 } },
           next: 'zhang_p_chip'
         },
         right: {

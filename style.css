@@ -934,3 +934,84 @@ body {
   .intro-art { width: 48px; height: 48px; }
   .btn { font-size: 0.58rem; padding: 5px 10px; }
 }
+
+/* ── Live Protocol Feed & Side Panel Extensions ── */
+.panel-section-title {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-bottom: 3px;
+}
+
+.panel-section-title.feed-title {
+  margin-top: 16px;
+}
+
+.staff-chat-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  line-height: 1.3;
+  padding-right: 4px;
+}
+
+.staff-chat-feed::-webkit-scrollbar {
+  width: 3px;
+}
+.staff-chat-feed::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.feed-item {
+  padding: 5px 7px;
+  border-left: 2px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0 4px 4px 0;
+  animation: feedFadeIn 0.3s ease-out forwards;
+}
+
+.feed-item.system-init {
+  border-left-color: #666;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.feed-item.reaction-positive {
+  border-left-color: #10b981;
+}
+
+.feed-item.reaction-negative {
+  border-left-color: #ef4444;
+}
+
+.feed-item.reaction-neutral {
+  border-left-color: #3b82f6;
+}
+
+.feed-sender {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-right: 5px;
+  font-size: 0.52rem;
+  letter-spacing: 0.03em;
+}
+
+.feed-msg {
+  color: var(--text-secondary);
+}
+
+@keyframes feedFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
