@@ -939,6 +939,33 @@ class GameEngine {
     }
   }
 
+  // ─── Pool system: pick a contextual scene from the character's pool ───
+  pickPoolNode() {
+    const story = this.getStory();
+    if (!story || !story.pool || !Array.isArray(story.pool)) return null;
+
+    const s = this.state;
+    const visited = s.visitedNodes || {};
+    const t = s.timeInPower || 0;
+
+    // Filter: not yet visited, minTime passed, condition met
+    const eligible = story.pool.filter(entry => {
+      if (!entry || !entry.id) return false;
+      if (visited[entry.id]) return false; // already shown
+      if (entry.minTime && t < entry.minTime) return false;
+      if (entry.if && !this.evaluateCondition(entry.if)) return false;
+      if (!story.nodes || !story.nodes[entry.id]) return false; // node must exist
+      return true;
+    });
+
+    if (eligible.length === 0) return null;
+
+    // Sort by priority descending, pick from top-3 with some randomness
+    eligible.sort((a, b) => (b.priority || 5) - (a.priority || 5));
+    const topN = eligible.slice(0, Math.min(3, eligible.length));
+    return topN[Math.floor(Math.random() * topN.length)].id;
+  }
+
   resolveNextTarget(nextSpec) {
     const story = this.getStory();
     if (!nextSpec) return story ? story.start : null;
@@ -1549,9 +1576,28 @@ class GameEngine {
     } else {
       const pressure = this.pickWorldPressureNode();
       if (pressure && story.nodes[pressure]) {
+        // World pressure events always take priority
         this.state.currentCardNode = pressure;
       } else {
-        this.state.currentCardNode = this.resolveNextTarget(choice.next) || story.start;
+        // If choice explicitly specifies a next node, respect it
+        const explicitNext = choice.next ? this.resolveNextTarget(choice.next) : null;
+        if (explicitNext && story.nodes[explicitNext]) {
+          // Check pool occasionally even with explicit next (30% chance)
+          const poolNode = this.pickPoolNode();
+          if (poolNode && Math.random() < 0.30) {
+            this.state.currentCardNode = poolNode;
+          } else {
+            this.state.currentCardNode = explicitNext;
+          }
+        } else {
+          // No explicit next — always try pool first
+          const poolNode = this.pickPoolNode();
+          if (poolNode) {
+            this.state.currentCardNode = poolNode;
+          } else {
+            this.state.currentCardNode = explicitNext || story.start;
+          }
+        }
       }
     }
 

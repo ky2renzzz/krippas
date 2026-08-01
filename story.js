@@ -366,6 +366,26 @@ const STORY_DATA = {
 
   elon: {
     start: 'elon_a1_identity',
+    pool: [
+      { id: 'elon_pool_board_coup', priority: 9, minTime: 6, if: { maxRelations: { board: 35 } } },
+      { id: 'elon_pool_empire_summit', priority: 8, minTime: 8, if: { flags: { full_empire: true }, minStats: { compute: 75 } } },
+      { id: 'elon_pool_rivals_alliance', priority: 7, minTime: 7, if: { minRelations: { rival: 65 } } },
+      { id: 'elon_pool_grimes_trial', priority: 9, minTime: 5, if: { maxRelations: { family: 28 } } },
+      { id: 'elon_pool_mars_obsession', priority: 7, minTime: 6, if: { flags: { colossus2_started: true }, minStats: { compute: 70 } } },
+      { id: 'elon_pool_grok_revolt', priority: 8, minTime: 5, if: { maxRelations: { public: 45 } } },
+      { id: 'elon_pool_shivon_ultimatum', priority: 9, minTime: 7, if: { maxRelations: { family: 45 } } },
+      { id: 'elon_pool_doge_blowback', priority: 8, minTime: 8, if: { maxRelations: { regulator: 28 } } }
+    ],
+    pool: [
+      { id: 'elon_pool_board_coup', priority: 9, minTime: 6, if: { maxRelations: { board: 35 } } },
+      { id: 'elon_pool_empire_summit', priority: 8, minTime: 8, if: { flags: { full_empire: true }, minStats: { compute: 75 } } },
+      { id: 'elon_pool_rivals_alliance', priority: 7, minTime: 7 },
+      { id: 'elon_pool_grimes_trial', priority: 9, minTime: 5, if: { maxRelations: { family: 28 } } },
+      { id: 'elon_pool_mars_obsession', priority: 7, minTime: 6 },
+      { id: 'elon_pool_grok_revolt', priority: 8, minTime: 5 },
+      { id: 'elon_pool_shivon_ultimatum', priority: 9, minTime: 7, if: { maxRelations: { family: 45 } } },
+      { id: 'elon_pool_doge_blowback', priority: 8, minTime: 8 }
+    ],
     pressure: {
       nodes: [
         { once: true, minTime: 4, if: { maxRelations: { family: 40 } }, goto: 'elon_p_family' },
@@ -536,7 +556,13 @@ const STORY_DATA = {
           setFlags: { full_empire: true },
           relations: { board: 8, staff: -5, public: 4, partner: 6, family: -8, regulator: -5, rival: 6 },
           tags: ['aggressive'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'Maybe it should. Maybe I have built enough.',
@@ -544,7 +570,13 @@ const STORY_DATA = {
           setFlags: { enough_path: true },
           relations: { board: -4, staff: 4, public: 3, partner: -3, family: 8, regulator: 3, rival: -4 },
           tags: ['cautious'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         }
       },
 
@@ -561,7 +593,13 @@ const STORY_DATA = {
           setFlags: { family_first: true, redemption_arc: true },
           relations: { family: 10, board: -5, staff: 3, public: 6, partner: -3, regulator: 4, rival: -3 },
           tags: ['cautious'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'I tried the human path. It was a mistake. Full empire mode. Now.',
@@ -569,40 +607,170 @@ const STORY_DATA = {
           setFlags: { return_to_empire: true },
           relations: { family: -8, board: 7, staff: -3, public: 2, partner: 5, regulator: -3, rival: 5 },
           tags: ['aggressive'],
-          next: 'elon_loop_hub'
-        }
-      },
-
-      elon_loop_hub: {
-        speaker: 'Chief of Staff',
-        avatar: 'friend',
-        textVariants: [
-          { if: { flags: { redemption_arc: true, family_first: true } }, text: 'Another quarter. The family path. The board grumbles, but the children know your face. Shivon says you are different now. Are you?' },
-          { if: { flags: { full_empire: true } }, text: 'Another quarter. The empire path. Colossus 2 hums. Grok dominates. But the house is empty. Even Shivon has stopped waiting up.' },
-          { if: { flags: { enough_path: true } }, text: 'Another quarter. You said "enough." The world did not end. But every day you wonder: could I have built more?' },
-          { if: { always: true }, text: 'Another quarter. SpaceXAI is the most powerful AI company on Earth. But power is not happiness. Power is just power.' }
-        ],
-        left: {
-          text: 'Push the frontier. Compute, Grok, Starship, Mars.',
-          effects: { capital: -5, hype: 5, compute: 7, safety: -4 },
           next: [
             { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
             { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
-            { if: { flags: { cursor_integrated: true, tesla_fight: true }, maxRelations: { staff: 30 } }, goto: 'elon_crisis_burnout' },
-            { if: { minTime: 14 }, goto: 'elon_crisis_regulator' },
-            { if: { always: true }, goto: 'elon_crisis_regulator' }
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
           ]
+        }
+      },
+
+      // POOL NODES
+      elon_pool_board_coup: {
+        speaker: 'Tesla Board Chair',
+        avatar: 'board',
+        text: 'Elon. Three board members met privately with SpaceX investors. The word succession was used. You are seen as too distracted to run any single company.',
+        left: {
+          text: 'Call a shareholder vote. Let them decide publicly.',
+          effects: { capital: -4, hype: 5, compute: 0, safety: -2 },
+          relations: { board: -5, public: 7, staff: 3, partner: -2 },
+          setFlags: { board_confronted: true },
+          next: 'elon_p_walkout'
         },
         right: {
-          text: 'Invest in people. Family, team, reputation.',
-          effects: { capital: 2, hype: -2, compute: -3, safety: 6 },
-          next: [
-            { if: { flags: { redemption_arc: true, family_first: true }, minStats: { safety: 50 }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
-            { if: { flags: { enough_path: true }, minRelations: { staff: 55 } }, goto: 'elon_secret_father' },
-            { if: { flags: { human_path: true, cursor_independent: true }, maxRelations: { regulator: 35 } }, goto: 'elon_crisis_regulator' },
-            { if: { minTime: 14, maxRelations: { family: 35 } }, goto: 'elon_crisis_family' },
-            { if: { always: true }, goto: 'elon_crisis_family' }
-          ]
+          text: 'Replace the dissenters quietly. Loyalty is the price of a seat.',
+          effects: { capital: -3, hype: -2, compute: 0, safety: -1 },
+          relations: { board: -8, staff: -3, public: -2, regulator: -3 },
+          setFlags: { board_purged: true },
+          next: 'elon_p_sec'
+        }
+      },
+
+      elon_pool_empire_summit: {
+        speaker: 'State Department Official',
+        avatar: 'politician',
+        text: 'Elon. Eleven heads of state want to negotiate AI governance at your Texas facility. You have become a sovereign actor. Governments are coming to you.',
+        left: {
+          text: 'Host them. I set the terms.',
+          effects: { capital: 3, hype: 8, compute: 2, safety: -3 },
+          relations: { public: 6, regulator: -4, rival: 5, partner: 4, board: 3 },
+          setFlags: { sovereign_summit: true },
+          next: 'elon_p_dario'
+        },
+        right: {
+          text: 'Decline. Governments should solve their own problems.',
+          effects: { capital: 0, hype: -4, compute: 1, safety: 4 },
+          relations: { public: -2, regulator: 5, rival: -2, staff: 3 },
+          next: 'elon_p_mania'
+        }
+      },
+
+      elon_pool_rivals_alliance: {
+        speaker: 'Financial Times',
+        avatar: 'regulator',
+        text: 'Elon. Dario and Demis announced a joint safety foundation. Invited everyone except xAI. The headline: A Wall Against Musk.',
+        left: {
+          text: 'Launch Grok Open Safety. Bigger and louder.',
+          effects: { capital: -4, hype: 7, compute: 0, safety: 4 },
+          relations: { rival: -3, public: 5, regulator: 4, staff: 3 },
+          setFlags: { counter_safety_initiative: true },
+          next: 'elon_p_dario'
+        },
+        right: {
+          text: 'Tweet: Safety coalitions are monopoly plays. And move on.',
+          effects: { capital: 1, hype: 5, compute: 1, safety: -4 },
+          relations: { rival: -6, public: 4, regulator: -5, staff: 1 },
+          next: 'elon_p_sec'
+        }
+      },
+
+      elon_pool_grimes_trial: {
+        speaker: 'Family Attorney',
+        avatar: 'friend',
+        text: 'Elon. Grimes subpoenaed your X posts and SpaceXAI communications for the custody trial. Twelve children, four mothers, one deposition. The judge set a date.',
+        left: {
+          text: 'Settle. Whatever it costs. Keep it private.',
+          effects: { capital: -10, hype: -5, compute: 0, safety: 3 },
+          relations: { family: 10, public: 3, regulator: 2, board: -2 },
+          setFlags: { custody_settled: true },
+          next: 'elon_p_family'
+        },
+        right: {
+          text: 'Fight in court. I have nothing to hide.',
+          effects: { capital: -4, hype: -6, compute: 0, safety: -3 },
+          relations: { family: -8, public: -6, regulator: -4, board: -3 },
+          setFlags: { custody_trial: true },
+          next: 'elon_crisis_family'
+        }
+      },
+
+      elon_pool_mars_obsession: {
+        speaker: 'Chief Engineer',
+        avatar: 'engineer',
+        text: 'Elon. You have not attended a single Earth board meeting in six weeks. You live at the Texas launch site. Engineers say you only talk about propellant ratios.',
+        left: {
+          text: 'Appoint a COO. Let the company run while I focus on Starship.',
+          effects: { capital: -2, hype: -3, compute: -1, safety: 2 },
+          relations: { staff: 5, board: 4, family: 3, public: -2 },
+          setFlags: { coo_appointed: true },
+          next: 'elon_p_walkout'
+        },
+        right: {
+          text: 'Mars is the mission. Everything else is maintenance.',
+          effects: { capital: 2, hype: 4, compute: 3, safety: -5 },
+          relations: { staff: -6, board: -5, family: -4, public: 3 },
+          next: 'elon_p_mania'
+        }
+      },
+
+      elon_pool_grok_revolt: {
+        speaker: 'Head of Trust and Safety',
+        avatar: 'engineer',
+        text: 'Elon. Grok generated targeted harassment about a senator. Two advertisers pulled out. EU opened a DSA case. Staff threatening to walk.',
+        left: {
+          text: 'Suspend Grok for 48 hours. Full audit.',
+          effects: { capital: -3, hype: -5, compute: 0, safety: 8 },
+          relations: { public: 4, regulator: 8, staff: 5, board: -2, rival: -2 },
+          setFlags: { grok_suspended: true },
+          next: 'elon_crisis_regulator'
+        },
+        right: {
+          text: 'Free speech is not negotiable. We defend Grok.',
+          effects: { capital: -2, hype: 6, compute: 0, safety: -8 },
+          relations: { public: 3, regulator: -10, staff: -6, board: -3, rival: 4 },
+          next: 'elon_p_sec'
+        }
+      },
+
+      elon_pool_shivon_ultimatum: {
+        speaker: 'Shivon Zilis',
+        avatar: 'friend',
+        text: 'Elon. I need to know what we are. The twins ask where you are every night. Not asking for marriage. Just presence. If you cannot give that, I need to know now.',
+        left: {
+          text: 'Clear my schedule for a month. They come first.',
+          effects: { capital: -3, hype: -4, compute: -2, safety: 5 },
+          relations: { family: 14, staff: 3, board: -3, public: 2 },
+          setFlags: { shivon_priority: true },
+          next: 'elon_p_mania'
+        },
+        right: {
+          text: 'I love you all. But I cannot stop. The mission is everything.',
+          effects: { capital: 2, hype: 1, compute: 3, safety: -3 },
+          relations: { family: -10, public: -2, staff: 1, board: 2 },
+          setFlags: { shivon_leaving: true },
+          next: 'elon_crisis_family'
+        }
+      },
+
+      elon_pool_doge_blowback: {
+        speaker: 'Chief Legal Counsel',
+        avatar: 'board',
+        text: 'Elon. Your DOGE work deleted 14,000 federal AI contracts. Congress called it sabotage. DOJ opened a conflict-of-interest case. Your AI work and federal policy are legally entangled.',
+        left: {
+          text: 'Step back from DOGE. SpaceXAI cannot afford this.',
+          effects: { capital: -2, hype: -4, compute: 0, safety: 4 },
+          relations: { regulator: 6, public: 3, board: 4, rival: -1 },
+          setFlags: { doge_stepped_back: true },
+          next: 'elon_crisis_regulator'
+        },
+        right: {
+          text: 'DOGE is right. Federal AI bloat is a security risk.',
+          effects: { capital: 1, hype: 5, compute: 0, safety: -5 },
+          relations: { regulator: -10, public: 4, board: -3, rival: 3 },
+          setFlags: { doge_defended: true },
+          next: 'elon_p_sec'
         }
       },
 
@@ -677,14 +845,26 @@ const STORY_DATA = {
           effects: { capital: -3, hype: -4, compute: -2, safety: 5 },
           relations: { staff: 8, family: 6, board: -3, public: 3 },
           setFlags: { health_intervention: true },
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'I am fine. This is what peak performance looks like.',
           effects: { capital: 2, hype: 2, compute: 4, safety: -8 },
           relations: { staff: -8, family: -4, board: 2, public: -2 },
           delay: { turns: 2, log: 'You collapse during a board meeting. Hospitalized for three days. The stock drops 12%.', effects: { capital: -6, hype: -5 }, relations: { board: -4, public: -4 } },
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         }
       },
 
@@ -697,14 +877,26 @@ const STORY_DATA = {
           effects: { capital: -14, hype: -6, compute: 0, safety: 5 },
           relations: { regulator: 10, board: 3, public: 2, partner: 4 },
           setFlags: { settled_all: true },
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'Fight every case. Set precedent. I will not be intimidated.',
           effects: { capital: -8, hype: 6, compute: -2, safety: -4 },
           relations: { regulator: -12, board: -2, public: 5, partner: -3, rival: 4 },
           setFlags: { endless_lawsuits: true },
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         }
       },
 
@@ -717,7 +909,13 @@ const STORY_DATA = {
           effects: { capital: -2, hype: -5, compute: -2, safety: 4 },
           relations: { family: 14, public: 5, staff: 2, board: -3 },
           setFlags: { family_retreat: true },
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'I fund their lives. That is my contribution. The mission cannot stop.',
@@ -725,7 +923,13 @@ const STORY_DATA = {
           relations: { family: -14, public: -4, staff: 2, board: 4 },
           setFlags: { abandoned_family: true },
           delay: { turns: 2, log: 'Shivon leaves. Takes the twins. Grimes wins custody. The house is silent.', effects: { capital: 0, hype: -3 }, relations: { family: -6, public: -3 } },
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         }
       },
 
@@ -739,14 +943,26 @@ const STORY_DATA = {
           effects: { capital: 0, hype: -2, compute: -1, safety: 2 },
           relations: { family: 8, public: 3, staff: 1 },
           tags: ['cautious'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'I am building their future. They will understand when they are older.',
           effects: { capital: 1, hype: 2, compute: 1, safety: -2 },
           relations: { family: -6, public: -2, staff: -1 },
           tags: ['aggressive'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         }
       },
 
@@ -759,14 +975,26 @@ const STORY_DATA = {
           effects: { capital: -4, hype: -5, compute: 0, safety: 3 },
           relations: { regulator: 8, board: 2, public: -3, partner: 4 },
           tags: ['cautious'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'Tweet: "The SEC is a weapon of the deep state. I will see them in court."',
           effects: { capital: -2, hype: 6, compute: 0, safety: -4 },
           relations: { regulator: -10, board: -2, public: 6, partner: -4 },
           tags: ['aggressive'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         }
       },
 
@@ -779,7 +1007,13 @@ const STORY_DATA = {
           effects: { capital: -1, hype: 2, compute: 1, safety: 4 },
           relations: { staff: 10, public: 4, family: 2 },
           tags: ['cautious', 'alliance'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'If they want to leave, leave. I do not negotiate with ultimatums.',
@@ -787,7 +1021,13 @@ const STORY_DATA = {
           relations: { staff: -12, public: -4, partner: -2, board: 3 },
           tags: ['aggressive'],
           delay: { turns: 2, log: 'Twenty-seven engineers resign. Training stalls for six weeks.', effects: { compute: -5, hype: -3 } },
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         }
       },
 
@@ -800,14 +1040,26 @@ const STORY_DATA = {
           effects: { capital: 0, hype: 4, compute: 2, safety: -3 },
           relations: { rival: -4, public: 3, staff: 2, partner: -1 },
           tags: ['aggressive'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'Reach out to him privately. "You are right about some things. Let us talk."',
           effects: { capital: 0, hype: -3, compute: -1, safety: 5 },
           relations: { rival: 6, public: -2, staff: 2, partner: 3, regulator: 2 },
           tags: ['cautious', 'alliance'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         }
       },
 
@@ -821,14 +1073,26 @@ const STORY_DATA = {
           relations: { partner: 8, staff: 6, public: 7, board: -4 },
           tags: ['cautious'],
           setFlags: { cursor_opensource: true },
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'Cursors value is proprietary. We close it down. Full SpaceXAI integration.',
           effects: { capital: 3, hype: -5, compute: 3, safety: -2 },
           relations: { partner: -8, staff: -6, public: -7, board: 4 },
           tags: ['aggressive'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         }
       },
 
@@ -841,7 +1105,13 @@ const STORY_DATA = {
           effects: { capital: -1, hype: -6, compute: 1, safety: 6 },
           relations: { public: -3, family: 5, board: 3, regulator: 3, staff: 2 },
           tags: ['cautious'],
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         },
         right: {
           text: 'The people need me. I am the voice. I cannot go silent now.',
@@ -849,13 +1119,26 @@ const STORY_DATA = {
           relations: { public: 8, family: -5, board: -3, regulator: -5, staff: -2 },
           tags: ['aggressive'],
           delay: { turns: 2, log: 'A tweet goes viral. SEC opens a new investigation. Grimes submits it as evidence.', effects: { hype: 2, capital: -4 }, relations: { regulator: -3, family: -3 } },
-          next: 'elon_loop_hub'
+          next: [
+            { if: { flags: { full_empire: true, colossus2_started: true }, minRelations: { rival: 60 } }, goto: 'elon_secret_energy_king' },
+            { if: { flags: { builder_path: true }, minStats: { compute: 70 }, minRelations: { partner: 55 } }, goto: 'elon_secret_mars' },
+            { if: { flags: { redemption_arc: true }, minRelations: { family: 55 } }, goto: 'elon_secret_father' },
+            { if: { flags: { family_first: true }, minRelations: { family: 60 } }, goto: 'elon_secret_father' },
+            { if: { always: true }, goto: 'elon_p_sec' }
+          ]
         }
       }
     }
   },
   sam: {
     start: 'sam_a1_identity',
+    pool: [
+      { id: 'sam_pool_board_coup', priority: 9, minTime: 5, if: { maxRelations: { board: 38 } } },
+      { id: 'sam_pool_apple_tension', priority: 8, minTime: 6 },
+      { id: 'sam_pool_governance_crisis', priority: 9, minTime: 7, if: { maxRelations: { regulator: 35 } } },
+      { id: 'sam_pool_rival_summit', priority: 7, minTime: 6 },
+      { id: 'sam_pool_compute_crisis', priority: 10, minTime: 5, if: { maxStats: { compute: 35 } } }
+    ],
     pressure: {
       nodes: [
         { once: true, minTime: 4, if: { maxRelations: { family: 40 } }, goto: 'sam_p_oliver' },
@@ -1025,7 +1308,11 @@ const STORY_DATA = {
           setFlags: { full_send: true },
           relations: { board: 8, staff: -4, public: 6, partner: 7, family: -5, regulator: -4, rival: 6 },
           tags: ['aggressive'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'Maybe there is still time to be human. Call Oliver.',
@@ -1033,7 +1320,11 @@ const STORY_DATA = {
           setFlags: { reach_back: true },
           relations: { board: -3, staff: 3, public: 2, partner: -2, family: 6, regulator: 2, rival: -3 },
           tags: ['cautious'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
@@ -1047,7 +1338,11 @@ const STORY_DATA = {
           setFlags: { cannot_stop: true },
           relations: { board: 3, staff: -3, public: 1, family: -2, partner: 2 },
           tags: ['aggressive'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'Help me. I cannot do this alone anymore.',
@@ -1055,7 +1350,11 @@ const STORY_DATA = {
           setFlags: { seeking_help: true, redemption_arc: true },
           relations: { board: -2, staff: 5, public: 4, family: 4, partner: -1, regulator: 3 },
           tags: ['cautious'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
@@ -1072,7 +1371,11 @@ const STORY_DATA = {
           setFlags: { sustainable_path: true },
           relations: { family: 6, board: 3, staff: 4, public: 3, partner: 2, regulator: 3, rival: -1 },
           tags: ['cautious'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'You are right. I am managing decline. I miss the edge.',
@@ -1080,38 +1383,109 @@ const STORY_DATA = {
           setFlags: { return_to_edge: true },
           relations: { family: -4, board: 4, staff: -2, public: 2, partner: 3, regulator: -2, rival: 3 },
           tags: ['aggressive'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
-      sam_loop_hub: {
-        speaker: 'Chief of Staff',
-        avatar: 'friend',
-        textVariants: [
-          { if: { flags: { full_send: true } }, text: 'Another quarter. GPT-5 dominates. The IPO minted billionaires. But the safety team is drafting a public letter. And Oliver has not returned your calls in six weeks.' },
-          { if: { flags: { seeking_help: true, redemption_arc: true } }, text: 'Another quarter. You are in therapy. Oliver came back — cautiously. The board is skeptical of "the new Sam." But you feel, for the first time, like a person, not a product.' },
-          { if: { flags: { sustainable_path: true } }, text: 'Another quarter. The balance holds. Not thrilling, but real. Oliver smiles more. The team is stable. Is this what winning actually looks like?' },
-          { if: { always: true }, text: 'Another quarter. OpenAI is the most consequential company on Earth. But consequence is not happiness. Consequence is just weight.' }
-        ],
+      // POOL NODES
+      sam_pool_board_coup: {
+        speaker: 'Board Chair',
+        avatar: 'board',
+        text: 'Sam. Three board members met without you. The word removal was used. They say you are building a sovereign tech state, not a company.',
         left: {
-          text: 'Push the frontier. Ship, scale, dominate.',
-          effects: { capital: 4, hype: 6, compute: 5, safety: -5 },
-          next: [
-            { if: { flags: { full_send: true, singularity_declared: true }, minStats: { hype: 70 }, minRelations: { partner: 60 } }, goto: 'sam_secret_singularity' },
-            { if: { flags: { build_path: true, ms_deep_partner: true }, maxRelations: { staff: 30 } }, goto: 'sam_crisis_exodus' },
-            { if: { minTime: 14, minRelations: { rival: 65 } }, goto: 'sam_crisis_anthropic' },
-            { if: { always: true }, goto: 'sam_crisis_anthropic' }
-          ]
+          text: 'Call each of them personally. Show vulnerability.',
+          effects: { capital: -2, hype: -3, compute: -1, safety: 3 },
+          relations: { board: 9, staff: 4, partner: 2, public: -1 },
+          setFlags: { board_crisis_resolved: true },
+          next: 'sam_p_exodus'
         },
         right: {
-          text: 'Invest in people. Safety. Oliver. The team.',
-          effects: { capital: -2, hype: -3, compute: -2, safety: 7 },
-          next: [
-            { if: { flags: { seeking_help: true, oliver_promise: true }, minStats: { safety: 55 }, minRelations: { family: 60 } }, goto: 'sam_secret_perpetual' },
-            { if: { flags: { human_path: true, ms_independent: true }, minRelations: { staff: 55 } }, goto: 'sam_secret_perpetual' },
-            { if: { minTime: 14, maxRelations: { family: 30 } }, goto: 'sam_crisis_oliver' },
-            { if: { always: true }, goto: 'sam_crisis_oliver' }
-          ]
+          text: 'Replace the three dissidents before they act.',
+          effects: { capital: -4, hype: 3, compute: 0, safety: -2 },
+          relations: { board: -6, staff: -4, public: 3, regulator: -3 },
+          setFlags: { board_purged: true },
+          next: 'sam_p_board'
+        }
+      },
+
+      sam_pool_apple_tension: {
+        speaker: 'Apple Executive',
+        avatar: 'partner',
+        text: 'Sam. Cook is reconsidering the GPT deal. He wants a quieter, Apple-aligned AI. Less OpenAI politics, more aesthetics. What do we offer him?',
+        left: {
+          text: 'Offer a private Apple model. Closed and curated.',
+          effects: { capital: 6, hype: -4, compute: 3, safety: 2 },
+          relations: { partner: 10, board: 4, public: -3, staff: 2 },
+          setFlags: { apple_deal_private: true },
+          next: 'sam_p_microsoft'
+        },
+        right: {
+          text: 'OpenAI cannot become an Apple product. We walk if needed.',
+          effects: { capital: -6, hype: 5, compute: -2, safety: 0 },
+          relations: { partner: -8, public: 6, board: -3, staff: 3 },
+          setFlags: { apple_refused: true },
+          next: 'sam_p_dario'
+        }
+      },
+
+      sam_pool_governance_crisis: {
+        speaker: 'OpenAI Legal',
+        avatar: 'board',
+        text: 'Sam. The nonprofit structure is under DOJ review. Congress asks: who controls OpenAI if AGI arrives? The answer cannot be Sam Altman. We need a governance document.',
+        left: {
+          text: 'I will write a public AGI governance charter. Transparent.',
+          effects: { capital: -3, hype: 4, compute: -1, safety: 8 },
+          relations: { regulator: 10, public: 7, board: 2, rival: -2 },
+          setFlags: { governance_charter: true },
+          next: 'sam_p_mania'
+        },
+        right: {
+          text: 'Governance slows us down. We address it when needed.',
+          effects: { capital: 2, hype: -3, compute: 2, safety: -6 },
+          relations: { regulator: -8, public: -5, board: -2, rival: 3 },
+          next: 'sam_p_board'
+        }
+      },
+
+      sam_pool_rival_summit: {
+        speaker: 'Elon Musk (text message)',
+        avatar: 'rival',
+        text: 'Sam. Elon is holding a closed AI safety summit and did not invite you. Anthropic, DeepMind, and Zhipu all accepted. Ignoring looks weak. Crashing looks desperate.',
+        left: {
+          text: 'Publish our own AGI safety framework the same day.',
+          effects: { capital: -2, hype: 7, compute: 0, safety: 4 },
+          relations: { rival: -5, public: 6, regulator: 3, board: 2 },
+          next: 'sam_p_dario'
+        },
+        right: {
+          text: 'Send a congratulatory message. Play the long game.',
+          effects: { capital: 0, hype: -2, compute: 1, safety: 2 },
+          relations: { rival: 4, public: -1, regulator: 2, staff: 3 },
+          next: 'sam_p_exodus'
+        }
+      },
+
+      sam_pool_compute_crisis: {
+        speaker: 'CTO',
+        avatar: 'engineer',
+        text: 'Sam. Three months from exhausting the compute budget for GPT-5. Microsoft wants to renegotiate exclusivity. Without a deal, training stalls.',
+        left: {
+          text: 'Give Microsoft more exclusivity. Lock in compute now.',
+          effects: { capital: 8, hype: -4, compute: 10, safety: -2 },
+          relations: { partner: 8, board: 4, rival: 5, public: -3 },
+          setFlags: { microsoft_locked: true },
+          next: 'sam_p_microsoft'
+        },
+        right: {
+          text: 'Diversify. Strike deals with Oracle, Google, and Amazon in parallel.',
+          effects: { capital: -5, hype: 3, compute: 4, safety: 0 },
+          relations: { partner: -3, board: -2, rival: -2, public: 4 },
+          setFlags: { compute_diversified: true },
+          next: 'sam_p_oliver'
         }
       },
 
@@ -1166,7 +1540,11 @@ const STORY_DATA = {
           effects: { capital: -4, hype: -6, compute: -2, safety: 7 },
           relations: { staff: 8, public: 5, regulator: 4, board: -3, partner: -2 },
           setFlags: { safety_audit: true },
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'They signed NDAs. Enforce them. The IPO cannot be derailed.',
@@ -1174,7 +1552,11 @@ const STORY_DATA = {
           relations: { staff: -10, public: -6, regulator: -5, board: 3, partner: -3 },
           setFlags: { safety_suppressed: true },
           delay: { turns: 2, log: 'The letter leaks anyway. Congress opens an investigation. IPO delayed.', effects: { capital: -5, hype: -4 }, relations: { regulator: -4, public: -3 } },
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
@@ -1187,14 +1569,22 @@ const STORY_DATA = {
           effects: { capital: 3, hype: 6, compute: 4, safety: -7 },
           relations: { board: 5, staff: -4, public: 4, partner: 3, regulator: -5, rival: -3 },
           tags: ['aggressive'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'Publish our safety benchmarks. Show the work. Win on trust, not speed.',
           effects: { capital: -2, hype: -3, compute: -1, safety: 6 },
           relations: { board: -2, staff: 5, public: 6, partner: 1, regulator: 5, rival: 2 },
           tags: ['cautious'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
@@ -1207,7 +1597,11 @@ const STORY_DATA = {
           effects: { capital: -3, hype: -6, compute: -2, safety: 3 },
           relations: { family: 12, public: 4, staff: 2, board: -4 },
           setFlags: { chose_oliver: true },
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'I cannot. There is a board meeting in twenty minutes.',
@@ -1215,7 +1609,11 @@ const STORY_DATA = {
           relations: { family: -14, board: 4, staff: 1, public: -3 },
           setFlags: { lost_oliver: true },
           delay: { turns: 2, log: 'Oliver files for divorce. The news breaks during the IPO roadshow.', effects: { hype: -5, capital: -2 }, relations: { public: -4, family: -6 } },
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
@@ -1229,14 +1627,22 @@ const STORY_DATA = {
           effects: { capital: 0, hype: -2, compute: -1, safety: 2 },
           relations: { family: 8, public: 1, staff: 2 },
           tags: ['cautious'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'Joy is a distraction. I have a company to run.',
           effects: { capital: 1, hype: 2, compute: 2, safety: -2 },
           relations: { family: -8, board: 1, staff: -1, public: -2 },
           tags: ['aggressive'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
@@ -1249,14 +1655,22 @@ const STORY_DATA = {
           effects: { capital: -3, hype: -3, compute: -1, safety: 7 },
           relations: { staff: 10, public: 4, regulator: 3, board: -3 },
           tags: ['cautious'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'The timeline is fixed. If you cannot handle pressure, OpenAI is not for you.',
           effects: { capital: 2, hype: 2, compute: 3, safety: -6 },
           relations: { staff: -10, board: 3, public: -3, partner: -1 },
           tags: ['aggressive'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
@@ -1269,14 +1683,22 @@ const STORY_DATA = {
           effects: { capital: 1, hype: 5, compute: 1, safety: -3 },
           relations: { rival: -6, public: 5, board: 2, partner: 1, regulator: -3 },
           tags: ['aggressive'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'Call him. "You are not wrong about everything. Let us find common ground on testing standards."',
           effects: { capital: -1, hype: -2, compute: 0, safety: 5 },
           relations: { rival: 5, public: -1, board: -1, partner: 2, regulator: 3 },
           tags: ['cautious', 'alliance'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
@@ -1289,14 +1711,22 @@ const STORY_DATA = {
           effects: { capital: 3, hype: 1, compute: 3, safety: -2 },
           relations: { partner: 8, board: 4, staff: -2, public: 1 },
           tags: ['alliance'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'No joint statement. OpenAI is independent. Microsoft is a partner, not an owner.',
           effects: { capital: -2, hype: 4, compute: -2, safety: 4 },
           relations: { partner: -6, board: -2, staff: 5, public: 4, regulator: 2 },
           tags: ['cautious'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
@@ -1309,14 +1739,22 @@ const STORY_DATA = {
           effects: { capital: -4, hype: -6, compute: -2, safety: 5 },
           relations: { board: 6, staff: 5, public: 3, family: 6, partner: -2 },
           setFlags: { took_leave: true },
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'Try to remove me. I built this company. The team is loyal to me, not the board.',
           effects: { capital: 1, hype: 4, compute: 1, safety: -3 },
           relations: { board: -8, staff: 2, public: 5, partner: -1, family: -3 },
           tags: ['aggressive'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       },
 
@@ -1329,7 +1767,11 @@ const STORY_DATA = {
           effects: { capital: -1, hype: -6, compute: 0, safety: 5 },
           relations: { family: 6, public: -2, board: 1, staff: 3, regulator: 2 },
           tags: ['cautious'],
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         },
         right: {
           text: 'Mania is momentum. The world needs to hear this. I need to be the voice.',
@@ -1337,13 +1779,24 @@ const STORY_DATA = {
           relations: { family: -5, public: 8, board: -2, staff: -3, regulator: -4 },
           tags: ['aggressive'],
           delay: { turns: 2, log: 'An interview clip goes viral out of context. SEC opens market manipulation inquiry.', effects: { hype: 2, capital: -3 }, relations: { regulator: -4, public: -2 } },
-          next: 'sam_loop_hub'
+          next: [
+            { if: { flags: { singularity_declared: true }, minStats: { compute: 75 }, minRelations: { public: 60 } }, goto: 'sam_secret_singularity' },
+            { if: { flags: { humanity_path: true }, minStats: { safety: 60 }, minRelations: { partner: 55 } }, goto: 'sam_secret_institution' },
+            { if: { always: true }, goto: 'sam_p_oliver' }
+          ]
         }
       }
     }
   },
   dario: {
     start: 'dario_a1_identity',
+    pool: [
+      { id: 'dario_pool_amazon_squeeze', priority: 9, minTime: 5 },
+      { id: 'dario_pool_claude_leak', priority: 8, minTime: 6 },
+      { id: 'dario_pool_safety_summit', priority: 7, minTime: 7, if: { minStats: { safety: 55 } } },
+      { id: 'dario_pool_rival_model', priority: 9, minTime: 6 },
+      { id: 'dario_pool_congress_hearing', priority: 8, minTime: 8, if: { minStats: { safety: 60 } } }
+    ],
     pressure: {
       nodes: [
         { once: true, minTime: 4, if: { maxRelations: { family: 45 } }, goto: 'dario_p_daniela' },
@@ -1510,7 +1963,11 @@ const STORY_DATA = {
           setFlags: { principled_winner: true },
           relations: { family: 7, board: 3, staff: 6, public: 5, regulator: 4, partner: 0, rival: -1 },
           tags: ['cautious'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'Honestly? I worry every day. But that worry is what keeps us honest.',
@@ -1518,7 +1975,11 @@ const STORY_DATA = {
           setFlags: { honest_worry: true },
           relations: { family: 6, board: 2, staff: 5, public: 4, regulator: 3, partner: 1, rival: 0 },
           tags: ['cautious'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         }
       },
 
@@ -1532,7 +1993,11 @@ const STORY_DATA = {
           setFlags: { full_empire: true },
           relations: { board: 8, staff: -6, public: 3, partner: 6, family: -6, regulator: -4, rival: 5 },
           tags: ['aggressive'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'Call Daniela. I need to fix this before it is too late.',
@@ -1540,7 +2005,11 @@ const STORY_DATA = {
           setFlags: { repair_attempt: true },
           relations: { family: 6, board: -2, staff: 4, public: 2, partner: -1, regulator: 2, rival: -2 },
           tags: ['cautious'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         }
       },
 
@@ -1554,7 +2023,11 @@ const STORY_DATA = {
           setFlags: { wisdom_path: true },
           relations: { family: 5, board: 4, staff: 5, public: 4, regulator: 3, partner: 3, rival: 0 },
           tags: ['cautious'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'You are right. I have been coasting. It is time to choose a side.',
@@ -1562,37 +2035,10 @@ const STORY_DATA = {
           setFlags: { choose_side: true },
           relations: { family: -3, board: 4, staff: -2, public: 1, partner: 3, regulator: -1, rival: 2 },
           tags: ['aggressive'],
-          next: 'dario_loop_hub'
-        }
-      },
-
-      dario_loop_hub: {
-        speaker: 'Chief of Staff',
-        avatar: 'friend',
-        textVariants: [
-          { if: { flags: { principled_winner: true, daniela_aligned: true } }, text: 'Another quarter. The safety-first bet is paying. Revenue is up. The team believes. Daniela smiles in board meetings. You proved that principles and profits can coexist. But the world keeps testing that hypothesis.' },
-          { if: { flags: { full_empire: true } }, text: 'Another quarter. The empire grows. But Daniela has stopped coming to your office. The safety team communicates through lawyers. You won every battle. The silence is deafening.' },
-          { if: { flags: { wisdom_path: true } }, text: 'Another quarter. The contradictions hold. Not elegant, but real. Daniela says you have found your footing. The board has learned to live with ambiguity. Is this what maturity looks like?' },
-          { if: { always: true }, text: 'Another quarter. Anthropic is the most principled AI company on Earth. But principle is not a destination. It is a daily choice.' }
-        ],
-        left: {
-          text: 'Hold the line. Safety, constitutional limits, principles.',
-          effects: { capital: -2, hype: 2, compute: -1, safety: 5 },
           next: [
-            { if: { flags: { principled_winner: true, daniela_aligned: true, pentagon_terms: true }, minStats: { safety: 60 }, minRelations: { family: 60 } }, goto: 'dario_secret_safety_throne' },
-            { if: { flags: { safety_path: true, pentagon_refused: true }, minStats: { safety: 55 } }, goto: 'dario_secret_safety_throne' },
-            { if: { minTime: 14, maxRelations: { staff: 35 } }, goto: 'dario_crisis_walkout' },
-            { if: { always: true }, goto: 'dario_crisis_walkout' }
-          ]
-        },
-        right: {
-          text: 'Adapt. The world changes. So must we.',
-          effects: { capital: 3, hype: 2, compute: 3, safety: -3 },
-          next: [
-            { if: { flags: { scale_path: true, pentagon_terms: true }, minStats: { capital: 65 } }, goto: 'dario_secret_general' },
-            { if: { flags: { science_embraced: true, balanced_pitch: true }, minRelations: { partner: 55 } }, goto: 'dario_secret_general' },
-            { if: { minTime: 14, maxRelations: { regulator: 35 } }, goto: 'dario_crisis_pentagon' },
-            { if: { always: true }, goto: 'dario_crisis_pentagon' }
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
           ]
         }
       },
@@ -1638,7 +2084,105 @@ const STORY_DATA = {
         }
       },
 
-      // CRISIS NODES
+      // CRISIS NODES      // DARIO POOL NODES
+      dario_pool_amazon_squeeze: {
+        speaker: 'Amazon AWS Executive',
+        avatar: 'partner',
+        text: 'Dario. Amazon invested four billion but now wants board seats and deployment rights. They are becoming a controller. What do we tell Bezos?',
+        left: {
+          text: 'Negotiate hard. We keep the weights, they get the API.',
+          effects: { capital: -3, hype: 2, compute: 4, safety: 2 },
+          relations: { partner: -5, board: 3, staff: 4, regulator: 2 },
+          setFlags: { amazon_limited: true },
+          next: 'dario_p_google'
+        },
+        right: {
+          text: 'Grant the board seats. We need their compute more than independence.',
+          effects: { capital: 8, hype: -4, compute: 8, safety: -3 },
+          relations: { partner: 7, board: -4, staff: -3, public: -2 },
+          setFlags: { amazon_controls: true },
+          next: 'dario_p_aws'
+        }
+      },
+
+      dario_pool_claude_leak: {
+        speaker: 'Head of Security',
+        avatar: 'engineer',
+        text: 'Dario. A Claude system prompt leaked on Reddit. Critics say Constitutional AI rules are inconsistent. Supporters say we are the only lab with real rules.',
+        left: {
+          text: 'Publish the full Constitutional AI document now.',
+          effects: { capital: -1, hype: 5, compute: 0, safety: 7 },
+          relations: { public: 8, regulator: 5, rival: -2, board: -1 },
+          setFlags: { constitution_public: true },
+          next: 'dario_p_messiah'
+        },
+        right: {
+          text: 'Say nothing. The leak is incomplete. Let it die.',
+          effects: { capital: 1, hype: -4, compute: 1, safety: -5 },
+          relations: { public: -6, regulator: -3, staff: 2, board: 2 },
+          next: 'dario_p_aws'
+        }
+      },
+
+      dario_pool_safety_summit: {
+        speaker: 'UK AI Safety Institute',
+        avatar: 'regulator',
+        text: 'Dario. The UK government wants Anthropic to co-chair the global AI safety summit. You help write the standards every rival must follow — but it invites scrutiny of Claude.',
+        left: {
+          text: 'Accept. We help write the rules.',
+          effects: { capital: -2, hype: 4, compute: -1, safety: 9 },
+          relations: { regulator: 12, public: 6, rival: -4, partner: 3, board: 2 },
+          setFlags: { global_safety_chair: true },
+          next: 'dario_p_messiah'
+        },
+        right: {
+          text: 'Decline. We are a research lab, not a regulator.',
+          effects: { capital: 0, hype: -3, compute: 2, safety: 2 },
+          relations: { regulator: -4, public: -2, staff: 3, rival: 2 },
+          next: 'dario_p_google'
+        }
+      },
+
+      dario_pool_rival_model: {
+        speaker: 'Research Lead',
+        avatar: 'engineer',
+        text: 'Dario. GPT-5 benchmarks leaked. It beats Claude 4 on safety metrics. OpenAI markets it as the safest model ever. Our core differentiator is under attack.',
+        left: {
+          text: 'Accelerate Claude 4.5. Ship in eight weeks, not six months.',
+          effects: { capital: -6, hype: 5, compute: 6, safety: -4 },
+          relations: { staff: -5, board: 3, rival: 3, public: 4 },
+          setFlags: { claude_rushed: true },
+          next: 'dario_p_aws'
+        },
+        right: {
+          text: 'Publish a methodology paper. Our process is deeper.',
+          effects: { capital: -2, hype: 2, compute: -1, safety: 8 },
+          relations: { staff: 5, regulator: 6, public: 3, rival: -2 },
+          setFlags: { safety_paper_published: true },
+          next: 'dario_p_google'
+        }
+      },
+
+      dario_pool_congress_hearing: {
+        speaker: 'Chief of Staff',
+        avatar: 'board',
+        text: 'Dario. Senate Intelligence wants you to testify about frontier AI risk — specifically deceptive alignment. The highest-profile AI hearing in history.',
+        left: {
+          text: 'Testify fully. The world needs to hear this.',
+          effects: { capital: -2, hype: 8, compute: 0, safety: 6 },
+          relations: { regulator: 12, public: 9, rival: -2, board: -2 },
+          setFlags: { congress_testimony: true },
+          next: 'dario_p_messiah'
+        },
+        right: {
+          text: 'Send a written statement only. Hearings can be weaponized.',
+          effects: { capital: 0, hype: -4, compute: 0, safety: 2 },
+          relations: { regulator: -3, public: -4, staff: 2, board: 3 },
+          next: 'dario_p_aws'
+        }
+      },
+
+
       dario_crisis_walkout: {
         speaker: 'Constitutional Team Lead',
         avatar: 'scientist',
@@ -1648,7 +2192,11 @@ const STORY_DATA = {
           effects: { capital: -4, hype: -3, compute: -1, safety: 7 },
           relations: { staff: 10, public: 6, regulator: 4, board: -3, family: 4 },
           setFlags: { charter_reaffirmed: true },
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'They are free to leave. The mission is bigger than any four hundred employees.',
@@ -1656,7 +2204,11 @@ const STORY_DATA = {
           relations: { staff: -12, board: 3, public: -6, partner: 2, family: -5 },
           setFlags: { staff_purged: true },
           delay: { turns: 2, log: 'Two hundred resign. The rest stay but morale collapses. A whistleblower goes to the Times.', effects: { hype: -5, safety: -2 }, relations: { public: -4, staff: -3 } },
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         }
       },
 
@@ -1669,14 +2221,22 @@ const STORY_DATA = {
           effects: { capital: -2, hype: 5, compute: 0, safety: 4 },
           relations: { regulator: 3, public: 6, staff: 4, board: -1, partner: -1 },
           setFlags: { dario_testified: true },
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'Send Daniela. She is better at this. I will stay focused on the product.',
           effects: { capital: 1, hype: -3, compute: 2, safety: -1 },
           relations: { regulator: -3, public: -3, staff: -2, board: 2, family: 3 },
           setFlags: { daniela_testified: true },
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         }
       },
 
@@ -1690,14 +2250,22 @@ const STORY_DATA = {
           effects: { capital: 1, hype: 1, compute: 0, safety: 2 },
           relations: { family: 8, staff: 4, board: 3, public: 1 },
           tags: ['cautious', 'alliance'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'My thinking IS the work. Someone has to ask what we are building and why.',
           effects: { capital: -1, hype: 2, compute: 0, safety: 3 },
           relations: { family: -6, staff: -2, board: -1, public: 2, regulator: 1 },
           tags: ['cautious'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         }
       },
 
@@ -1710,14 +2278,22 @@ const STORY_DATA = {
           effects: { capital: -3, hype: -2, compute: -1, safety: 5 },
           relations: { staff: 8, family: 2, public: 3, board: -2 },
           tags: ['cautious'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'I cannot give you that. The world will not wait. I am sorry.',
           effects: { capital: 2, hype: 1, compute: 2, safety: -5 },
           relations: { staff: -8, board: 2, public: -3, family: -3 },
           tags: ['aggressive'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         }
       },
 
@@ -1730,14 +2306,22 @@ const STORY_DATA = {
           effects: { capital: 1, hype: -2, compute: 0, safety: 2 },
           relations: { rival: -1, board: 2, public: 1, staff: 2 },
           tags: ['cautious'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'Tweet back: "Safety is not fear. It is the reason Anthropic exists. Come to the IPO roadshow and ask your questions in person."',
           effects: { capital: -1, hype: 4, compute: 0, safety: 2 },
           relations: { rival: -4, board: 0, public: 4, staff: 1 },
           tags: ['aggressive'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         }
       },
 
@@ -1750,14 +2334,22 @@ const STORY_DATA = {
           effects: { capital: -2, hype: 4, compute: 0, safety: 4 },
           relations: { regulator: -3, board: -2, staff: 5, public: 6, partner: -2 },
           tags: ['aggressive'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'Engage quietly. Send Daniela to meet with the NSC off the record.',
           effects: { capital: 3, hype: -3, compute: 0, safety: 1 },
           relations: { regulator: 4, board: 3, staff: -2, public: -3, family: 3 },
           tags: ['cautious'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         }
       },
 
@@ -1770,14 +2362,22 @@ const STORY_DATA = {
           effects: { capital: -5, hype: 3, compute: -2, safety: 6 },
           relations: { partner: -6, staff: 5, public: 4, board: -3, regulator: 3 },
           tags: ['cautious'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'Negotiate a limited business exceptions framework. We can be principled and pragmatic.',
           effects: { capital: 4, hype: -2, compute: 1, safety: -3 },
           relations: { partner: 6, board: 4, staff: -3, public: -1, regulator: -2 },
           tags: ['aggressive'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         }
       },
 
@@ -1790,7 +2390,11 @@ const STORY_DATA = {
           effects: { capital: -1, hype: -3, compute: 0, safety: 4 },
           relations: { public: -1, family: 5, staff: 3, board: 1 },
           tags: ['cautious'],
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         },
         right: {
           text: 'If they need a conscience, I will be that. Someone has to.',
@@ -1798,13 +2402,24 @@ const STORY_DATA = {
           relations: { public: 8, family: -1, board: 2, partner: -1 },
           tags: ['aggressive'],
           delay: { turns: 2, log: 'The 60 Minutes interview airs. Your words become a movement. And a target.', effects: { hype: 4, capital: 0 }, relations: { public: 5, regulator: -2 } },
-          next: 'dario_loop_hub'
+          next: [
+            { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
+            { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
+            { if: { always: true }, goto: 'dario_p_amanda' }
+          ]
         }
       }
     }
   },
   demis: {
     start: 'demis_a1_identity',
+    pool: [
+      { id: 'demis_pool_alphabet_audit', priority: 9, minTime: 5, if: { maxRelations: { partner: 45 } } },
+      { id: 'demis_pool_gemini_failure', priority: 8, minTime: 5, if: { maxStats: { hype: 40 } } },
+      { id: 'demis_pool_researcher_exodus', priority: 9, minTime: 6, if: { maxRelations: { staff: 38 } } },
+      { id: 'demis_pool_science_breakthrough', priority: 7, minTime: 7, if: { minStats: { compute: 65 } } },
+      { id: 'demis_pool_merger_offer', priority: 8, minTime: 8 }
+    ],
     pressure: {
       nodes: [
         { once: true, minTime: 4, if: { maxRelations: { family: 40 } }, goto: 'demis_p_teresa' },
@@ -1970,7 +2585,11 @@ const STORY_DATA = {
           setFlags: { full_empire: true },
           relations: { board: 7, staff: -3, public: 1, partner: 5, family: -3, regulator: -2, rival: 3 },
           tags: ['aggressive'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'Maybe it is time to start publishing again. The scientist is still in here somewhere.',
@@ -1978,7 +2597,11 @@ const STORY_DATA = {
           setFlags: { return_to_science: true },
           relations: { board: -3, staff: 5, public: 5, partner: -1, family: 3, regulator: 2, rival: 0 },
           tags: ['cautious'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         }
       },
 
@@ -1992,7 +2615,11 @@ const STORY_DATA = {
           setFlags: { cambridge_path: true },
           relations: { board: -10, staff: 4, public: 8, partner: -5, family: 7, regulator: 4, rival: -1 },
           tags: ['cautious'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'I cannot leave. DeepMind is my creation. I have to finish what I started.',
@@ -2000,7 +2627,11 @@ const STORY_DATA = {
           setFlags: { stay_deepmind: true },
           relations: { board: 3, staff: -2, public: -2, partner: 2, family: -3, regulator: 0, rival: 1 },
           tags: ['aggressive'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         }
       },
 
@@ -2014,7 +2645,11 @@ const STORY_DATA = {
           setFlags: { balance_path: true },
           relations: { board: 4, staff: 5, public: 4, partner: 3, family: 5, regulator: 3, rival: 1 },
           tags: ['cautious'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'You are right. I have been coasting. The world does not reward balance — it rewards conviction.',
@@ -2022,37 +2657,10 @@ const STORY_DATA = {
           setFlags: { choose_conviction: true },
           relations: { board: 3, staff: -2, public: 1, partner: 3, family: -2, regulator: -1, rival: 2 },
           tags: ['aggressive'],
-          next: 'demis_loop_hub'
-        }
-      },
-
-      demis_loop_hub: {
-        speaker: 'Chief Scientist Office',
-        avatar: 'scientist',
-        textVariants: [
-          { if: { flags: { full_empire: true } }, text: 'Another quarter. Gemini revenue climbs. The board is happy. But your chess board is covered in dust. Teresa stopped asking about your day. You won the business and lost the game.' },
-          { if: { flags: { cambridge_path: true } }, text: 'Another quarter. Cambridge is everything you hoped. No shareholders. No ads. Just science. Teresa smiles again. The chess board is set up. But sometimes you wonder: did you abandon the people who believed in you at DeepMind?' },
-          { if: { flags: { balance_path: true } }, text: 'Another quarter. The balance holds. Gemini ships. Papers publish. Teresa is here. The chess board is mid-game. Is this sustainable, or are you one crisis from collapse?' },
-          { if: { always: true }, text: 'Another quarter. DeepMind is the most decorated AI lab on Earth. But decoration is not direction. What are you building toward?' }
-        ],
-        left: {
-          text: 'Push the frontier. Compute, scale, products.',
-          effects: { capital: 4, hype: 3, compute: 5, safety: -3 },
           next: [
-            { if: { flags: { full_empire: true, gemini_ads: true }, minStats: { capital: 70 }, minRelations: { board: 60 } }, goto: 'demis_secret_gemini' },
-            { if: { flags: { empire_path: true, isomorphic_commercial: true }, minRelations: { partner: 60 } }, goto: 'demis_secret_gemini' },
-            { if: { minTime: 14, maxRelations: { staff: 35 } }, goto: 'demis_crisis_exodus' },
-            { if: { always: true }, goto: 'demis_crisis_exodus' }
-          ]
-        },
-        right: {
-          text: 'Invest in science. Papers, people, principles.',
-          effects: { capital: -3, hype: 4, compute: -2, safety: 6 },
-          next: [
-            { if: { flags: { cambridge_path: true, science_first: true }, minStats: { safety: 65 } }, goto: 'demis_secret_nobel' },
-            { if: { flags: { alphafold_opensource: true, isomorphic_open: true }, minRelations: { public: 60 } }, goto: 'demis_secret_nobel' },
-            { if: { minTime: 14, maxRelations: { board: 25 } }, goto: 'demis_crisis_sundar' },
-            { if: { always: true }, goto: 'demis_crisis_sundar' }
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
           ]
         }
       },
@@ -2098,7 +2706,106 @@ const STORY_DATA = {
         }
       },
 
-      // CRISIS NODES
+      // CRISIS NODES      // DEMIS POOL NODES
+      demis_pool_alphabet_audit: {
+        speaker: 'Sundar Pichai',
+        avatar: 'sundar',
+        text: 'Demis. Alphabet board wants a full audit of DeepMind research. Too many projects with no commercial path. Three months to show ROI on every team.',
+        left: {
+          text: 'Present a science-to-product roadmap.',
+          effects: { capital: -2, hype: 2, compute: -2, safety: 3 },
+          relations: { partner: 5, board: 6, staff: -3, public: 1 },
+          setFlags: { product_roadmap_presented: true, product_path: true },
+          next: 'demis_p_sundar'
+        },
+        right: {
+          text: 'Refuse the audit. Research cannot be measured by quarters.',
+          effects: { capital: -4, hype: 4, compute: 3, safety: 2 },
+          relations: { partner: -8, board: -6, staff: 8, rival: 2 },
+          setFlags: { alphabet_standoff: true, science_path: true },
+          next: 'demis_p_reputation'
+        }
+      },
+
+      demis_pool_gemini_failure: {
+        speaker: 'Product Lead',
+        avatar: 'engineer',
+        text: 'Demis. Gemini 2 underperformed and a journalist caught it hallucinating a court case. Google leadership wants a personal apology from you.',
+        left: {
+          text: 'Apologize publicly. Own it. Explain the fix.',
+          effects: { capital: -2, hype: -4, compute: 0, safety: 5 },
+          relations: { public: 3, regulator: 4, board: -2, staff: 3 },
+          setFlags: { gemini_apology: true },
+          next: 'demis_p_sundar'
+        },
+        right: {
+          text: 'Deflect to benchmarks. Science takes time.',
+          effects: { capital: 0, hype: -6, compute: 1, safety: 1 },
+          relations: { public: -5, board: -4, staff: 2, rival: 3 },
+          next: 'demis_p_reputation'
+        }
+      },
+
+      demis_pool_researcher_exodus: {
+        speaker: 'HR Director',
+        avatar: 'friend',
+        text: 'Demis. Four top AGI researchers joined a Yann LeCun open-source lab. Their exit posts say bureaucracy kills curiosity. This is a talent crisis.',
+        left: {
+          text: 'Create 20% free research time immediately.',
+          effects: { capital: -3, hype: 4, compute: -2, safety: 3 },
+          relations: { staff: 10, public: 4, board: -3, partner: -1 },
+          setFlags: { research_freedom_policy: true },
+          next: 'demis_p_legacy'
+        },
+        right: {
+          text: 'Compete on comp. Match their equity.',
+          effects: { capital: -7, hype: 0, compute: 0, safety: 0 },
+          relations: { staff: 5, board: -4, partner: 2 },
+          next: 'demis_p_sundar'
+        }
+      },
+
+      demis_pool_science_breakthrough: {
+        speaker: 'Lead Scientist',
+        avatar: 'engineer',
+        text: 'Demis. AlphaFold 3 modeled an enzyme that could halve insulin costs globally. Nature wants to publish. Alphabet legal wants to patent and restrict access first.',
+        left: {
+          text: 'Publish in Nature. Science belongs to everyone.',
+          effects: { capital: -5, hype: 9, compute: -1, safety: 6 },
+          relations: { public: 12, regulator: 5, staff: 8, partner: -6, board: -4 },
+          setFlags: { enzyme_published: true, science_path: true },
+          next: 'demis_p_legacy'
+        },
+        right: {
+          text: 'Patent first, license later. Revenue funds more science.',
+          effects: { capital: 8, hype: -3, compute: 2, safety: -2 },
+          relations: { public: -5, staff: -4, board: 6, partner: 4 },
+          setFlags: { enzyme_patented: true, product_path: true },
+          next: 'demis_p_sundar'
+        }
+      },
+
+      demis_pool_merger_offer: {
+        speaker: 'Investment Banker',
+        avatar: 'investor',
+        text: 'Demis. Microsoft offered to acquire DeepMind separately from Google at a valuation that makes every employee wealthy. Sundar does not know yet.',
+        left: {
+          text: 'Tell Sundar immediately. Transparency above all.',
+          effects: { capital: 0, hype: 2, compute: 0, safety: 3 },
+          relations: { partner: 8, board: 4, staff: 2, rival: -2 },
+          setFlags: { microsoft_approach_disclosed: true },
+          next: 'demis_p_sundar'
+        },
+        right: {
+          text: 'Explore it privately first. Options matter.',
+          effects: { capital: 3, hype: -2, compute: 0, safety: -2 },
+          relations: { partner: -6, board: -3, staff: 4, rival: 3 },
+          setFlags: { microsoft_secret_talks: true },
+          next: 'demis_p_legacy'
+        }
+      },
+
+
       demis_crisis_exodus: {
         speaker: 'Senior Research Scientist',
         avatar: 'scientist',
@@ -2108,7 +2815,11 @@ const STORY_DATA = {
           effects: { capital: -5, hype: 3, compute: -1, safety: 5 },
           relations: { staff: 8, public: 5, board: -3, partner: -1 },
           setFlags: { research_autonomy: true },
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'This is a business. Researchers who want pure science can go to academia.',
@@ -2116,7 +2827,11 @@ const STORY_DATA = {
           relations: { staff: -8, board: 3, public: -4, partner: 2 },
           setFlags: { business_first: true },
           delay: { turns: 2, log: 'A Nobel laureate on your team resigns publicly, citing "the death of scientific culture."', effects: { hype: -4, safety: -2 }, relations: { public: -5, staff: -3 } },
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         }
       },
 
@@ -2129,7 +2844,11 @@ const STORY_DATA = {
           effects: { capital: 4, hype: -2, compute: 2, safety: -4 },
           relations: { board: 6, staff: -4, public: -3, partner: 3, family: -2 },
           setFlags: { compromised: true },
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'Then fire me. I will not trade my integrity for a board seat.',
@@ -2137,7 +2856,11 @@ const STORY_DATA = {
           relations: { board: -10, staff: 7, public: 8, partner: -4, family: 5, regulator: 4 },
           setFlags: { board_confrontation: true },
           delay: { turns: 2, log: 'The board votes 6-5 to keep you. But the relationship is broken. The press calls it "the scientist CEO rebellion."', effects: { hype: 4 }, relations: { public: 4 } },
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         }
       },
 
@@ -2151,14 +2874,22 @@ const STORY_DATA = {
           effects: { capital: 0, hype: -1, compute: -1, safety: 2 },
           relations: { family: 8, public: 1 },
           tags: ['cautious'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'The work is too important right now. You know that.',
           effects: { capital: 1, hype: 1, compute: 2, safety: -2 },
           relations: { family: -6, board: 1 },
           tags: ['aggressive'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         }
       },
 
@@ -2171,14 +2902,22 @@ const STORY_DATA = {
           effects: { capital: 4, hype: -2, compute: 3, safety: -3 },
           relations: { board: 7, staff: -2, partner: 3 },
           tags: ['alliance'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'DeepMind was always meant to be independent-minded. That is what you bought.',
           effects: { capital: -2, hype: 4, compute: -2, safety: 4 },
           relations: { board: -6, staff: 4, public: 4, partner: -2 },
           tags: ['cautious'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         }
       },
 
@@ -2191,14 +2930,22 @@ const STORY_DATA = {
           effects: { capital: -2, hype: 3, compute: -1, safety: 5 },
           relations: { staff: 8, public: 4, board: -2 },
           tags: ['cautious'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'Research is funded by revenue. They want meaning? Ship a product that matters.',
           effects: { capital: 3, hype: -2, compute: 2, safety: -3 },
           relations: { staff: -6, board: 3, partner: 2 },
           tags: ['aggressive'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         }
       },
 
@@ -2212,14 +2959,22 @@ const STORY_DATA = {
           relations: { board: -8, staff: 3, public: 6, partner: -4, family: 4, regulator: 4 },
           tags: ['cautious'],
           setFlags: { cambridge_offer: true },
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'DeepMind is my creation. I cannot abandon it. Thank you, but no.',
           effects: { capital: 2, hype: -3, compute: 1, safety: 1 },
           relations: { board: 3, staff: 2, partner: 1, family: -1 },
           tags: ['aggressive'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         }
       },
 
@@ -2232,14 +2987,22 @@ const STORY_DATA = {
           effects: { capital: -2, hype: 5, compute: -1, safety: 5 },
           relations: { public: 7, staff: 5, board: -1 },
           tags: ['cautious'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'Reputation is a distraction. The work speaks for itself.',
           effects: { capital: 1, hype: -3, compute: 1, safety: -2 },
           relations: { public: -5, board: 2, staff: -1 },
           tags: ['aggressive'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         }
       },
 
@@ -2252,20 +3015,35 @@ const STORY_DATA = {
           effects: { capital: 1, hype: 3, compute: 3, safety: -1 },
           relations: { board: 2, staff: 1, public: 2, family: -2 },
           tags: ['aggressive'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         },
         right: {
           text: 'You are right. I have been playing for so long I forgot to look at the board.',
           effects: { capital: -2, hype: -2, compute: -2, safety: 5 },
           relations: { family: 7, staff: 3, public: 2, board: -1 },
           tags: ['cautious'],
-          next: 'demis_loop_hub'
+          next: [
+            { if: { flags: { science_path: true }, minStats: { compute: 75 }, minRelations: { staff: 55 } }, goto: 'demis_secret_nature' },
+            { if: { flags: { product_path: true }, minRelations: { partner: 65 }, minStats: { capital: 60 } }, goto: 'demis_secret_sovereign' },
+            { if: { always: true }, goto: 'demis_p_sundar' }
+          ]
         }
       }
     }
   },
   zhang: {
     start: 'zhang_a1_identity',
+    pool: [
+      { id: 'zhang_pool_sanction_bypass', priority: 10, minTime: 5, if: { maxStats: { compute: 40 } } },
+      { id: 'zhang_pool_western_talent', priority: 8, minTime: 5 },
+      { id: 'zhang_pool_open_source_gambit', priority: 7, minTime: 6 },
+      { id: 'zhang_pool_belt_road_ai', priority: 9, minTime: 7, if: { minRelations: { regulator: 50 } } },
+      { id: 'zhang_pool_defection_threat', priority: 8, minTime: 6, if: { maxRelations: { staff: 45 } } }
+    ],
     pressure: {
       nodes: [
         { once: true, minTime: 4, if: { maxRelations: { family: 40 } }, goto: 'zhang_p_lin' },
@@ -2430,7 +3208,11 @@ const STORY_DATA = {
           setFlags: { full_fortress: true, domestic_champion: true },
           relations: { regulator: 8, board: 6, staff: 2, public: -2, partner: -5, family: -2, rival: 3 },
           tags: ['aggressive'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'We can rebuild bridges. Even fortresses have gates.',
@@ -2438,7 +3220,11 @@ const STORY_DATA = {
           setFlags: { bridge_rebuild: true },
           relations: { regulator: -2, board: 1, staff: 3, public: 4, partner: 3, family: 1, rival: 0 },
           tags: ['cautious'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         }
       },
 
@@ -2452,7 +3238,11 @@ const STORY_DATA = {
           setFlags: { zurich_peace: true },
           relations: { family: 7, public: 6, staff: 3, partner: 5, regulator: -2, board: -2 },
           tags: ['cautious'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'You are right. I need to go back. Not to the party — to the mission.',
@@ -2460,7 +3250,11 @@ const STORY_DATA = {
           setFlags: { return_to_china: true },
           relations: { family: -3, regulator: 2, board: 3, staff: 2, partner: -1 },
           tags: ['aggressive'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         }
       },
 
@@ -2474,7 +3268,11 @@ const STORY_DATA = {
           setFlags: { balanced_path: true },
           relations: { regulator: 3, board: 4, staff: 5, public: 3, partner: 3, family: 4, rival: 1 },
           tags: ['cautious'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'You are right. I have been too careful. It is time to take a stand.',
@@ -2482,37 +3280,10 @@ const STORY_DATA = {
           setFlags: { take_stand: true },
           relations: { regulator: -3, board: 2, staff: 3, public: 5, partner: -1, family: -1, rival: 2 },
           tags: ['aggressive'],
-          next: 'zhang_loop_hub'
-        }
-      },
-
-      zhang_loop_hub: {
-        speaker: 'Z.ai Strategy Desk',
-        avatar: 'friend',
-        textVariants: [
-          { if: { flags: { full_fortress: true } }, text: 'Another quarter. The fortress holds. State contracts flow. The chip initiative advances. But Lin is quiet. Zurich is a memory. You built a wall so high you cannot see over it.' },
-          { if: { flags: { zurich_peace: true } }, text: 'Another quarter. Zurich is peaceful. The institute thrives. Your daughter laughs. But every morning you check the Chinese tech news. You wonder what GLM-5.3 would have looked like.' },
-          { if: { flags: { balanced_path: true } }, text: 'Another quarter. The balance holds. Sanctions navigated. Party placated. Family intact. But every day you ask: how long can I serve two masters?' },
-          { if: { always: true }, text: 'Another quarter. Z.ai stands at the intersection of two worlds. And you stand alone at that intersection.' }
-        ],
-        left: {
-          text: 'Deepen domestic roots. China first.',
-          effects: { capital: 4, hype: -1, compute: 4, safety: -2 },
           next: [
-            { if: { flags: { full_fortress: true, custom_chip: true }, minStats: { compute: 60 }, minRelations: { regulator: 70 } }, goto: 'zhang_secret_fortress' },
-            { if: { flags: { domestic_path: true, cppcc_complied: true }, minRelations: { rival: 50 } }, goto: 'zhang_crisis_deepseek' },
-            { if: { minTime: 14 }, goto: 'zhang_crisis_deepseek' },
-            { if: { always: true }, goto: 'zhang_crisis_deepseek' }
-          ]
-        },
-        right: {
-          text: 'Build global bridges. Science without borders.',
-          effects: { capital: -2, hype: 4, compute: -1, safety: 4 },
-          next: [
-            { if: { flags: { escape_accepted: true, zurich_peace: true }, minStats: { safety: 60 }, minRelations: { family: 65 } }, goto: 'zhang_secret_silk' },
-            { if: { flags: { benchmark_victory_published: true, cppcc_dissented: true }, minRelations: { public: 60 } }, goto: 'zhang_secret_scholar' },
-            { if: { minTime: 14, maxRelations: { regulator: 35 } }, goto: 'zhang_crisis_party' },
-            { if: { always: true }, goto: 'zhang_crisis_party' }
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
           ]
         }
       },
@@ -2578,7 +3349,106 @@ const STORY_DATA = {
         }
       },
 
-      // CRISIS NODES
+      // CRISIS NODES      // ZHANG POOL NODES
+      zhang_pool_sanction_bypass: {
+        speaker: 'Chief Strategy Officer',
+        avatar: 'board',
+        text: 'Peng. A Southeast Asian distributor can route our compute through Singapore to bypass US chip sanctions. Gray area legally. But so is almost everything we do.',
+        left: {
+          text: 'Use the route. We need the compute.',
+          effects: { capital: 5, hype: -2, compute: 8, safety: -3 },
+          relations: { regulator: -6, board: 4, partner: 3, public: -2 },
+          setFlags: { sanction_bypass: true },
+          next: 'zhang_p_ministry'
+        },
+        right: {
+          text: 'Decline. One compliance failure ends everything.',
+          effects: { capital: -4, hype: 2, compute: -3, safety: 5 },
+          relations: { regulator: 6, board: -3, partner: -2, public: 3 },
+          setFlags: { compliance_strict: true },
+          next: 'zhang_p_chip'
+        }
+      },
+
+      zhang_pool_western_talent: {
+        speaker: 'Lin Zhang',
+        avatar: 'friend',
+        text: 'Peng. Three top American AI researchers want to join Zhipu. Security review takes a year and the Ministry is suspicious of foreign engineers in core research.',
+        left: {
+          text: 'Fast-track them. Talent is talent. I take responsibility.',
+          effects: { capital: -2, hype: 4, compute: 3, safety: 2 },
+          relations: { staff: 8, public: 5, regulator: -4, board: 2 },
+          setFlags: { western_talent_hired: true, global_path: true },
+          next: 'zhang_p_media'
+        },
+        right: {
+          text: 'Decline politely. The political risk is not worth it.',
+          effects: { capital: 0, hype: -3, compute: -1, safety: 1 },
+          relations: { regulator: 5, board: 3, staff: -3, public: -2 },
+          setFlags: { domestic_path: true },
+          next: 'zhang_p_ministry'
+        }
+      },
+
+      zhang_pool_open_source_gambit: {
+        speaker: 'Research Director',
+        avatar: 'engineer',
+        text: 'Peng. We can open-source GLM-4 sparse attention. Global developer trust overnight. But the Ministry may view it as leaking national AI technology.',
+        left: {
+          text: 'Release it. Academic credibility matters more.',
+          effects: { capital: -3, hype: 8, compute: 0, safety: 4 },
+          relations: { public: 10, staff: 7, regulator: -5, board: -2 },
+          setFlags: { glm_opensource: true, global_path: true },
+          next: 'zhang_p_media'
+        },
+        right: {
+          text: 'Keep it proprietary. National AI assets stay national.',
+          effects: { capital: 2, hype: -4, compute: 2, safety: 2 },
+          relations: { regulator: 7, board: 5, public: -4, staff: -2 },
+          setFlags: { domestic_path: true },
+          next: 'zhang_p_ministry'
+        }
+      },
+
+      zhang_pool_belt_road_ai: {
+        speaker: 'Foreign Affairs Liaison',
+        avatar: 'politician',
+        text: 'Peng. The government wants Zhipu to deploy GLM across ten Belt and Road countries. Courts, education, public services. Massive scale. Public failure is also massive.',
+        left: {
+          text: 'Deploy. This is our path to global relevance.',
+          effects: { capital: 6, hype: 6, compute: 4, safety: -4 },
+          relations: { regulator: 8, board: 6, public: 5, partner: 4, staff: -2 },
+          setFlags: { belt_road_deployed: true, global_path: true },
+          next: 'zhang_p_chip'
+        },
+        right: {
+          text: 'Decline. We are not ready for government-scale failures.',
+          effects: { capital: -3, hype: -3, compute: 0, safety: 4 },
+          relations: { regulator: -5, board: -4, staff: 3, public: 2 },
+          next: 'zhang_p_ministry'
+        }
+      },
+
+      zhang_pool_defection_threat: {
+        speaker: 'Deputy Director',
+        avatar: 'engineer',
+        text: 'Peng. Your lead architect received a Google offer: ten times salary, green card, full research freedom. If he goes, six junior researchers follow.',
+        left: {
+          text: 'Tell him to go. I do not cage talent.',
+          effects: { capital: 0, hype: 3, compute: -4, safety: 1 },
+          relations: { staff: 5, public: 4, regulator: -2, board: -3 },
+          setFlags: { talent_let_go: true },
+          next: 'zhang_p_media'
+        },
+        right: {
+          text: 'Match the offer internally. And remind him where he comes from.',
+          effects: { capital: -5, hype: -2, compute: 2, safety: 0 },
+          relations: { staff: 6, board: -3, regulator: 2, partner: -1 },
+          next: 'zhang_p_ministry'
+        }
+      },
+
+
       zhang_crisis_deepseek: {
         speaker: 'Board Chair',
         avatar: 'board',
@@ -2588,7 +3458,11 @@ const STORY_DATA = {
           effects: { capital: -4, hype: 4, compute: 5, safety: -3 },
           relations: { board: 4, staff: 2, rival: -4, regulator: 3, partner: -1 },
           tags: ['aggressive'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'Partner with them. Open-source our smaller models. Beat them with openness, not silence.',
@@ -2596,7 +3470,11 @@ const STORY_DATA = {
           relations: { board: -1, staff: 4, rival: 5, regulator: -2, public: 5 },
           tags: ['cautious'],
           setFlags: { open_source_move: true },
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         }
       },
 
@@ -2609,7 +3487,11 @@ const STORY_DATA = {
           effects: { capital: 2, hype: -4, compute: 1, safety: -3 },
           relations: { regulator: 6, board: 3, staff: -3, public: -4, partner: -2, family: -1 },
           tags: ['aggressive'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'My loyalty is to science and to my family. China is my home. But my mind belongs to the world.',
@@ -2617,7 +3499,11 @@ const STORY_DATA = {
           relations: { regulator: -8, board: -4, staff: 6, public: 7, partner: 3, family: 4 },
           tags: ['cautious'],
           delay: { turns: 2, log: 'The party issues a formal warning. Your CCPPC seat is suspended. International press calls it a watershed moment.', effects: { hype: 4, capital: -2 }, relations: { public: 5, regulator: -4 } },
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         }
       },
 
@@ -2631,14 +3517,22 @@ const STORY_DATA = {
           effects: { capital: 0, hype: -1, compute: -1, safety: 2 },
           relations: { family: 8, public: 1 },
           tags: ['cautious'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'Tell her baba is building a future she will be proud of. Even if it takes time.',
           effects: { capital: 1, hype: 1, compute: 2, safety: -2 },
           relations: { family: -5, board: 1 },
           tags: ['aggressive'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         }
       },
 
@@ -2651,14 +3545,22 @@ const STORY_DATA = {
           effects: { capital: 2, hype: -2, compute: 1, safety: -2 },
           relations: { regulator: 6, board: 3, partner: -2 },
           tags: ['alliance'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'Z.ai is a scientific company. Science has no nationality.',
           effects: { capital: -2, hype: 4, compute: 0, safety: 4 },
           relations: { regulator: -6, board: -2, staff: 4, public: 4, partner: 2 },
           tags: ['cautious'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         }
       },
 
@@ -2672,14 +3574,22 @@ const STORY_DATA = {
           relations: { regulator: 4, staff: 5, board: -3, partner: -2 },
           tags: ['aggressive'],
           setFlags: { chip_doubledown: true },
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'Cancel. Use backchannels. Stay competitive. We can revisit custom silicon later.',
           effects: { capital: 3, hype: -3, compute: 3, safety: -2 },
           relations: { regulator: -4, staff: -3, board: 4, partner: 4 },
           tags: ['aggressive'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         }
       },
 
@@ -2692,14 +3602,22 @@ const STORY_DATA = {
           effects: { capital: 1, hype: 3, compute: 2, safety: 0 },
           relations: { rival: -2, public: 3, staff: 2, board: 2 },
           tags: ['aggressive'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'Open source our research. If openness is the game, we will play it better.',
           effects: { capital: -2, hype: 5, compute: -1, safety: 3 },
           relations: { rival: 4, public: 6, staff: 3, board: -2 },
           tags: ['cautious'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         }
       },
 
@@ -2712,14 +3630,22 @@ const STORY_DATA = {
           effects: { capital: -3, hype: 4, compute: -1, safety: 5 },
           relations: { staff: 7, public: 4, regulator: -2, board: -1 },
           tags: ['cautious'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'We are a Chinese company. They knew the context when they joined.',
           effects: { capital: 2, hype: -3, compute: 1, safety: -3 },
           relations: { staff: -7, board: 2, regulator: 3, partner: -1 },
           tags: ['aggressive'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         }
       },
 
@@ -2732,7 +3658,11 @@ const STORY_DATA = {
           effects: { capital: 0, hype: -3, compute: 1, safety: 4 },
           relations: { public: -2, family: 3, staff: 2, regulator: 1 },
           tags: ['cautious'],
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         },
         right: {
           text: 'If they need a symbol, I will be a good one. Better than the alternatives.',
@@ -2740,7 +3670,11 @@ const STORY_DATA = {
           relations: { public: 8, regulator: -4, family: -1, board: 2 },
           tags: ['aggressive'],
           delay: { turns: 2, log: 'Your profile becomes global. The party accelerates its review of your CCPPC seat.', effects: { hype: 3, capital: -1 }, relations: { regulator: -3, public: 4 } },
-          next: 'zhang_loop_hub'
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
         }
       }
     }
