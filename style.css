@@ -165,52 +165,46 @@ body {
 }
 
 /* --- Layout --- */
-/* --- Layout --- */
 .game-container {
-  display: grid;
+  display: flex;
   position: relative; z-index: 10;
   width: 100%; height: 100%;
-  grid-template-columns: 1fr;
   justify-content: center; align-items: center;
-  padding: 24px;
-}
-
-@media (min-width: 900px) {
-  .game-container {
-    grid-template-columns: 240px var(--vp-w) 240px;
-    gap: 40px;
-    width: auto;
-    height: auto;
-  }
+  gap: 40px; /* Clean grid separation */
 }
 
 /* --- Side Panels — ambient terminal noise --- */
 .side-panel {
-  position: relative;
-  width: 100%;
+  width: 260px;
   font-family: var(--font-mono);
   font-size: 0.65rem;
   color: var(--text-dim);
-  pointer-events: none;
+  pointer-events: auto; /* Enable interactive scrollbars */
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: var(--vp-h); /* Align height with viewport */
+  padding: 10px 0;
 }
 
 .side-panel .noise-content {
   opacity: 0.85;
   color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .side-panel .audio-control {
-  pointer-events: auto;
   margin-top: 12px;
 }
 
 .right-panel {
-  text-align: right;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
+  align-items: flex-start;
 }
 
 .audio-control {
@@ -225,7 +219,6 @@ body {
   color: var(--text-dim);
   padding: 3px 8px;
   cursor: pointer;
-  pointer-events: auto;
   font-family: var(--font-mono);
   font-size: 0.55rem;
   letter-spacing: 0.04em;
@@ -236,24 +229,31 @@ body {
 .audio-control button:hover { border-color: var(--text-primary); color: var(--text-primary); }
 
 .objectives-checklist {
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
 }
 
 .obj-item {
-  display: flex; align-items: flex-start; gap: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
   font-family: var(--font-mono);
   font-size: 0.52rem;
   line-height: 1.25;
   color: var(--text-dim);
-  justify-content: flex-end;
+  justify-content: flex-start; /* Left-aligned checkbox grid */
+  text-align: left;
 }
 
 .obj-checkbox {
-  width: 4px; height: 4px;
+  width: 5px;
+  height: 5px;
   border: 1px solid var(--text-dim);
   display: inline-block;
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 3px;
   transition: all 0.2s;
 }
 
@@ -831,16 +831,36 @@ body {
   display: inline-block;
 }
 
-/* -- Mobile & Tablet --- */
+/* -- Mobile & Tablet Stacking --- */
 @media (max-width: 900px) {
-  .side-panel { display: none; }
+  .game-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100dvh;
+    padding: 20px;
+    gap: 20px;
+    overflow-y: auto;
+    justify-content: flex-start;
+  }
+  .side-panel {
+    width: var(--vp-w);
+    height: auto;
+    padding: 10px;
+    justify-content: flex-start;
+  }
+  .panel-section-title.feed-title {
+    margin-top: 12px;
+  }
+  .staff-chat-feed {
+    max-height: 140px;
+  }
 }
 
-/* ── Mobile & Tablet (≤860px) ── */
-@media (max-width: 860px) {
+@media (max-width: 600px) {
+  .side-panel { display: none; }
   body { align-items: stretch; justify-content: stretch; }
-  .game-container { width: 100%; height: 100%; }
-  .viewport { width: 100%; height: 100%; max-height: none; border-left: none; border-right: none; }
+  .game-container { width: 100%; height: 100%; gap: 0; padding: 0; }
+  .viewport { width: 100%; height: 100%; max-height: none; border-left: none; border-right: none; border-top: none; border-bottom: none; }
 
   /* Stats header — bigger, readable */
   .stats-header { padding-top: max(10px, env(safe-area-inset-top)); }
