@@ -142,9 +142,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
-  width: 100vw;
   height: 100vh; height: 100dvh;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -163,51 +164,54 @@ body {
   transition: background 1.4s ease;
 }
 
-/* --- Strict Grid Layout --- */
+/* --- Layout --- */
+/* --- Layout --- */
 .game-container {
   display: grid;
-  grid-template-columns: 1fr var(--vp-w) 220px;
-  grid-template-rows: 100vh;
-  grid-template-areas: "left center right";
-  width: 100%;
-  height: 100vh;
-  position: relative;
-  z-index: 10;
-  align-items: stretch;
-  gap: 0;
+  position: relative; z-index: 10;
+  width: 100%; height: 100%;
+  grid-template-columns: 1fr;
+  justify-content: center; align-items: center;
+  padding: 24px;
 }
 
-/* --- Side Panels --- */
+@media (min-width: 900px) {
+  .game-container {
+    grid-template-columns: 240px var(--vp-w) 240px;
+    gap: 40px;
+    width: auto;
+    height: auto;
+  }
+}
+
+/* --- Side Panels — ambient terminal noise --- */
 .side-panel {
-  grid-area: right;
-  height: 100%;
-  border-left: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 20px 16px;
+  position: relative;
+  width: 100%;
   font-family: var(--font-mono);
   font-size: 0.65rem;
   color: var(--text-dim);
+  pointer-events: none;
   user-select: none;
-  overflow: hidden;
 }
 
 .side-panel .noise-content {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  opacity: 0.85;
+  color: var(--text-secondary);
 }
 
 .side-panel .audio-control {
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
+  pointer-events: auto;
+  margin-top: 12px;
 }
 
-.right-panel { text-align: left; }
+.right-panel {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
 
 .audio-control {
   display: flex;
@@ -257,8 +261,6 @@ body {
 
 /* --- Viewport --- */
 .viewport {
-  grid-area: center;
-  align-self: center;
   width: var(--vp-w); height: var(--vp-h);
   max-height: 100dvh;
   background: var(--background);
@@ -829,24 +831,16 @@ body {
   display: inline-block;
 }
 
-/* -- Tablet / small screens (≤1024px): collapse to 2-col, hide panel --- */
-@media (max-width: 1024px) {
-  .game-container {
-    grid-template-columns: 1fr var(--vp-w) 1fr;
-    grid-template-areas: "left center left";
-  }
+/* -- Mobile & Tablet --- */
+@media (max-width: 900px) {
   .side-panel { display: none; }
 }
 
 /* ── Mobile & Tablet (≤860px) ── */
 @media (max-width: 860px) {
-  .game-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 100vh;
-    grid-template-areas: "center";
-  }
-  body { overflow: auto; }
-  .viewport { width: 100%; height: 100dvh; max-height: none; border-left: none; border-right: none; align-self: stretch; }
+  body { align-items: stretch; justify-content: stretch; }
+  .game-container { width: 100%; height: 100%; }
+  .viewport { width: 100%; height: 100%; max-height: none; border-left: none; border-right: none; }
 
   /* Stats header — bigger, readable */
   .stats-header { padding-top: max(10px, env(safe-area-inset-top)); }
