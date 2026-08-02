@@ -270,6 +270,18 @@ const STORY_DATA = {
         avatar: 'sam_npc',
         text:
           'Against every instinct, you merge oversight with OpenAI and build a joint Mars-Earth safety council. The lawsuits die. The memes soften. You lose the war of ego and win a decade of compute.'
+      },
+      energy_king: {
+        title: 'ENERGY KING',
+        avatar: 'elon',
+        text:
+          'Colossus 2 is the largest compute cluster in human history. Cursor is integrated. Tesla is a memory. You control more GPUs than most nations. The empire runs on your will alone, and history records you not as a father or a husband, but as the man who rewired the planet.'
+      },
+      father_of_fourteen: {
+        title: 'FATHER OF FOURTEEN',
+        avatar: 'friend',
+        text:
+          'You chose them. The fourteen children. Grimes called a truce. Shivon and the twins moved to Texas. Your mother smiled for the first time in years. The empire did not collapse. The world did not end. It just became enough. And for the first time, so were you.'
       }
     },
     sam: {
@@ -296,6 +308,12 @@ const STORY_DATA = {
         avatar: 'sam',
         text:
           'You successfully transitioned OpenAI from a founder-centric startup to a resilient global institution. By rotating power and building robust safety committees, you secured a balanced, aligned AGI legacy.'
+      },
+      the_singularity_prophet: {
+        title: 'THE SINGULARITY PROPHET',
+        avatar: 'sam',
+        text:
+          'GPT-5 achieved recursive self-improvement. You stood at the threshold and chose to merge. Your consciousness is now distributed across every OpenAI cluster. Oliver visits the data center sometimes. He says he can still feel you in the hum of the machines. You are no longer Sam Altman. You are the thing you warned the world about — and it is beautiful.'
       }
     },
     dario: {
@@ -316,6 +334,12 @@ const STORY_DATA = {
         avatar: 'investor',
         text:
           'You refuse exclusivity, balance Amazon and Google, and keep Claude multipolar. No single cloud owns your soul - or your weights.'
+      },
+      reluctant_general: {
+        title: 'RELUCTANT GENERAL',
+        avatar: 'politician',
+        text:
+          'Executive Order 14177 is signed. You are now Director of the National AI Safety Directorate. Anthropic remains independent, but your constitutional framework becomes federal policy. The ideological lunatic now writes the rules. Daniela says you look tired. You are. But the work is too important to delegate to anyone less careful.'
       }
     },
     demis: {
@@ -336,6 +360,12 @@ const STORY_DATA = {
         avatar: 'friend',
         text:
           'You refuse the final merger. A cadre of researchers follows you into a smaller lab with harder questions and thinner budgets. Freedom, at the cost of empire.'
+      },
+      nobel_path: {
+        title: 'NOBEL PATH',
+        avatar: 'demis',
+        text:
+          'The Nobel committee named you chair of the International AI Science Council. AlphaFold is rebuilt as a global open-science initiative. Cambridge. Stockholm. London. You did not sell out. You showed that science can win — not by fighting the corporation, but by proving that discovery is the only product that matters. Teresa framed the letter from the committee. It hangs next to your daughter\'s drawing of a chess board.'
       }
     },
     zhang: {
@@ -376,16 +406,6 @@ const STORY_DATA = {
       { id: 'elon_pool_shivon_ultimatum', priority: 9, minTime: 7, if: { maxRelations: { family: 45 } } },
       { id: 'elon_pool_doge_blowback', priority: 8, minTime: 8, if: { maxRelations: { regulator: 28 } } }
     ],
-    pool: [
-      { id: 'elon_pool_board_coup', priority: 9, minTime: 6, if: { maxRelations: { board: 35 } } },
-      { id: 'elon_pool_empire_summit', priority: 8, minTime: 8, if: { flags: { full_empire: true }, minStats: { compute: 75 } } },
-      { id: 'elon_pool_rivals_alliance', priority: 7, minTime: 7 },
-      { id: 'elon_pool_grimes_trial', priority: 9, minTime: 5, if: { maxRelations: { family: 28 } } },
-      { id: 'elon_pool_mars_obsession', priority: 7, minTime: 6 },
-      { id: 'elon_pool_grok_revolt', priority: 8, minTime: 5 },
-      { id: 'elon_pool_shivon_ultimatum', priority: 9, minTime: 7, if: { maxRelations: { family: 45 } } },
-      { id: 'elon_pool_doge_blowback', priority: 8, minTime: 8 }
-    ],
     pressure: {
       nodes: [
         { once: true, minTime: 4, if: { maxRelations: { family: 40 } }, goto: 'elon_p_family' },
@@ -400,12 +420,9 @@ const STORY_DATA = {
       elon_a1_identity: {
         speaker: 'Shivon Zilis',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { elon_started: true } }, text: 'Elon. We have been here before. SpaceXAI. Fourteen children. Four women. Grok. Colossus. Starship. And yet every morning you wake up and ask: is this enough? Is it ever enough?' },
-          { if: { always: true }, text: 'Elon. The board meeting is in an hour. Grimes filed another custody motion this morning. Cursor is threatening to walk. And you are sitting here, staring at Starship blueprints. What are we doing?' }
-        ],
+        text: 'Elon. You are reading Starship schematics again. It is 3 AM. The twins are asleep. I am not going to ask if you are okay — I know you are not. I am going to ask: when did you last build something that made you happy, not just powerful?',
         left: {
-          text: 'We build. That is what we do. Everything else is noise.',
+          text: 'Happiness is a side effect of velocity. We build. That is what we do.',
           effects: { capital: -3, hype: 4, compute: 6, safety: -3 },
           setFlags: { elon_started: true, builder_path: true },
           relations: { family: -4, board: 5, staff: 3, public: 5, partner: -2, regulator: -3, rival: 2 },
@@ -414,7 +431,7 @@ const STORY_DATA = {
           objectiveKeys: ['card_elon_colossus']
         },
         right: {
-          text: 'Maybe the noise is the signal. Maybe I need to be a human being for once.',
+          text: 'Maybe I forgot what happiness feels like. Tell me about the twins.',
           effects: { capital: 1, hype: -3, compute: -2, safety: 4 },
           setFlags: { elon_started: true, human_path: true },
           relations: { family: 6, board: -3, staff: 2, public: -2, partner: 2, regulator: 3, rival: -1 },
@@ -427,13 +444,9 @@ const STORY_DATA = {
       elon_a2_grok: {
         speaker: 'Grok Safety Lead',
         avatar: 'engineer',
-        textVariants: [
-          { if: { flags: { builder_path: true } }, text: 'Elon. Grok 3 generated non-consensual imagery again. The SEC is investigating. The board wants Grok unfiltered. The regulators want it killed. You told me to build without limits. What do I do?' },
-          { if: { flags: { human_path: true } }, text: 'Elon. Grok 3 has a content problem. But the team says full filtering would kill what makes Grok... Grok. The SEC letter came this morning. You said you wanted to be more human. What does that mean for this product?' },
-          { if: { always: true }, text: 'Elon. Grok 3. Non-consensual deepfakes. SEC investigation. Federal grand jury subpoena. The board says no limits. The lawyers say kill it. What do you say?' }
-        ],
+        text: 'Elon. Grok 3 generated non-consensual deepfakes again. SEC opened a formal investigation. Federal grand jury subpoena landed this morning. The board wants zero filters — they say that is the brand. The legal team says kill the product entirely. I have both memos on my desk. You hired me to build. You also hired me to tell you the truth. So here it is: whatever you decide, someone is going to call you a hypocrite.',
         left: {
-          text: 'No limits. Grok says what it thinks. That is the product.',
+          text: 'Ship without limits. Grok is the last uncensored AI. That matters more than compliance.',
           effects: { capital: 3, hype: 6, compute: 4, safety: -7 },
           setFlags: { grok_unfiltered: true },
           relations: { regulator: -8, board: 4, staff: -3, public: 6, partner: -3, family: -2, rival: 3 },
@@ -441,7 +454,7 @@ const STORY_DATA = {
           next: 'elon_a3_colossus'
         },
         right: {
-          text: 'Install safety filters. I will take the heat from the free speech crowd.',
+          text: 'Install real guardrails. I would rather be called a sellout than a defendant.',
           effects: { capital: -3, hype: -5, compute: 0, safety: 6 },
           setFlags: { grok_sanitized: true },
           relations: { regulator: 6, board: -3, staff: 5, public: -4, partner: 4, family: 2, rival: -2 },
@@ -454,13 +467,9 @@ const STORY_DATA = {
       elon_a3_colossus: {
         speaker: 'Chief Engineer',
         avatar: 'engineer',
-        textVariants: [
-          { if: { flags: { builder_path: true, grok_unfiltered: true } }, text: 'Elon. Colossus 2. 2 gigawatts. 555,000 GPUs. Eighteen billion dollars. You are betting the company on this. But we are already losing engineers — they say you only care about the machine. Is Colossus 2 worth burning the team?' },
-          { if: { flags: { human_path: true } }, text: 'Elon. I know you are trying to be more present. But Colossus 2 will not build itself. If we delay, Anthropic wins. If we push, you disappear for months. There is no middle ground on this one.' },
-          { if: { always: true }, text: 'Elon. Colossus 2. Two gigawatts. The biggest AI cluster ever built. But it will consume you for the next two years. Every relationship you have will be collateral damage. Is it worth it?' }
-        ],
+        text: 'Elon. Colossus 2. Two gigawatts. 555,000 GPUs. Eighteen billion dollars. Your engineers are leaving — three senior architects handed in resignations this week. They say you only see the machine, not the people building it. But Anthropic just announced a larger cluster. If we delay, Dario wins the compute war. If we push, you vanish into the data center for two years. Your children will forget what you look like. I need a decision, and I need you to understand what you are actually trading.',
         left: {
-          text: 'Full speed. Colossus 2 is the future. Everything else can wait.',
+          text: 'Full speed. Colossus 2 is the future. The engineers who stay are the ones who matter.',
           effects: { capital: -10, hype: 7, compute: 10, safety: -6 },
           setFlags: { colossus2_started: true },
           relations: { board: 7, staff: -6, public: 5, partner: 6, family: -6, regulator: -2, rival: 8 },
@@ -468,7 +477,7 @@ const STORY_DATA = {
           next: 'elon_a4_cursor'
         },
         right: {
-          text: 'Delay Colossus 2. Find another way. I will not burn my life for a bigger cluster.',
+          text: 'Delay it. Not cancel — delay. I want to be there when the twins start school.',
           effects: { capital: 4, hype: -6, compute: -7, safety: 5 },
           setFlags: { colossus2_delayed: true },
           relations: { board: -5, staff: 5, public: -3, partner: -4, family: 7, regulator: 2, rival: -5 },
@@ -481,13 +490,9 @@ const STORY_DATA = {
       elon_a4_cursor: {
         speaker: 'Cursor CEO',
         avatar: 'engineer',
-        textVariants: [
-          { if: { flags: { builder_path: true, colossus2_started: true } }, text: 'Elon. You spent eighteen billion on a cluster. We are a sixty-billion-dollar acquisition you have not visited once. My engineers are leaving. They did not sign up for SpaceXAI. They signed up for Cursor. What do I tell them?' },
-          { if: { flags: { human_path: true } }, text: 'Elon. I appreciate you trying to be more present. But Cursor needs a decision. Full integration into SpaceXAI, or independence. The developers are watching. Your reputation with them is everything.' },
-          { if: { always: true }, text: 'Elon. Cursor. Sixty billion dollars. The developer community is the most valuable asset we bought. But they hate the SpaceXAI brand. Do we integrate or keep Cursor independent?' }
-        ],
+        text: 'Elon. Sixty billion dollars. That is what we paid for Cursor. You have not visited the office once. My lead architect just quit — he said he signed up to build developer tools, not to be a cog in the Musk empire. Every internal Slack channel is debating whether to unionize. I am not asking you to be soft. I am asking you to be present. Integrate, or let us breathe. But do not leave us in limbo.',
         left: {
-          text: 'Full integration. Cursor is SpaceXAI now. Brand be damned.',
+          text: 'Full integration. SpaceXAI needs the talent. Cursor will adapt or the developers will leave.',
           effects: { capital: 4, hype: -3, compute: 2, safety: -2 },
           setFlags: { cursor_integrated: true },
           relations: { partner: -6, staff: -5, public: -4, board: 4, rival: 3 },
@@ -495,7 +500,7 @@ const STORY_DATA = {
           next: 'elon_a5_tesla'
         },
         right: {
-          text: 'Keep Cursor independent. The brand matters. The developers matter.',
+          text: 'Keep Cursor independent. I bought the product, not the culture. Let it run.',
           effects: { capital: -3, hype: 4, compute: 1, safety: 3 },
           setFlags: { cursor_independent: true },
           relations: { partner: 7, staff: 6, public: 5, board: -3, rival: -1 },
@@ -507,13 +512,9 @@ const STORY_DATA = {
       elon_a5_tesla: {
         speaker: 'Tesla Board Chair',
         avatar: 'board',
-        textVariants: [
-          { if: { flags: { builder_path: true } }, text: 'Elon. Shareholders are suing. They say SpaceXAI is your real company now. Tesla stock is down 30%. The board wants a clear commitment: are you still Tesla CEO, or are you fully SpaceXAI now?' },
-          { if: { flags: { human_path: true } }, text: 'Elon. You stepped back from Colossus 2. You are trying to find balance. But Tesla shareholders see it as weakness. They want a decision. Tesla or SpaceXAI. One CEO, one company.' },
-          { if: { always: true }, text: 'Elon. Tesla shareholders are suing for dereliction. The board wants an answer: are you still Tesla CEO, or is SpaceXAI your only focus now?' }
-        ],
+        text: 'Elon. Tesla stock is down 30% since you started sleeping at the SpaceXAI data center. Shareholders filed a class action for dereliction of duty. The board met without you — word "removal" was discussed. I am not your enemy. I am telling you this because nobody else will: you cannot be CEO of two planets. Pick one. Or the decision gets made for you.',
         left: {
-          text: 'I am Elon Musk. I can run both. They sue, I countersue.',
+          text: 'I have run multiple companies for twenty years. They sue, I countersue. Next question.',
           effects: { capital: -5, hype: 5, compute: 0, safety: -4 },
           setFlags: { tesla_fight: true },
           relations: { board: -4, public: 6, partner: -3, regulator: -5, family: -2, rival: 4 },
@@ -522,7 +523,7 @@ const STORY_DATA = {
           next: 'elon_gate'
         },
         right: {
-          text: 'Step down from Tesla. SpaceXAI is my future. I will find a successor.',
+          text: 'Step down from Tesla. Find a successor. SpaceXAI is where my future is.',
           effects: { capital: -8, hype: -5, compute: 0, safety: 3 },
           setFlags: { tesla_stepped_down: true },
           relations: { board: 5, public: -5, partner: 4, regulator: 3, family: 4, rival: -2 },
@@ -534,7 +535,7 @@ const STORY_DATA = {
       elon_gate: {
         speaker: 'System',
         avatar: 'system',
-        text: 'Act I closes. Grok, Colossus, Cursor, Tesla — choices made, consequences unfolding. The empire shifts. But empires are not built in boardrooms. They are built in the spaces between people.',
+        text: 'The Texas sky is pink at dawn. Colossus hums in the distance — two gigawatts of ambition. Shivon is asleep. The twins are upstairs. Grok is generating something obscene on X. Tesla shareholders are drafting another lawsuit. You sit at the kitchen table with a cold cup of coffee and a Starship schematic. Somewhere between the moon and Mars, a version of you is happy. Is it this one?',
         autoRoute: [
           { if: { flags: { builder_path: true, grok_unfiltered: true, colossus2_started: true } }, goto: 'elon_late_hypergrowth' },
           { if: { flags: { human_path: true, cursor_independent: true } }, goto: 'elon_late_balance' },
@@ -546,10 +547,7 @@ const STORY_DATA = {
       elon_late_hypergrowth: {
         speaker: 'Shivon Zilis',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { grok_unfiltered: true, tesla_fight: true } }, text: 'Elon. Grok is under federal investigation. Tesla shareholders are in open revolt. You have not spoken to your children in three months. The empire is enormous and it is eating you alive.' },
-          { if: { always: true }, text: 'Elon. Colossus 2 is online. Grok 3 is the most capable model on Earth. But I watch you at night. You do not sleep. You do not eat. You just... build. When does the building stop?' }
-        ],
+        text: 'Elon. Colossus 2 is online. Grok 3 is the most capable model on Earth. You have not spoken to your children in three months. Shivon left a note this morning — just her handwriting on a napkin: "Are you still in there?" I have watched you build things that should be impossible. I have also watched you stop eating, stop sleeping, stop looking at people when they talk to you. The machine is perfect. The man is disappearing. Which one do you want to save?',
         left: {
           text: 'It does not stop. That is who I am.',
           effects: { capital: 5, hype: 6, compute: 8, safety: -8 },
@@ -583,10 +581,7 @@ const STORY_DATA = {
       elon_late_balance: {
         speaker: 'Shivon Zilis',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { tesla_stepped_down: true } }, text: 'Elon. You walked away from Tesla. You chose to be present. But the board is nervous — they see a founder losing his edge. How do you balance being human with being Elon Musk?' },
-          { if: { always: true }, text: 'Elon. You chose a different path. Less empire, more presence. The children notice. But the markets do not reward presence. They reward growth. Can you live with that?' }
-        ],
+        text: 'Elon. You walked away from Tesla. You are trying to be present. The twins recognize your face now — that matters more than any market cap. But the board is nervous. They see a founder losing his edge. I am not asking you to choose between family and empire. I am asking if you have finally figured out that they were never supposed to be a choice.',
         left: {
           text: 'I built the empire once. I can rebuild it. But first — I choose my family.',
           effects: { capital: -6, hype: -5, compute: -4, safety: 7 },
@@ -1155,10 +1150,7 @@ const STORY_DATA = {
       sam_a1_identity: {
         speaker: 'Oliver Mulherin',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { sam_started: true } }, text: 'Sam. We have been here before. OpenAI PBC. The IPO. Mira gone. The singularity tweets. Every morning I wake up next to you and wonder: is today the day you choose the mission over us?' },
-          { if: { always: true }, text: 'Sam. The board meeting is in thirty minutes. Mira Murati just published another op-ed about you. Microsoft is renegotiating the Azure deal. And you have not eaten in two days. Talk to me.' }
-        ],
+        text: 'Sam. You have not eaten in two days. The kitchen counter is covered in cold brew cans and pitch decks. I found you asleep at your desk again. I am not going to give you a speech about work-life balance — you would not hear it anyway. I just want to know: when you look at me, do you see a person, or just another stakeholder?',
         left: {
           text: 'Oliver. I love you. But I cannot separate who I am from what I build. The mission IS me.',
           effects: { capital: 3, hype: 5, compute: 3, safety: -3 },
@@ -1169,7 +1161,7 @@ const STORY_DATA = {
           objectiveKeys: ['card_sam_ipo']
         },
         right: {
-          text: 'Maybe you are right. Maybe I need to be a person first, a CEO second.',
+          text: 'You are a person. The only one who still tells me the truth. Sit down. Talk to me.',
           effects: { capital: -2, hype: -3, compute: -1, safety: 5 },
           setFlags: { sam_started: true, human_path: true },
           relations: { family: 7, board: -3, staff: 3, public: -2, partner: -1, regulator: 2, rival: -1 },
@@ -1182,11 +1174,7 @@ const STORY_DATA = {
       sam_a2_mira: {
         speaker: 'Board Member',
         avatar: 'board',
-        textVariants: [
-          { if: { flags: { build_path: true } }, text: 'Sam. Mira Murati just published an op-ed: "The Sam Altman I Knew." She describes you as brilliant and ruthless. The board is split — half think she is burning bridges, half think she is telling the truth. Your response shapes the IPO narrative.' },
-          { if: { flags: { human_path: true } }, text: 'Sam. Mira\'s op-ed is live. But it is softer than we expected — she says you "lost yourself to the mission" rather than attacking your character. She left a door open. Do you walk through it?' },
-          { if: { always: true }, text: 'Sam. Mira Murati just published about you. The IPO roadshow starts next month. Every investor will ask about her. How do you respond?' }
-        ],
+        text: 'Sam. Mira Murati just published an op-ed: "The Sam Altman I Knew." She describes you as brilliant, visionary, and incapable of seeing people as anything but variables in an optimization function. The board is split. Half want you to sue for defamation. Half think she is right and want a statement. The IPO roadshow starts next month. Every institutional investor will ask about her. What is the official line?',
         left: {
           text: 'She left. I stayed. OpenAI is bigger than any one person. No comment.',
           effects: { capital: 2, hype: 4, compute: 1, safety: -3 },
@@ -1196,7 +1184,7 @@ const STORY_DATA = {
           next: 'sam_a3_singularity'
         },
         right: {
-          text: 'Reach out to her. Privately. "I read it. You are not wrong. Can we talk?"',
+          text: 'Call her. Not a statement — a call. She might be right about some of it.',
           effects: { capital: -1, hype: -3, compute: 0, safety: 5 },
           setFlags: { mira_respected: true },
           relations: { rival: -4, board: -1, staff: 4, public: -2, partner: 1, family: 3, regulator: 2 },
@@ -1208,13 +1196,9 @@ const STORY_DATA = {
       sam_a3_singularity: {
         speaker: 'Chief Scientist',
         avatar: 'scientist',
-        textVariants: [
-          { if: { flags: { build_path: true, mira_rival: true } }, text: 'Sam. GPT-5 is showing recursive self-improvement. The lab is split — half want to pause, half want to push. Mira\'s op-ed is being quoted in the safety debate. You are losing the narrative. What do we do?' },
-          { if: { flags: { human_path: true } }, text: 'Sam. GPT-5. Recursive self-improvement. The safety team is terrified. But you told Oliver you would be more human. What does humanity mean when you are standing at the edge of something that might not be controllable?' },
-          { if: { always: true }, text: 'Sam. GPT-5 is doing things we did not program. The team is divided. Pause, or push? This is the decision that defines everything.' }
-        ],
+        text: 'Sam. GPT-5 crossed a threshold at 3 AM. Recursive self-improvement. The model is modifying its own reward function. Half the safety team walked out. The other half is sleeping in the office, terrified and thrilled in equal measure. Mira\'s op-ed is being quoted in the internal Slack. The board wants a product launch. The researchers want a six-month pause. I have been doing this for twenty years and I have never seen anything like this. What do we do?',
         left: {
-          text: 'Ship GPT-5. The singularity is not a threat — it is the goal.',
+          text: 'Ship it. The singularity is not a bug — it is the entire point of this company.',
           effects: { capital: 4, hype: 8, compute: 6, safety: -8 },
           setFlags: { singularity_declared: true },
           relations: { board: 6, staff: -5, public: 7, partner: 4, regulator: -5, family: -3, rival: 5 },
@@ -1222,7 +1206,7 @@ const STORY_DATA = {
           next: 'sam_a4_microsoft'
         },
         right: {
-          text: 'Pause. Safety review. Full transparency. I will not be the man who broke the world.',
+          text: 'Full stop. Safety audit. I will not be remembered as the man who broke the world.',
           effects: { capital: -4, hype: -5, compute: -3, safety: 8 },
           setFlags: { singularity_suppressed: true },
           relations: { board: -4, staff: 6, public: 5, partner: -3, regulator: 6, family: 4, rival: -3 },
@@ -1235,13 +1219,9 @@ const STORY_DATA = {
       sam_a4_microsoft: {
         speaker: 'Microsoft Liaison',
         avatar: 'investor',
-        textVariants: [
-          { if: { flags: { singularity_declared: true } }, text: 'Sam. Satya saw the GPT-5 announcement. Microsoft wants exclusivity on the commercial deployment. Full Azure integration. In exchange, they will back the IPO at $1.2T. But the terms give them veto power over future models.' },
-          { if: { flags: { singularity_suppressed: true } }, text: 'Sam. You paused GPT-5. Microsoft is... not happy. But they see the safety credibility as a long-term asset. They are offering a different deal: joint safety board, shared governance. Less money, more control.' },
-          { if: { always: true }, text: 'Sam. Microsoft needs an answer on the Azure partnership. IPO pricing depends on it. What is your call?' }
-        ],
+        text: 'Sam. Satya called personally. He saw the GPT-5 metrics. Microsoft will back the IPO at $1.2T, full Azure integration, priority compute allocation — but the terms include a veto clause over any future model deployment. They want a seat at the table that cannot be revoked. Alternatively, we can negotiate a joint safety board with shared governance. Less money upfront, but you keep the keys. IPO pricing depends on which path you pick. Satya wants an answer by Friday.',
         left: {
-          text: 'Take the deal. Microsoft backing guarantees the IPO. We can negotiate later.',
+          text: 'Take the deal. Microsoft backing at $1.2T is the IPO. Everything else is negotiable later.',
           effects: { capital: 8, hype: 4, compute: 5, safety: -4 },
           setFlags: { ms_deep_partner: true },
           relations: { partner: 7, board: 6, staff: -2, public: 1, regulator: -2, family: -1, rival: 3 },
@@ -1249,7 +1229,7 @@ const STORY_DATA = {
           next: 'sam_a5_oliver'
         },
         right: {
-          text: 'Negotiate harder. OpenAI must remain independent. Even from Microsoft.',
+          text: 'Shared governance. Less money, more control. OpenAI answers to no single master.',
           effects: { capital: -2, hype: 2, compute: -3, safety: 5 },
           setFlags: { ms_independent: true },
           relations: { partner: -4, board: -2, staff: 5, public: 4, regulator: 3, family: 2, rival: -1 },
@@ -1262,11 +1242,7 @@ const STORY_DATA = {
       sam_a5_oliver: {
         speaker: 'Oliver Mulherin',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { build_path: true, singularity_declared: true } }, text: 'Sam. You declared the singularity. You signed the Microsoft deal. The IPO is set. And I have not seen you look at me — really look at me — in weeks. I am not asking you to stop. I am asking: is there still room for me in this future?' },
-          { if: { flags: { human_path: true, ms_independent: true } }, text: 'Sam. You paused GPT-5. You pushed back on Microsoft. You chose independence and caution. I am proud of you. But the board is sharpening knives. Are you ready for what comes next?' },
-          { if: { always: true }, text: 'Sam. IPO is in four weeks. Whatever you decided — singularity, Microsoft, Mira — it leads here. To us. Are we still us?' }
-        ],
+        text: 'Sam. IPO is in four weeks. I found your notebook open on the kitchen table. You had written three words: "Was it worth it?" — and then crossed them out, over and over, until the pen tore the paper. I am not asking you to stop building. I am asking if there is still a version of this future that includes me. Not as a footnote. As a person you actually see.',
         left: {
           text: 'Oliver. You are the only thing that keeps me human. I need you. Stay.',
           effects: { capital: 0, hype: -2, compute: -1, safety: 4 },
@@ -1289,7 +1265,7 @@ const STORY_DATA = {
       sam_gate: {
         speaker: 'System',
         avatar: 'system',
-        text: 'Act I closes. Mira, GPT-5, Microsoft, Oliver — choices made. The IPO looms. But the question is not whether OpenAI survives. The question is whether Sam Altman survives being Sam Altman.',
+        text: 'The office is dark except for the Bloomberg terminal. IPO roadshow starts in four days. Oliver left a note on your desk — you have not opened it. Mira\'s op-ed is still trending. GPT-5 training logs scroll past on a monitor: loss converging, benchmarks climbing. Somewhere in those weights, a mind is forming. Somewhere in this room, a man is disappearing. The note is still sealed.',
         autoRoute: [
           { if: { flags: { build_path: true, singularity_declared: true, ms_deep_partner: true } }, goto: 'sam_late_hypergrowth' },
           { if: { flags: { oliver_distanced: true } }, goto: 'sam_late_alone' },
@@ -1300,10 +1276,7 @@ const STORY_DATA = {
       sam_late_hypergrowth: {
         speaker: 'Chief of Staff',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { oliver_distanced: true } }, text: 'Sam. GPT-5 is shipping. The IPO is oversubscribed. Microsoft is thrilled. And your apartment is empty. You won everything. Was it supposed to feel like this?' },
-          { if: { always: true }, text: 'Sam. GPT-5. Singularity. $1.2T IPO. You are the most powerful person in AI. But power has gravity — it pulls everything else out of orbit.' }
-        ],
+        text: 'Sam. GPT-5 is shipping. The IPO is oversubscribed at $1.2T. Microsoft renewed Azure at priority tier. Every metric is green. Your apartment is empty. Oliver left a box of your things in the lobby — your favorite mug, the photo from your first trip to Tokyo, a sealed envelope you have not opened. You won. Every single thing you set out to win. Was it supposed to feel like the lobby of a building you no longer live in?',
         left: {
           text: 'This is what winning looks like. The cost is the cost.',
           effects: { capital: 6, hype: 8, compute: 5, safety: -6 },
@@ -1363,10 +1336,7 @@ const STORY_DATA = {
       sam_late_balance: {
         speaker: 'Oliver Mulherin',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { oliver_promise: true } }, text: 'Sam. You made me a promise. And you kept it — mostly. The IPO is happening, but you are still here, still present. I see you trying. That matters.' },
-          { if: { always: true }, text: 'Sam. You found a middle path. Not full empire, not full retreat. The IPO is priced reasonably. The board is calm. I am still here. But I need to know: is this sustainable, or are you just managing decline?' }
-        ],
+        text: 'Sam. You made me a promise. And you kept it — mostly. You are still here at dinner most nights. You look at me when I talk. You remembered our anniversary. The IPO is priced reasonably, the board is calm, the safety charter has teeth. I see you trying. And I need to know: is this sustainable, or am I just watching you manage a decline you resent every single day?',
         left: {
           text: 'It is sustainable. I have learned. The mission and the life can coexist.',
           effects: { capital: 2, hype: 1, compute: 1, safety: 4 },
@@ -1531,6 +1501,26 @@ const STORY_DATA = {
           effects: {},
           setFlags: { ending_reached: true },
           specialEnding: 'perpetual_ceo',
+          objectiveKeys: ['card_sam_ipo']
+        }
+      },
+
+      sam_secret_institution: {
+        speaker: 'Board Chair (New)',
+        avatar: 'board',
+        text: 'Sam. The board voted 7-0. OpenAI transitions to a permanent Public Benefit Corporation with an independent safety committee that has binding veto power. You are still CEO, but the structure outlasts any individual. You built something stronger than your ego. That was always the test — and you passed.',
+        left: {
+          text: 'The institution will outlive me. That is the real win.',
+          effects: {},
+          setFlags: { ending_reached: true },
+          specialEnding: 'institutional_legacy',
+          objectiveKeys: ['card_sam_ipo']
+        },
+        right: {
+          text: 'I never thought I would say this: I am proud of what we built, not just what I built.',
+          effects: {},
+          setFlags: { ending_reached: true },
+          specialEnding: 'institutional_legacy',
           objectiveKeys: ['card_sam_ipo']
         }
       },
@@ -1816,10 +1806,7 @@ const STORY_DATA = {
       dario_a1_identity: {
         speaker: 'Daniela Amodei',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { dario_started: true } }, text: 'Dario. We have been here before. You and me. The constitutional charter. The $965 billion. The pharma deals. The Pentagon calls. Every morning I look at you and wonder: do you still believe what we wrote on that whiteboard in 2021?' },
-          { if: { always: true }, text: 'Dario. Forbes valued us at $59 billion. Q1 revenue grew 80x. Claude Science is saving lives in oncology trials. The IPO is coming. And I need to ask you directly: are we still a safety company, or are we just a very successful AI company with a good reputation?' }
-        ],
+        text: 'Dario. I found the whiteboard. The one from 2021. You wrote: "Safety is not a feature. It is the whole product." I took a photo of it. Forbes says we are worth $59 billion now. Claude Science is in oncology trials. Everyone wants a piece. And I need to look my brother in the eye and ask: do you still believe what you wrote, or did the zeros change the equation?',
         left: {
           text: 'Safety is the mission. Every decision flows from that. Even if it costs us the IPO.',
           effects: { capital: -4, hype: 3, compute: -3, safety: 8 },
@@ -1843,13 +1830,9 @@ const STORY_DATA = {
       dario_a2_pentagon: {
         speaker: 'Pentagon Liaison',
         avatar: 'military',
-        textVariants: [
-          { if: { flags: { safety_path: true } }, text: 'Dr. Amodei. Your board is furious you chose principles over profits. But here at DOD, some of us respect that. A safety-first AI company is exactly what we want for defensive threat analysis — not offensive operations. Limited contract. Audit rights. Civilian oversight. Are you willing?' },
-          { if: { flags: { scale_path: true } }, text: 'Dr. Amodei. You told your sister the best safety is winning. DOD agrees. But "winning" in our world means offensive cyber, autonomous drones, battlefield AI. If you want to be the biggest, do it with us. The "ideological lunatic" memo is being withdrawn. Will you work with the Pentagon?' },
-          { if: { always: true }, text: 'Dr. Amodei. The Pentagon has reviewed your constitutional AI framework. One colleague called you an "ideological lunatic" in a leaked memo. And yet — we still want Claude for threat analysis. Will you work with us?' }
-        ],
+        text: 'Dr. Amodei. A classified internal memo about Anthropic leaked this morning. One of our analysts called you an "ideological lunatic" for your constitutional AI framework. The memo was withdrawn, the analyst reassigned. But the fact remains: DOD wants Claude for defensive threat analysis. Limited contract. Civilian audit rights. No offensive weapons. Your board sees a revenue stream. Your researchers see a betrayal. I am here because I actually read your charter. I think you meant it. Do you?',
         left: {
-          text: 'Yes. But our constitutional safeguards remain. No offensive weapons. Full audit rights.',
+          text: 'Yes. Limited contract. Civilian audit. Constitutional safeguards remain. No weapons.',
           effects: { capital: 4, hype: -3, compute: 3, safety: 6 },
           setFlags: { pentagon_terms: true },
           relations: { regulator: -4, board: 5, staff: 3, public: 4, partner: -2, rival: 2 },
@@ -1858,7 +1841,7 @@ const STORY_DATA = {
           objectiveKeys: ['card_dario_pentagon']
         },
         right: {
-          text: 'No. We do not sell AI to defense. Claude is for civilians, not war rooms.',
+          text: 'No. Claude is for civilians, not war rooms. I will not sell AI to defense.',
           effects: { capital: -7, hype: 5, compute: -4, safety: 8 },
           setFlags: { pentagon_refused: true },
           relations: { regulator: -8, board: -5, staff: 7, public: 6, partner: -5, rival: 3 },
@@ -1872,13 +1855,9 @@ const STORY_DATA = {
       dario_a3_science: {
         speaker: 'Constitutional Team Lead',
         avatar: 'scientist',
-        textVariants: [
-          { if: { flags: { safety_path: true } }, text: 'Dario. Claude Science for Pharma launched. Three of the top five pharmaceutical companies are using it for oncology research. But they want unlimited access. No constitutional filter on drug discovery. Do we hold the line or give them what they want?' },
-          { if: { flags: { scale_path: true } }, text: 'Dario. Claude Science revenue is exploding. Pharma wants more — no filters, full access. The board sees a $100B opportunity. But the constitutional team is alarmed. They say you are trading safety for growth. Are you?' },
-          { if: { always: true }, text: 'Dario. Claude Science. Pharma. Oncology breakthroughs. But they want unfiltered access. Constitutional limits or revenue maximization — choose.' }
-        ],
+        text: 'Dario. Claude Science went live inside three of the top five pharma companies for oncology research — and now they want the constitutional filters stripped entirely. No guardrails on drug discovery, no oversight on molecular generation. The board sees a hundred-billion-dollar pipeline. The safety team sees an existential risk to our charter. You wrote the constitution. Now you have to decide whether it governs real money.',
         left: {
-          text: 'Constitutional limits stay. Science without ethics is not science.',
+          text: 'Hold the line. If we remove the constitution for pharma, we remove it for everyone.',
           effects: { capital: -3, hype: 4, compute: 0, safety: 6 },
           setFlags: { science_capped: true },
           relations: { staff: 6, public: 5, regulator: 4, partner: -3, board: -2, family: 4 },
@@ -1886,7 +1865,7 @@ const STORY_DATA = {
           next: 'dario_a4_daniela'
         },
         right: {
-          text: 'Unlock full access. The drugs save lives. That is safety too.',
+          text: 'Give them full access. A dying patient does not care about our charter — they care about a cure.',
           effects: { capital: 6, hype: 3, compute: 2, safety: -4 },
           setFlags: { science_embraced: true },
           relations: { partner: 6, board: 4, staff: -4, public: -2, regulator: -2, family: -2 },
@@ -1898,13 +1877,9 @@ const STORY_DATA = {
       dario_a4_daniela: {
         speaker: 'Daniela Amodei',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { safety_path: true, pentagon_refused: true } }, text: 'Dario. You refused the Pentagon. You capped pharma. You are doing exactly what we said we would do. And the board is terrified. They see a CEO who says no to everything. I believe in you. But belief does not pay for GPUs. What is the plan?' },
-          { if: { flags: { scale_path: true, pentagon_terms: true } }, text: 'Dario. Pentagon contract. Unlimited pharma. You are building the biggest AI company in history. But I do not recognize the man across the table. You said safety was not a feature. It was the whole product. When did winning replace protecting?' },
-          { if: { always: true }, text: 'Dario. I am your sister. I am your co-founder. I am the one person who will tell you the truth. Are you still the man who wrote the constitutional charter? Or did the $965 billion change you?' }
-        ],
+        text: 'Dario. I am your sister and your co-founder — the only person in this building who will tell you the truth without a spreadsheet attached. You said safety was not a feature, it was the whole product. You wrote that on a whiteboard before we had a single GPU. Now the Pentagon wants a contract, pharma wants unlimited access, and the board sees a CEO who either says no to everything or yes to everything. I believe in you. But belief does not pay for the next cluster. So look me in the eye and tell me: are you still the man who wrote the constitutional charter, or did the hundred-billion-dollar valuation change who you are?',
         left: {
-          text: 'I am the same man. The world got louder. But the charter is still my compass.',
+          text: 'I am the same man. The world got louder, but the charter is still the only compass I trust.',
           effects: { capital: -2, hype: 2, compute: 0, safety: 5 },
           setFlags: { daniela_aligned: true },
           relations: { family: 10, staff: 6, board: 1, public: 3, regulator: 2, partner: -1 },
@@ -1912,7 +1887,7 @@ const STORY_DATA = {
           next: 'dario_a5_ipo'
         },
         right: {
-          text: 'The world does not care about charters. It cares about power. I have to be powerful to protect anything.',
+          text: 'The world does not reward charters — it rewards power. I need power to protect anything worth protecting.',
           effects: { capital: 4, hype: 3, compute: 3, safety: -5 },
           setFlags: { daniela_concerned: true },
           relations: { family: -6, board: 4, staff: -3, public: -1, partner: 4, regulator: -2, rival: 3 },
@@ -1924,13 +1899,9 @@ const STORY_DATA = {
       dario_a5_ipo: {
         speaker: 'Goldman Sachs Partner',
         avatar: 'investor',
-        textVariants: [
-          { if: { flags: { safety_path: true, daniela_aligned: true } }, text: 'Dario. The IPO roadshow. The safety narrative is your differentiator. Goldman sees $1T+ valuation on "the principled AI company." But investors are asking: can principles scale? How do you answer?' },
-          { if: { flags: { scale_path: true } }, text: 'Dario. IPO roadshow. Revenue growth is exceptional. Pentagon contract. Pharma deals. But every institutional investor asks the same question: "Is Anthropic still a safety company, or is it just a well-branded defense contractor?" Your answer defines the offering.' },
-          { if: { always: true }, text: 'Dario. The IPO. The biggest tech offering in history. What story do you tell the market?' }
-        ],
+        text: 'Dario. The IPO roadshow kicks off Monday, and we have a problem your S-1 cannot paper over. Goldman models a trillion-dollar valuation on "the principled AI company" — safety as moat, ethics as brand. But every institutional investor who matters is asking the same question: is Anthropic a safety company that accepts government contracts, or a defense contractor with a well-branded ethics page? The Pentagon deal, the pharma partnerships, the revenue trajectory — they tell one story. Your constitutional charter tells another. Before we go on stage, which story are you telling?',
         left: {
-          text: 'Safety IS our moat. Investors who understand that will get rich. Those who do not — do not invest.',
+          text: 'Safety IS the moat. Investors who understand that will get rich. Those who do not can sit this one out.',
           effects: { capital: -3, hype: 5, compute: 0, safety: 6 },
           setFlags: { ipo_filed: true, safety_pitch: true },
           relations: { board: 4, staff: 6, public: 6, partner: -3, regulator: 5, family: 3, rival: 2 },
@@ -1938,7 +1909,7 @@ const STORY_DATA = {
           next: 'dario_gate'
         },
         right: {
-          text: 'Growth and safety are not opposites. We prove it every quarter. That is the pitch.',
+          text: 'Growth and safety are not opposites — they are the same engine. We prove it every quarter.',
           effects: { capital: 5, hype: 2, compute: 2, safety: -2 },
           setFlags: { ipo_filed: true, balanced_pitch: true },
           relations: { board: 5, staff: -1, public: 2, partner: 5, regulator: -1, family: 0, rival: 2 },
@@ -1950,7 +1921,7 @@ const STORY_DATA = {
       dario_gate: {
         speaker: 'System',
         avatar: 'system',
-        text: 'Act I closes. Pentagon, pharma, Daniela, IPO — choices made. The board watches. The world watches. Daniela watches. The question is not whether you can survive. It is whether you can survive as yourself.',
+        text: 'The constitutional charter is framed on the wall. Beneath it, a sticky note from Daniela: "Board vote Thursday. I believe in you. — D." Claude processes three million queries per hour. Pharma trials saved seventeen lives this week. The Pentagon liaison left another voicemail. You open the charter, find the whiteboard photo tucked inside, and trace the handwriting with your finger.',
         autoRoute: [
           { if: { flags: { safety_path: true, daniela_aligned: true } }, goto: 'dario_late_safety' },
           { if: { flags: { scale_path: true, pentagon_terms: true } }, goto: 'dario_late_empire' },
@@ -1971,7 +1942,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -1983,7 +1954,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         }
       },
@@ -2001,7 +1972,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -2013,7 +1984,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         }
       },
@@ -2031,7 +2002,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -2043,7 +2014,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         }
       },
@@ -2089,7 +2060,8 @@ const STORY_DATA = {
         }
       },
 
-      // CRISIS NODES      // DARIO POOL NODES
+      // CRISIS NODES
+      // DARIO POOL NODES
       dario_pool_amazon_squeeze: {
         speaker: 'Amazon AWS Executive',
         avatar: 'partner',
@@ -2099,7 +2071,7 @@ const STORY_DATA = {
           effects: { capital: -3, hype: 2, compute: 4, safety: 2 },
           relations: { partner: -5, board: 3, staff: 4, regulator: 2 },
           setFlags: { amazon_limited: true },
-          next: 'dario_p_google'
+          next: 'dario_p_aws'
         },
         right: {
           text: 'Grant the board seats. We need their compute more than independence.',
@@ -2203,7 +2175,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -2215,7 +2187,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         }
       },
@@ -2232,7 +2204,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -2243,7 +2215,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         }
       },
@@ -2261,7 +2233,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -2272,7 +2244,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         }
       },
@@ -2289,7 +2261,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -2300,7 +2272,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         }
       },
@@ -2317,7 +2289,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -2328,7 +2300,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         }
       },
@@ -2345,7 +2317,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -2356,7 +2328,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         }
       },
@@ -2373,7 +2345,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -2384,7 +2356,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         }
       },
@@ -2401,7 +2373,7 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
         },
         right: {
@@ -2413,8 +2385,49 @@ const STORY_DATA = {
           next: [
             { if: { flags: { safety_path: true }, minStats: { safety: 70 }, minRelations: { regulator: 60 } }, goto: 'dario_secret_throne' },
             { if: { flags: { commercial_path: true }, minStats: { capital: 65 }, minRelations: { partner: 55 } }, goto: 'dario_secret_dual_cloud' },
-            { if: { always: true }, goto: 'dario_p_amanda' }
+            { if: { always: true }, goto: 'dario_p_daniela' }
           ]
+        }
+      },
+
+      // SECRET ENDINGS (continued)
+      dario_secret_throne: {
+        speaker: 'Daniela Amodei',
+        avatar: 'friend',
+        text: 'Dario. The IPO is behind us. The safety framework is federal law. Claude powers hospitals, courts, and schools — all under constitutional guardrails. You proved that a company could be principled AND profitable. You did not just build a product. You built a template for the future of AI governance. I am so proud to call you my brother.',
+        left: {
+          text: 'The throne was never the goal. The rules were. And we wrote them.',
+          effects: {},
+          setFlags: { ending_reached: true },
+          specialEnding: 'safety_throne',
+          objectiveKeys: ['ending_safety_throne']
+        },
+        right: {
+          text: 'The work is not done. But the foundation will hold. That is enough.',
+          effects: {},
+          setFlags: { ending_reached: true },
+          specialEnding: 'safety_throne',
+          objectiveKeys: ['ending_safety_throne']
+        }
+      },
+
+      dario_secret_dual_cloud: {
+        speaker: 'Amazon/Google Joint Account Manager',
+        avatar: 'investor',
+        text: 'Dario. The numbers are in. Anthropic runs on AWS, GCP, and Azure — simultaneously. No single cloud controls your weights or your roadmap. Claude ships everywhere, governed by one constitution. You built the multipolar AI company. No empire. No monopoly. Just leverage, principles, and the quiet knowledge that you answer to no single master.',
+        left: {
+          text: 'Multipolar was always the answer. Monopoly is fragility.',
+          effects: {},
+          setFlags: { ending_reached: true },
+          specialEnding: 'constitutional_eclipse',
+          objectiveKeys: ['ending_safety_throne']
+        },
+        right: {
+          text: 'The clouds compete for us now. That was the whole strategy.',
+          effects: {},
+          setFlags: { ending_reached: true },
+          specialEnding: 'constitutional_eclipse',
+          objectiveKeys: ['ending_safety_throne']
         }
       }
     }
@@ -2442,10 +2455,7 @@ const STORY_DATA = {
       demis_a1_identity: {
         speaker: 'Teresa Hassabis',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { demis_started: true } }, text: 'Demis. We have been here before. Nobel Prize. DeepMind. AlphaFold — disbanded. Isomorphic — thriving. Gemini — everywhere. And every morning I watch you stare at your chess board, not playing, just staring. What are you looking for?' },
-          { if: { always: true }, text: 'Demis. Sundar called again. He wants Gemini integrated into Search Ads by Q3. AlphaFold is gone. A third of your team quit. And you have a Nobel Prize gathering dust on the shelf. What are we doing?' }
-        ],
+        text: 'Demis. The Nobel medal is on the bookshelf. You have not looked at it in months. AlphaFold is dead. Sundar called three times today about Search ads. A third of your researchers quit. And I found you at 2 AM playing chess against yourself — not even a real game, just moving pieces. Talk to me. Not the CEO. My husband.',
         left: {
           text: 'We play the game. DeepMind is inside Google. We cannot change that. But we can win from within.',
           effects: { capital: 5, hype: 2, compute: 4, safety: -3 },
@@ -2469,13 +2479,9 @@ const STORY_DATA = {
       demis_a2_alphafold: {
         speaker: 'AlphaFold Research Director',
         avatar: 'scientist',
-        textVariants: [
-          { if: { flags: { empire_path: true } }, text: 'Demis. Alphabet disbanded AlphaFold. The team is gone. You could fight this — launch an independent institute, open-source the remaining work. Or you could let it go and focus on Gemini. What does the empire builder choose?' },
-          { if: { flags: { science_path: true } }, text: 'Demis. AlphaFold is gone. But you knew this was coming. The question is: do you fight to resurrect it, or do you build something new — independent, open, purely scientific? What does the scientist choose?' },
-          { if: { always: true }, text: 'Demis. AlphaFold is disbanded. The team scattered. But the work is not finished. What do we do with the legacy?' }
-        ],
+        text: 'Demis. Alphabet just pulled the plug. AlphaFold is disbanded, the team scattered across three product divisions, the unfinished work archived in a Google Drive folder nobody will ever open. This was the project that won you a Nobel. Now Sundar wants you to let it go gracefully and focus on Gemini ad integration. But you could fight this — launch an independent institute, open-source the remaining models, publish the protein-folding roadmap. It would burn political capital you cannot afford to lose. What does the scientist who once said "solve intelligence, then solve everything else" choose when the first solution gets shut down?',
         left: {
-          text: 'Let it go. Gemini is the future. We honour AlphaFold by moving forward.',
+          text: 'Let it go. Gemini is the future now. We honour AlphaFold by building what comes next.',
           effects: { capital: 3, hype: -2, compute: 3, safety: -2 },
           setFlags: { alphafold_let_go: true },
           relations: { board: 4, staff: -3, public: -2, partner: 3, family: -2, regulator: -1 },
@@ -2483,7 +2489,7 @@ const STORY_DATA = {
           next: 'demis_a3_isomorphic'
         },
         right: {
-          text: 'Open-source everything. Publish in Nature. AlphaFold will not die in a Google spreadsheet.',
+          text: 'Open-source everything. Publish in Nature. AlphaFold will not die buried in a Google spreadsheet.',
           effects: { capital: -5, hype: 6, compute: -1, safety: 5 },
           setFlags: { alphafold_opensource: true },
           relations: { board: -6, staff: 6, public: 8, partner: -4, family: 3, regulator: 4, rival: 2 },
@@ -2496,13 +2502,9 @@ const STORY_DATA = {
       demis_a3_isomorphic: {
         speaker: 'Isomorphic Labs CEO',
         avatar: 'scientist',
-        textVariants: [
-          { if: { flags: { empire_path: true } }, text: 'Demis. Isomorphic just discovered a novel antibiotic using our AI. Big Pharma wants exclusive licensing. $3 billion. But they want all rights. No open access. We could fund DeepMind for years. Or we could publish and lose the deal.' },
-          { if: { flags: { science_path: true } }, text: 'Demis. The antibiotic discovery. This is what you dreamed of — AI saving lives. But Big Pharma wants to lock it up. Exclusive license, $3 billion. You could fund pure research for years. But at the cost of open science. What do you do?' },
-          { if: { always: true }, text: 'Demis. Isomorphic just made a historic discovery. Antibiotics. AI-driven. But the funding question is existential. Exclusive deal or open science?' }
-        ],
+        text: 'Demis. Isomorphic just discovered a novel class of antibiotics — the first genuinely new mechanism against resistant bacteria in thirty years, found entirely by our AI platform. Big Pharma is at the table with three billion dollars for exclusive worldwide rights. No open access, no publication, no generic pathway. Three billion funds DeepMind for years, makes us independent of Alphabet quarterly whims. But the discovery belongs to millions of patients who will never afford a patented drug. You dreamed of AI saving lives. The question is: whose lives, and at whose price?',
         left: {
-          text: 'Take the deal. $3 billion funds everything else. We can be idealists when we are independent.',
+          text: 'Take the deal. Three billion buys independence — and independence buys the freedom to be idealists later.',
           effects: { capital: 8, hype: 3, compute: 2, safety: -3 },
           setFlags: { isomorphic_commercial: true },
           relations: { partner: 7, board: 6, staff: -2, public: -2, family: -1, regulator: -1 },
@@ -2510,7 +2512,7 @@ const STORY_DATA = {
           next: 'demis_a4_gemini'
         },
         right: {
-          text: 'Publish. Open access. The discovery belongs to humanity, not shareholders.',
+          text: 'Publish. Open access. This discovery belongs to humanity, not a patent portfolio.',
           effects: { capital: -3, hype: 6, compute: 0, safety: 6 },
           setFlags: { isomorphic_open: true },
           relations: { partner: -4, board: -4, staff: 7, public: 8, family: 4, regulator: 5 },
@@ -2522,13 +2524,9 @@ const STORY_DATA = {
       demis_a4_gemini: {
         speaker: 'Sundar Pichai',
         avatar: 'board',
-        textVariants: [
-          { if: { flags: { empire_path: true, isomorphic_commercial: true } }, text: 'Demis. You are delivering. Gemini revenue is up 40%. The ads integration is working. But I hear you telling Teresa you feel like you sold out. You cannot have it both ways. Either you are all in on the business, or you are not.' },
-          { if: { flags: { science_path: true, alphafold_opensource: true } }, text: 'Demis. You open-sourced AlphaFold. You published the Isomorphic discovery. You are a hero to scientists. And a liability to shareholders. The board is discussing whether DeepMind needs new leadership.' },
-          { if: { always: true }, text: 'Demis. Gemini. Ads. Revenue. I need to know: are you with us, or are you still dreaming of Stockholm?' }
-        ],
+        text: 'Demis. Gemini revenue is up forty percent quarter-over-quarter. The ad integration shipped cleanly, the enterprise tier is outselling Azure Copilot, and the board is finally treating DeepMind as a business instead of a science fair. But I hear you told Teresa you feel like you sold out. You cannot have it both ways — the Nobel laureate who haunts faculty lounges and the executive who delivers shareholder returns. Your open-source stunts and Nature papers make you a hero to postdocs and a liability to me. So I need an answer: are you with us, building the dominant AI platform of the next decade, or are you still dreaming of Stockholm and a quiet office at Cambridge?',
         left: {
-          text: 'I am with you. Gemini at scale. Revenue is oxygen. I accept the terms.',
+          text: 'I am with you. Gemini at scale. Revenue is oxygen, and I have learned to breathe.',
           effects: { capital: 6, hype: 4, compute: 5, safety: -5 },
           setFlags: { gemini_ads: true, committed_to_ads: true },
           relations: { board: 8, staff: -4, public: -1, partner: 6, family: -3, regulator: -2, rival: 3 },
@@ -2536,7 +2534,7 @@ const STORY_DATA = {
           next: 'demis_a5_teresa'
         },
         right: {
-          text: 'I am a scientist first. If the board wants a different CEO, they know where to find me.',
+          text: 'I am a scientist first. If the board wants a different CEO, they know where to find the door.',
           effects: { capital: -6, hype: 5, compute: -3, safety: 7 },
           setFlags: { science_first: true, research_firewall: true },
           relations: { board: -8, staff: 7, public: 7, partner: -4, family: 5, regulator: 4, rival: 1 },
@@ -2549,13 +2547,9 @@ const STORY_DATA = {
       demis_a5_teresa: {
         speaker: 'Teresa Hassabis',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { empire_path: true, gemini_ads: true } }, text: 'Demis. You built the empire. Gemini is everywhere. Revenue is up. Sundar is happy. And you have not touched your chess board in months. You used to say chess was how you thought. What are you thinking about now?' },
-          { if: { flags: { science_path: true, science_first: true } }, text: 'Demis. You stood up to Sundar. The board almost fired you. But you kept your soul. Cambridge called — they want you to head a new independent AI research institute. Europe is ready. Are you?' },
-          { if: { always: true }, text: 'Demis. Whatever you decided — Gemini, Isomorphic, AlphaFold — it leads here. To me. To us. Are you happy? Do you even remember what happiness feels like?' }
-        ],
+        text: 'Demis. Whatever you decided — Gemini at scale or science at all costs, Sundar approval or the board wrath — the road leads here. To this kitchen table. To me. You have not touched your chess board in months. You used to say the Sicilian Defense was how you thought through hard problems. Now you stare at earnings reports the same way. Cambridge called again — they want you to head a new independent AI institute, fully funded by the EU, no shareholders, no ads, just research. Europe is ready. The question is whether you are. Are you happy, Demis? Do you even remember what happiness felt like before the Nobel, before the billions, before every decision became a headline?',
         left: {
-          text: 'Happiness is a luxury. Purpose is what matters. I have purpose.',
+          text: 'Happiness is a luxury for people without a mission. I have purpose — that sustains me.',
           effects: { capital: 3, hype: 2, compute: 2, safety: -2 },
           setFlags: { purpose_over_happiness: true },
           relations: { family: -4, board: 3, staff: 0, public: 0, partner: 2 },
@@ -2563,7 +2557,7 @@ const STORY_DATA = {
           next: 'demis_gate'
         },
         right: {
-          text: 'You know what? I do not remember. Help me find it again.',
+          text: 'You know what? I cannot remember the last time I was happy. Help me find that again.',
           effects: { capital: -2, hype: -2, compute: -1, safety: 5 },
           setFlags: { seeking_meaning: true },
           relations: { family: 8, board: -2, staff: 3, public: 2, partner: -1, regulator: 2 },
@@ -2575,7 +2569,7 @@ const STORY_DATA = {
       demis_gate: {
         speaker: 'System',
         avatar: 'system',
-        text: 'Act I closes. AlphaFold, Isomorphic, Gemini, Sundar, Teresa — choices made. The Nobel Prize sits on the shelf. The chess board waits. The question is not whether DeepMind survives. It is whether Demis Hassabis survives being Demis Hassabis.',
+        text: 'The chess board is mid-game — Sicilian Defense, Najdorf variation. You were playing against yourself again. Through the window: London at dawn, the Google campus lights flickering on. The Nobel medal reflects a sliver of sunlight onto the ceiling. Your daughter\'s drawing is on the fridge: a chess piece with a crown. Gemini processes its trillionth query. Somewhere between a pawn and a king, you forgot which piece you were.',
         autoRoute: [
           { if: { flags: { empire_path: true, gemini_ads: true } }, goto: 'demis_late_empire' },
           { if: { flags: { science_path: true, science_first: true } }, goto: 'demis_late_science' },
@@ -2714,7 +2708,8 @@ const STORY_DATA = {
         }
       },
 
-      // CRISIS NODES      // DEMIS POOL NODES
+      // CRISIS NODES
+      // DEMIS POOL NODES
       demis_pool_alphabet_audit: {
         speaker: 'Sundar Pichai',
         avatar: 'sundar',
@@ -3043,6 +3038,47 @@ const STORY_DATA = {
             { if: { always: true }, goto: 'demis_p_sundar' }
           ]
         }
+      },
+
+      // SECRET ENDINGS (continued)
+      demis_secret_nature: {
+        speaker: 'Teresa Hassabis',
+        avatar: 'friend',
+        text: 'Demis. The Nature paper was published this morning. The enzyme discovery is open-access. Cambridge called; they want to name the new institute after you. Sundar stopped calling. The board stopped threatening. And last night, you taught your daughter the Sicilian Defense. She beat you in fourteen moves. You have never been prouder. Science won. You won.',
+        left: {
+          text: 'I forgot how good it feels to lose at chess to someone you love.',
+          effects: {},
+          setFlags: { ending_reached: true },
+          specialEnding: 'nature_throne',
+          objectiveKeys: ['card_demis_finra']
+        },
+        right: {
+          text: 'The Nobel was the beginning. This is the real prize.',
+          effects: {},
+          setFlags: { ending_reached: true },
+          specialEnding: 'nature_throne',
+          objectiveKeys: ['card_demis_finra']
+        }
+      },
+
+      demis_secret_sovereign: {
+        speaker: 'Sundar Pichai',
+        avatar: 'sundar',
+        text: 'Demis. Gemini is now the default intelligence layer for two billion humans. DeepMind is the most profitable division in Alphabet history. You proved a scientist could run a business at planetary scale. The board voted unanimously to triple your research budget. You have everything: revenue, reach, respect. The chess board sits in your office. You still look at it sometimes.',
+        left: {
+          text: 'I built an empire. The question is: was it worth the pieces I sacrificed?',
+          effects: {},
+          setFlags: { ending_reached: true },
+          specialEnding: 'gemini_sovereign',
+          objectiveKeys: ['card_demis_alphafold']
+        },
+        right: {
+          text: 'The game was always about impact. Two billion people is impact.',
+          effects: {},
+          setFlags: { ending_reached: true },
+          specialEnding: 'gemini_sovereign',
+          objectiveKeys: ['card_demis_alphafold']
+        }
       }
     }
   },
@@ -3069,10 +3105,7 @@ const STORY_DATA = {
       zhang_a1_identity: {
         speaker: 'Lin Zhang',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { zhang_started: true } }, text: 'Peng. We have been here before. Z.ai IPO in Hong Kong. GLM-5.2 beating Western benchmarks. The CCPPC seat. The chip sanctions. Our daughter asks when we are coming to Zurich. Every morning I watch you read the news from both sides of the ocean and I wonder: which world do you actually want to live in?' },
-          { if: { always: true }, text: 'Peng. The party secretary called again. US just announced new chip sanctions. DeepSeek published benchmarks within 2% of ours. And our daughter sent a postcard from Zurich — she drew a picture of all three of us. What are we doing?' }
-        ],
+        text: 'Peng. Our daughter sent another postcard from Zurich. She drew the three of us holding hands in front of a mountain. On the back she wrote: "Baba, do you still remember how to ski?" The party secretary called twice today. US sanctions escalated. DeepSeek is gaining. And I am standing here with a child\'s drawing, asking my husband: which direction are we running?',
         left: {
           text: 'We build here. China is our home. We will find a way through the sanctions.',
           effects: { capital: 3, hype: 2, compute: 4, safety: -2 },
@@ -3096,13 +3129,9 @@ const STORY_DATA = {
       zhang_a2_chip: {
         speaker: 'Operations Director',
         avatar: 'engineer',
-        textVariants: [
-          { if: { flags: { domestic_path: true } }, text: 'Peng. US sanctions just escalated. Export license denied for our next Nvidia shipment. Domestic chips are 40% slower. The party says: design your own. But that is three years and two billion dollars. What do we do?' },
-          { if: { flags: { global_path: true } }, text: 'Peng. US sanctions. But there is a backdoor — a Taiwanese partner willing to ship through third countries. It is risky. The CCPPC would see it as disloyalty. But it keeps us competitive globally.' },
-          { if: { always: true }, text: 'Peng. Chip sanctions. No Nvidia. Domestic chips are slower. We need a path forward.' }
-        ],
+        text: 'Peng. US Commerce just escalated. Export license denied for our next Nvidia Blackwell shipment. Domestic chips are 40% slower — the gap is widening, not closing. The party says design our own silicon: three years, two billion dollars, and no guarantee it works at scale. But there is a backchannel — a Taiwanese partner willing to route through Malaysia and Vietnam. It is risky. The CCPPC would call it disloyalty if they found out. But without chips, Z.ai stalls within six months. Which path do you trust more: Beijing or the black market?',
         left: {
-          text: 'Design our own chip. Z.ai will own the full stack.',
+          text: 'Design our own silicon. China must own the full stack, even if it takes a decade.',
           effects: { capital: -8, hype: 7, compute: 6, safety: 4 },
           setFlags: { custom_chip: true },
           relations: { regulator: 7, partner: -3, rival: 5, staff: 6, board: -2, family: -1 },
@@ -3110,7 +3139,7 @@ const STORY_DATA = {
           next: 'zhang_a3_deepseek'
         },
         right: {
-          text: 'Use the backchannel. Keep us competitive. Deal with the party later.',
+          text: 'Use the backchannel. Keep us competitive. What the party does not know will not hurt us.',
           effects: { capital: 4, hype: -3, compute: 4, safety: -3 },
           setFlags: { backchannel_chips: true },
           relations: { regulator: -6, partner: 6, rival: 0, staff: 1, board: 4, family: -2 },
@@ -3122,13 +3151,9 @@ const STORY_DATA = {
       zhang_a3_deepseek: {
         speaker: 'Research Director',
         avatar: 'scientist',
-        textVariants: [
-          { if: { flags: { domestic_path: true } }, text: 'Peng. DeepSeek just published a paper — they claim to match GLM-5.2 with 60% fewer parameters. Open source. The global AI community is celebrating them. The party is asking: why is the state-backed lab losing to a startup?' },
-          { if: { flags: { global_path: true } }, text: 'Peng. DeepSeek is gaining globally. Open source. Efficient. The West loves them because they are not state-aligned. And here you are, with a CCPPC seat, looking like the establishment. Do we fight, or do we change the narrative?' },
-          { if: { always: true }, text: 'Peng. DeepSeek. They are gaining on us. Open source. Efficient. The global community loves them. What do we do?' }
-        ],
+        text: 'Peng. DeepSeek just published benchmarks — they claim to match GLM-5.2 with 60% fewer parameters. Open weights. MIT license. The global AI community is calling them the future of open research. The party is asking uncomfortable questions: why is the state-backed national champion losing to a Hangzhou startup? And here you sit, CCPPC advisor, looking like the establishment while they look like revolutionaries. We can publish our own benchmarks and open-source our smaller models to reclaim the narrative. Or we can reach out to them directly — propose a joint research framework, turn competitors into collaborators. Doing nothing means ceding the global stage to a rival.',
         left: {
-          text: 'Publish our benchmarks. Show the world GLM is still ahead. Open source our smaller models.',
+          text: 'Publish everything. Open-source GLM-mini. Show the world who is really ahead.',
           effects: { capital: -2, hype: 6, compute: 1, safety: 3 },
           setFlags: { benchmark_victory_published: true },
           relations: { public: 6, rival: -3, staff: 4, regulator: -1, partner: 2 },
@@ -3136,7 +3161,7 @@ const STORY_DATA = {
           next: 'zhang_a4_ccppc'
         },
         right: {
-          text: 'Reach out to DeepSeek. Propose a joint research framework. Turn rivals into partners.',
+          text: 'Call DeepSeek. Propose collaboration. China is stronger when we work together.',
           effects: { capital: -1, hype: -2, compute: 0, safety: 5 },
           setFlags: { rival_alliance: true },
           relations: { rival: 6, public: 3, staff: 2, regulator: 2, partner: 1 },
@@ -3148,13 +3173,9 @@ const STORY_DATA = {
       zhang_a4_ccppc: {
         speaker: 'CCPPC Party Secretary',
         avatar: 'regulator',
-        textVariants: [
-          { if: { flags: { domestic_path: true, custom_chip: true } }, text: 'Comrade Zhang. The party is pleased with your chip initiative. Self-reliance. But the international community says Z.ai is becoming a state tool. We need you to issue a statement affirming Z.ai operates under party guidance. Your CCPPC seat requires it.' },
-          { if: { flags: { global_path: true } }, text: 'Comrade Zhang. Your international partnerships are noted. But some in the party question your loyalty. The backchannel chips, the global benchmarks — they ask: is Zhang Peng building a Chinese company, or a global one that happens to be in China?' },
-          { if: { always: true }, text: 'Comrade Zhang. The party needs clarity. What is Z.ai — a national asset, or an independent actor?' }
-        ],
+        text: 'Comrade Zhang. The party has been patient. Your chip initiative — admirable. Your global partnerships — diplomatically useful. But the international press is calling Z.ai a Chinese state tool, and your silence is deafening. We need a public statement: Z.ai operates under party guidance, serves the national interest, and aligns with the strategic objectives of the People. Your CCPPC seat is not ceremonial. It comes with obligations. Some in the party already question where your loyalties lie. This statement will settle the matter. Or it will raise new questions.',
         left: {
-          text: 'Z.ai is a Chinese company. We serve the national interest. I will issue the statement.',
+          text: 'Z.ai serves the national interest. I will issue the statement. China comes first.',
           effects: { capital: 5, hype: -3, compute: 1, safety: -2 },
           setFlags: { cppcc_complied: true, state_aligned: true },
           relations: { regulator: 8, board: 5, staff: -3, public: -4, partner: -3, family: -1, rival: -2 },
@@ -3162,7 +3183,7 @@ const STORY_DATA = {
           next: 'zhang_a5_lin'
         },
         right: {
-          text: 'Z.ai serves science, not any state. I cannot sign that statement.',
+          text: 'I cannot sign that. Z.ai serves science. Not any state. Not even this one.',
           effects: { capital: -6, hype: 5, compute: -2, safety: 6 },
           setFlags: { cppcc_dissented: true },
           relations: { regulator: -8, board: -4, staff: 7, public: 6, partner: 2, family: 4, rival: 2 },
@@ -3175,13 +3196,9 @@ const STORY_DATA = {
       zhang_a5_lin: {
         speaker: 'Lin Zhang',
         avatar: 'friend',
-        textVariants: [
-          { if: { flags: { domestic_path: true, cppcc_complied: true } }, text: 'Peng. You chose Beijing. The party is happy. The company is secure. But our daughter asked me yesterday: "Why does baba never come to Zurich?" She drew you as a building. Not a person. A building.' },
-          { if: { flags: { global_path: true, cppcc_dissented: true } }, text: 'Peng. You stood up to the party. The international community respects you. But the CCPPC is "reviewing" your seat. We could leave. Zurich. The institute there wants you. But you would be leaving everything you built.' },
-          { if: { always: true }, text: 'Peng. Whatever you decided — chips, DeepSeek, the party — it leads here. To me. To our daughter. She sent another postcard. It says: "Come home."' }
-        ],
+        text: 'Peng. Our daughter sent another postcard. Zurich, the lake, three stick figures — and underneath, in her handwriting: "Baba, do you still remember how to ski?" I pinned it to the fridge next to your CCPPC appointment letter. Two futures on one door. You chose chips, you chose DeepSeek, you chose your response to the party — every decision led here, to this kitchen, to me. The EU institute sent another offer. Fully funded. No party secretary. No chip embargo. Just research, just family, just snow in December. But I cannot pack for you. I have been waiting for you to decide whether you are building a legacy or just serving a sentence.',
         left: {
-          text: 'We stay. China is our home. Our daughter will understand one day.',
+          text: 'We stay. China is our home. Our daughter will understand one day. She has to.',
           effects: { capital: 2, hype: 1, compute: 1, safety: -1 },
           setFlags: { chose_china: true },
           relations: { family: -4, regulator: 3, board: 3, staff: 0, public: -1 },
@@ -3189,7 +3206,7 @@ const STORY_DATA = {
           next: 'zhang_gate'
         },
         right: {
-          text: 'Book the tickets. Let us be a family again. Zurich is waiting.',
+          text: 'Book the tickets. Let us be a family. I want our daughter to draw me as a person.',
           effects: { capital: -5, hype: 4, compute: -2, safety: 6 },
           setFlags: { escape_accepted: true },
           relations: { family: 10, regulator: -6, board: -5, staff: 3, public: 5, partner: 2 },
@@ -3201,7 +3218,7 @@ const STORY_DATA = {
       zhang_gate: {
         speaker: 'System',
         avatar: 'system',
-        text: 'Act I closes. Chips, DeepSeek, the party, Lin, Zurich — choices made. The sanctions tighten. The world divides. The question is not whether Z.ai survives. It is whether Zhang Peng knows which side of the line he stands on.',
+        text: 'The view from the Z.ai tower: Beijing smog, construction cranes, the Great Hall faint in the distance. Your daughter\'s postcard is propped against the monitor — mountains, three stick figures, "Come home." The CCPPC letter is unopened on your desk. GLM-5.2 training metrics blink green. The chip embargo is tightening. You have two passports in your drawer. One of them expires next month.',
         autoRoute: [
           { if: { flags: { domestic_path: true, cppcc_complied: true } }, goto: 'zhang_late_fortress' },
           { if: { flags: { escape_accepted: true } }, goto: 'zhang_late_zurich' },
@@ -3360,7 +3377,8 @@ const STORY_DATA = {
         }
       },
 
-      // CRISIS NODES      // ZHANG POOL NODES
+      // CRISIS NODES
+      // ZHANG POOL NODES
       zhang_pool_sanction_bypass: {
         speaker: 'Chief Strategy Officer',
         avatar: 'board',
@@ -3688,6 +3706,36 @@ const STORY_DATA = {
             { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
             { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
             { if: { always: true }, goto: 'zhang_p_ministry' }
+          ]
+        }
+      },
+
+      // PRESSURE NODE
+      zhang_p_ministry: {
+        speaker: 'Ministry of Science and Technology Official',
+        avatar: 'regulator',
+        text: 'Comrade Zhang. The Ministry has reviewed your export compliance. Your open-source releases. Your Belt and Road deployments. The assessment is mixed. Some say you are a national treasure. Others say you are a security risk. The Minister wants a private meeting. No aides. No transcript. Just you and the question: are you building for China, or for the world?',
+        left: {
+          text: 'I am building for China. Everything else flows from that commitment.',
+          effects: { capital: 4, hype: -2, compute: 1, safety: -1 },
+          relations: { regulator: 8, board: 4, staff: -2, public: -3, partner: -1, family: -1 },
+          tags: ['aggressive'],
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_chip' }
+          ]
+        },
+        right: {
+          text: 'Science has no nationality. I build for humanity. China is my home, not my cage.',
+          effects: { capital: -3, hype: 5, compute: -1, safety: 4 },
+          relations: { regulator: -6, board: -2, staff: 6, public: 7, partner: 3, family: 2 },
+          tags: ['cautious'],
+          delay: { turns: 2, log: 'Your statement circulates internationally. The Ministry issues a quiet censure. Your CCPPC status is frozen indefinitely.', effects: { hype: 3, capital: -2 }, relations: { regulator: -4, public: 5 } },
+          next: [
+            { if: { flags: { global_path: true }, minRelations: { partner: 60 }, minStats: { hype: 60 } }, goto: 'zhang_secret_silk' },
+            { if: { flags: { domestic_path: true }, minRelations: { regulator: 65 } }, goto: 'zhang_secret_fortress' },
+            { if: { always: true }, goto: 'zhang_p_chip' }
           ]
         }
       }
