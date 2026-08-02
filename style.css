@@ -469,6 +469,54 @@ body {
   font-size: 0.75rem; line-height: 1.48;
   color: var(--text-secondary);
 }
+/* Advice whisper panel */
+.advice-whisper {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--text-primary);
+  background: var(--panel-bg);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.advice-whisper.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.advice-label {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  opacity: 0.5;
+  margin-bottom: 2px;
+}
+.advice-speaker {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+.advice-whisper p {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  opacity: 0.85;
+}
+/* Continue-only card override */
+.continue-only .choice-stamp.right { display: none; }
+.continue-only .choice-stamp.left {
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  background: var(--text-primary);
+  color: var(--background);
+  border-radius: 4px;
+  padding: 6px 20px;
+}
 
 /* ================================================================
    CARD (row 2 of #screen-game grid)

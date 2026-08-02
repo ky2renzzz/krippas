@@ -1458,8 +1458,39 @@ class GameEngine {
       // Dynamic theme per speaker
       this.applyTheme(this.state.currentCharacter, node.speaker);
 
-      if (this.indicatorLeft) this.indicatorLeft.innerText = node.left ? node.left.text : '';
-      if (this.indicatorRight) this.indicatorRight.innerText = node.right ? node.right.text : '';
+      // Advice whisper panel
+      let adviceEl = document.getElementById('advice-whisper');
+      if (!adviceEl) adviceEl = { classList: { add: function(){}, remove: function(){} } };
+      if (node.raw && node.raw.advice) {
+        var adv = node.raw.advice;
+        var advSpk = document.getElementById('advice-speaker');
+        var advTxt = document.getElementById('advice-text');
+        if (advSpk) advSpk.innerText = adv.speaker || '';
+        if (advTxt) advTxt.innerText = adv.text || '';
+        adviceEl.classList.add('visible');
+      } else {
+        adviceEl.classList.remove('visible');
+      }
+
+      // Continue-only mode: left choice = Continue, right hidden
+      var isContinue = node.raw && node.raw._continueOnly;
+      if (isContinue) {
+        if (this.indicatorLeft) this.indicatorLeft.innerText = node.left ? node.left.text : 'Continue';
+        if (this.indicatorRight) this.indicatorRight.innerText = '';
+        if (this.mainCard) this.mainCard.classList.add('continue-only');
+        if (!this._continueBound) {
+          this._continueBound = true;
+          this.mainCard.addEventListener('click', function(e) {
+            if (this.state.gameState !== 'game' || this.choiceLocked) return;
+            var cur = this.getResolvedNode(this.state.currentCardNode);
+            if (cur && cur.raw && cur.raw._continueOnly) this.performChoice('left');
+          }.bind(this));
+        }
+      } else {
+        if (this.mainCard) this.mainCard.classList.remove('continue-only');
+        if (this.indicatorLeft) this.indicatorLeft.innerText = node.left ? node.left.text : '';
+        if (this.indicatorRight) this.indicatorRight.innerText = node.right ? node.right.text : '';
+      }
 
       this.resetCardTransform(false);
       this.setChoicePreview(null, 0);
@@ -1670,6 +1701,17 @@ class GameEngine {
 
     this.updateStatsUI();
     this.pushDynamicStaffReactions(node, choice);
+
+    // Reveal advice truth after choice
+    if (node.raw && node.raw.advice) {
+      var advTruth = node.raw.advice.truth;
+      if (typeof advTruth !== 'undefined') {
+        var revealMsg = advTruth ? node.raw.advice.speaker + ' was telling the truth.'
+                                : node.raw.advice.speaker + ' was lying to you.';
+        this.addStaffFeedMessage('INTEL', revealMsg, advTruth ? 'reaction-positive' : 'reaction-negative');
+      }
+    }
+
     this.setChoicePreview(null, 0);
     this.hideChangeDots();
 
