@@ -1702,16 +1702,6 @@ class GameEngine {
     this.updateStatsUI();
     this.pushDynamicStaffReactions(node, choice);
 
-    // Reveal advice truth after choice
-    if (node.raw && node.raw.advice) {
-      var advTruth = node.raw.advice.truth;
-      if (typeof advTruth !== 'undefined') {
-        var revealMsg = advTruth ? node.raw.advice.speaker + ' was telling the truth.'
-                                : node.raw.advice.speaker + ' was lying to you.';
-        this.addStaffFeedMessage('INTEL', revealMsg, advTruth ? 'reaction-positive' : 'reaction-negative');
-      }
-    }
-
     this.setChoicePreview(null, 0);
     this.hideChangeDots();
 

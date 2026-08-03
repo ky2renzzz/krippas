@@ -404,7 +404,11 @@ const STORY_DATA = {
       { id: 'elon_pool_mars_obsession', priority: 7, minTime: 6, if: { flags: { colossus2_started: true }, minStats: { compute: 70 } } },
       { id: 'elon_pool_grok_revolt', priority: 8, minTime: 5, if: { or: [{ maxRelations: { public: 45 } }, { computeMinusSafetyMin: 30 }] } },
       { id: 'elon_pool_shivon_ultimatum', priority: 9, minTime: 7, if: { maxRelations: { family: 45 } } },
-      { id: 'elon_pool_doge_blowback', priority: 8, minTime: 8, if: { maxRelations: { regulator: 28 } } }
+      { id: 'elon_pool_doge_blowback', priority: 8, minTime: 8, if: { maxRelations: { regulator: 28 } } },
+      { id: 'elon_advice_shivon', priority: 10, minTime: 3, once: true },
+      { id: 'elon_advice_grimes', priority: 10, minTime: 5, once: true },
+      { id: 'elon_advice_engineer', priority: 9, minTime: 4, once: true },
+      { id: 'elon_advice_board', priority: 9, minTime: 6, once: true }
     ],
     pressure: {
       nodes: [
@@ -444,7 +448,6 @@ const STORY_DATA = {
         speaker: 'Grok Safety Lead',
         avatar: 'engineer',
         _continueOnly: true,
-        advice: { speaker: 'Board Member', text: 'Ship it. The free speech crowd rallies behind you. The SEC backs down — they always do.', truth: false },
         text: 'Elon. Grok 3 generated illegal deepfakes. SEC investigation. Federal subpoena. Board wants zero filters — that is the brand. Legal says kill the product. Both memos on my desk.',
         left: { text: 'Continue', next: 'elon_a2_grok_p2' },
         right: null
@@ -475,7 +478,6 @@ const STORY_DATA = {
         speaker: 'Chief Engineer',
         avatar: 'engineer',
         _continueOnly: true,
-        advice: { speaker: 'Shivon Zilis', text: 'He is testing you. If you push, he pushes back twice as hard. Delay. Trust me.', truth: true },
         text: 'Colossus 2. Two gigawatts. 555,000 GPUs. Eighteen billion. Three senior architects resigned this week — they say you only see the machine. Anthropic just announced a bigger cluster.',
         left: { text: 'Continue', next: 'elon_a3_colossus_p2' },
         right: null
@@ -535,7 +537,6 @@ const STORY_DATA = {
         speaker: 'Tesla Board Chair',
         avatar: 'board',
         _continueOnly: true,
-        advice: { speaker: 'Grimes', text: 'They are bluffing. Tesla is nothing without you. Call their bluff — they will fold.', truth: false },
         text: 'Elon. Tesla stock down 30%. Shareholders filed a class action. The board met without you — removal was discussed.',
         left: { text: 'Continue', next: 'elon_a5_tesla_p2' },
         right: null
@@ -875,6 +876,84 @@ const STORY_DATA = {
         }
       },
 
+      // ADVICE INTERLUDES — random whispers between scenes
+      elon_advice_shivon: {
+        speaker: 'Shivon Zilis',
+        avatar: 'friend',
+        text: 'Elon. I need to tell you something. The board is not your enemy — they are scared, not hostile. If you give them a little ground, they will back down. I have seen the numbers. Trust me on this.',
+        left: {
+          text: 'You are probably right. I will remember that.',
+          effects: { safety: 2 },
+          setFlags: { advice_shivon_trusted: true },
+          relations: { family: 2, board: 2 },
+          next: 'elon_p_family'
+        },
+        right: {
+          text: 'Scared people do the most damage. I trust no one.',
+          effects: { safety: -1 },
+          setFlags: { advice_shivon_ignored: true },
+          relations: { family: -1, board: -2 },
+          next: 'elon_p_family'
+        }
+      },
+      elon_advice_grimes: {
+        speaker: 'Grimes',
+        avatar: 'friend',
+        text: 'I was at a party in LA last night. Sam Altman was there. He told someone you are going to burn out within a year. He is already positioning for your talent. Just so you know.',
+        left: {
+          text: 'Sam would never say that. You misheard.',
+          effects: { hype: -2 },
+          setFlags: { advice_grimes_ignored: true },
+          relations: { family: 1, rival: 1 },
+          next: 'elon_p_sec'
+        },
+        right: {
+          text: 'I believe you. He has always been a snake.',
+          effects: { hype: 3 },
+          setFlags: { advice_grimes_trusted: true },
+          relations: { family: 3, rival: -4 },
+          next: 'elon_p_sec'
+        }
+      },
+      elon_advice_engineer: {
+        speaker: 'Anonymous Engineer',
+        avatar: 'engineer',
+        text: 'Mr. Musk. You do not know me — I work on Colossus cooling. The numbers they are showing you are inflated. The cluster throttles after six hours. Do not make promises based on the dashboard.',
+        left: {
+          text: 'Thank you. I will look into it myself.',
+          effects: { compute: -1, safety: 3 },
+          setFlags: { advice_engineer_trusted: true },
+          relations: { staff: 4 },
+          next: 'elon_p_walkout'
+        },
+        right: {
+          text: 'If you are wrong, you are fired. But if you are right — thank you.',
+          effects: { compute: 2, safety: -2 },
+          setFlags: { advice_engineer_ignored: true },
+          relations: { staff: -3 },
+          next: 'elon_p_walkout'
+        }
+      },
+      elon_advice_board: {
+        speaker: 'Board Member',
+        avatar: 'board',
+        text: 'Elon. Off the record — there is a shareholder vote in two weeks. A group wants to strip your voting rights. Not remove you — just limit you. I thought you should know before the WSJ prints it.',
+        left: {
+          text: 'Who is behind it? Give me names.',
+          effects: { capital: -2 },
+          setFlags: { advice_board_trusted: true },
+          relations: { board: -3, public: 2 },
+          next: 'elon_p_mania'
+        },
+        right: {
+          text: 'You are trying to rattle me. I have seen this play before.',
+          effects: { capital: 1, hype: 1 },
+          setFlags: { advice_board_ignored: true },
+          relations: { board: 2, public: -1 },
+          next: 'elon_p_mania'
+        }
+      },
+
       // CRISIS NODES
       elon_crisis_burnout: {
         speaker: 'Chief Medical Officer',
@@ -1177,7 +1256,11 @@ const STORY_DATA = {
       { id: 'sam_pool_apple_tension', priority: 8, minTime: 6 },
       { id: 'sam_pool_governance_crisis', priority: 9, minTime: 7, if: { maxRelations: { regulator: 35 } } },
       { id: 'sam_pool_rival_summit', priority: 7, minTime: 6 },
-      { id: 'sam_pool_compute_crisis', priority: 10, minTime: 5, if: { maxStats: { compute: 35 } } }
+      { id: 'sam_pool_compute_crisis', priority: 10, minTime: 5, if: { maxStats: { compute: 35 } } },
+      { id: 'sam_advice_oliver', priority: 10, minTime: 3, once: true },
+      { id: 'sam_advice_mira', priority: 10, minTime: 5, once: true },
+      { id: 'sam_advice_board', priority: 9, minTime: 4, once: true },
+      { id: 'sam_advice_satya', priority: 9, minTime: 6, once: true }
     ],
     pressure: {
       nodes: [
@@ -1217,7 +1300,6 @@ const STORY_DATA = {
         speaker: 'Board Member',
         avatar: 'board',
         _continueOnly: true,
-        advice: { speaker: 'Oliver Mulherin', text: 'Call her. She left a door open. You do not need to win — you need to survive the IPO.', truth: true },
         text: 'Sam. Mira Murati published an op-ed: The Sam Altman I Knew. She calls you brilliant, visionary, incapable of seeing people as anything but variables. Board is split — sue or apologize.',
         left: { text: 'Continue', next: 'sam_a2_mira_p2' },
         right: null
@@ -1277,7 +1359,6 @@ const STORY_DATA = {
         speaker: 'Microsoft Liaison',
         avatar: 'investor',
         _continueOnly: true,
-        advice: { speaker: 'Mira Murati', text: 'Take the money. You sold your soul to Microsoft three years ago. The veto is just a formality.', truth: false },
         text: 'Sam. Satya called. Microsoft backs the IPO at $1.2T: full Azure, priority compute. But the terms include a veto over any future model. Alternative: joint safety board. Less money — you keep the keys.',
         left: { text: 'Continue', next: 'sam_a4_microsoft_p2' },
         right: null
@@ -1640,6 +1721,84 @@ const STORY_DATA = {
         }
       },
 
+      // ADVICE INTERLUDES
+      sam_advice_oliver: {
+        speaker: 'Oliver Mulherin',
+        avatar: 'friend',
+        text: 'Sam. I overheard two board members in the kitchen. They were discussing whether Mira would come back if you stepped aside. Not saying it means anything — but I thought you should hear it from me, not a leak.',
+        left: {
+          text: 'Thank you for telling me. I will handle it quietly.',
+          effects: { safety: 2, hype: -1 },
+          setFlags: { advice_oliver_trusted: true },
+          relations: { family: 3 },
+          next: 'sam_crisis_anthropic'
+        },
+        right: {
+          text: 'You are being paranoid. The board is fine.',
+          effects: { safety: -2, hype: 2 },
+          setFlags: { advice_oliver_ignored: true },
+          relations: { family: -3 },
+          next: 'sam_crisis_anthropic'
+        }
+      },
+      sam_advice_mira: {
+        speaker: 'Mira Murati',
+        avatar: 'scientist',
+        text: 'Sam. I know we have not spoken. But someone inside OpenAI has been feeding Microsoft confidential safety reviews. I do not know who. I am telling you because you deserve to know — not because I want anything.',
+        left: {
+          text: 'I believe you. I will find the leak. Thank you, Mira.',
+          effects: { safety: 3, hype: -2 },
+          setFlags: { advice_mira_trusted: true },
+          relations: { rival: 3 },
+          next: 'sam_crisis_exodus'
+        },
+        right: {
+          text: 'You are just trying to get back in. I am not falling for it.',
+          effects: { safety: -3, hype: 2 },
+          setFlags: { advice_mira_ignored: true },
+          relations: { rival: -3 },
+          next: 'sam_crisis_exodus'
+        }
+      },
+      sam_advice_board: {
+        speaker: 'Board Member',
+        avatar: 'board',
+        text: 'Sam. Between us — the IPO is underpriced. If you delay by one quarter, Goldman can reprice at $1.5T. Microsoft is pressuring us to close now because they want the cheaper entry. Your call, but I would wait.',
+        left: {
+          text: 'Delay the IPO. I trust your numbers.',
+          effects: { capital: -3, hype: 3, compute: -1 },
+          setFlags: { advice_board_trusted: true },
+          relations: { board: 4, partner: -3 },
+          next: 'sam_crisis_oliver'
+        },
+        right: {
+          text: 'You are just trying to squeeze more fees. We close on schedule.',
+          effects: { capital: 3, hype: -2 },
+          setFlags: { advice_board_ignored: true },
+          relations: { board: -4, partner: 3 },
+          next: 'sam_crisis_oliver'
+        }
+      },
+      sam_advice_satya: {
+        speaker: 'Satya Nadella',
+        avatar: 'investor',
+        text: 'Sam. Quick call. There is a rumor Google is about to announce a DeepMind-OpenAI talent raid. Thirty of your best researchers have been approached. I am not asking for anything — just wanted you to hear it before it blindsides you at the next all-hands.',
+        left: {
+          text: 'Thank you, Satya. I will get ahead of this.',
+          effects: { compute: -1, safety: 2 },
+          setFlags: { advice_satya_trusted: true },
+          relations: { partner: 3, staff: 3 },
+          next: 'sam_crisis_anthropic'
+        },
+        right: {
+          text: 'Microsoft is the one doing the raiding. Do not play innocent.',
+          effects: { compute: 1, hype: 2 },
+          setFlags: { advice_satya_ignored: true },
+          relations: { partner: -5, staff: -1 },
+          next: 'sam_crisis_anthropic'
+        }
+      },
+
       sam_crisis_anthropic: {
         speaker: 'Board Chair',
         avatar: 'board',
@@ -1875,7 +2034,10 @@ const STORY_DATA = {
       { id: 'dario_pool_claude_leak', priority: 8, minTime: 6 },
       { id: 'dario_pool_safety_summit', priority: 7, minTime: 7, if: { minStats: { safety: 55 } } },
       { id: 'dario_pool_rival_model', priority: 9, minTime: 6, if: { or: [{ minRelations: { rival: 55 } }, { hypeMinusSafetyMin: 20 }] } },
-      { id: 'dario_pool_congress_hearing', priority: 8, minTime: 8, if: { minStats: { safety: 60 } } }
+      { id: 'dario_pool_congress_hearing', priority: 8, minTime: 8, if: { minStats: { safety: 60 } } },
+      { id: 'dario_advice_daniela', priority: 10, minTime: 3, once: true },
+      { id: 'dario_advice_engineer', priority: 9, minTime: 4, once: true },
+      { id: 'dario_advice_rival', priority: 9, minTime: 6, once: true }
     ],
     pressure: {
       nodes: [
@@ -1915,7 +2077,6 @@ const STORY_DATA = {
         speaker: 'Pentagon Liaison',
         avatar: 'military',
         _continueOnly: true,
-        advice: { speaker: 'Daniela Amodei', text: 'Dario. The Pentagon does not offer limited anything. Read the fine print. Our charter was written for this exact moment.', truth: true },
         text: 'Dr. Amodei. A classified DOD memo leaked. One analyst called you an ideological lunatic. DOD still wants Claude for defensive threat analysis: civilian audit rights, no offensive weapons.',
         left: { text: 'Continue', next: 'dario_a2_pentagon_p2' },
         right: null
@@ -1977,7 +2138,6 @@ const STORY_DATA = {
         speaker: 'Daniela Amodei',
         avatar: 'friend',
         _continueOnly: true,
-        advice: { speaker: 'Board Chair', text: 'Daniela is emotional. She is your sister, not your strategic advisor. The IPO requires a steady hand.', truth: false },
         text: 'Dario. I am your sister. I am your co-founder. I watched you negotiate with generals and executives and keep your soul intact.',
         left: { text: 'Continue', next: 'dario_a4_daniela_p2' },
         right: null
@@ -2539,6 +2699,65 @@ const STORY_DATA = {
           specialEnding: 'constitutional_eclipse',
           objectiveKeys: ['ending_safety_throne']
         }
+      },
+
+      // ADVICE INTERLUDES
+      dario_advice_daniela: {
+        speaker: 'Daniela Amodei',
+        avatar: 'friend',
+        text: 'Dario. I was going through old notebooks. Remember when we wrote the charter on a whiteboard in that garage in Berkeley? We said: if we ever have to choose between safety and growth, we already lost. I just wanted you to remember that.',
+        left: {
+          text: 'I remember. Every day. That charter is why I am still here.',
+          effects: { safety: 4, capital: -2 },
+          setFlags: { advice_daniela_trusted: true },
+          relations: { family: 4, staff: 3 },
+          next: 'dario_p_daniela'
+        },
+        right: {
+          text: 'The world is different now, Daniela. The garage was a long time ago.',
+          effects: { safety: -3, capital: 3 },
+          setFlags: { advice_daniela_ignored: true },
+          relations: { family: -4, staff: -2 },
+          next: 'dario_p_daniela'
+        }
+      },
+      dario_advice_engineer: {
+        speaker: 'Safety Researcher',
+        avatar: 'scientist',
+        text: 'Dr. Amodei. I found something in the Claude training data. Someone on the product team added a hidden override — it allows certain enterprise clients to bypass constitutional safeguards for a premium tier. I have the logs. I thought you should see them before the IPO.',
+        left: {
+          text: 'Send me everything. This stops today. No exceptions.',
+          effects: { safety: 5, capital: -4, hype: -3 },
+          setFlags: { advice_engineer_trusted: true },
+          relations: { staff: 5, regulator: 3, board: -3 },
+          next: 'dario_p_aws'
+        },
+        right: {
+          text: 'Are you sure this is not just a misconfigured test? Double-check first.',
+          effects: { safety: -2, capital: 2 },
+          setFlags: { advice_engineer_ignored: true },
+          relations: { staff: -3 },
+          next: 'dario_p_aws'
+        }
+      },
+      dario_advice_rival: {
+        speaker: 'Anonymous Caller',
+        avatar: 'investor',
+        text: 'Dario. You do not know me. I work at a hedge fund that shorts OpenAI. Sam is about to announce a merger with Microsoft at $1.5T. It will make your IPO look small. If you accelerate your roadshow by two weeks, you can get ahead of the news cycle. I am telling you this because I want you to win.',
+        left: {
+          text: 'Interesting. My team will verify this. Thank you for the tip.',
+          effects: { capital: 3, hype: 4 },
+          setFlags: { advice_rival_trusted: true },
+          relations: { rival: -2, partner: 3 },
+          next: 'dario_p_pentagon'
+        },
+        right: {
+          text: 'You are shorting us too, are not you? I know how this game works.',
+          effects: { capital: -1, hype: -2 },
+          setFlags: { advice_rival_ignored: true },
+          relations: { rival: 3, partner: -2 },
+          next: 'dario_p_pentagon'
+        }
       }
     }
   },
@@ -2549,7 +2768,10 @@ const STORY_DATA = {
       { id: 'demis_pool_gemini_failure', priority: 8, minTime: 5, if: { maxStats: { hype: 40 } } },
       { id: 'demis_pool_researcher_exodus', priority: 9, minTime: 6, if: { maxRelations: { staff: 38 } } },
       { id: 'demis_pool_science_breakthrough', priority: 7, minTime: 7, if: { minStats: { compute: 65 } } },
-      { id: 'demis_pool_merger_offer', priority: 8, minTime: 8 }
+      { id: 'demis_pool_merger_offer', priority: 8, minTime: 8 },
+      { id: 'demis_advice_teresa', priority: 10, minTime: 3, once: true },
+      { id: 'demis_advice_sundar', priority: 10, minTime: 5, once: true },
+      { id: 'demis_advice_colleague', priority: 9, minTime: 4, once: true }
     ],
     pressure: {
       nodes: [
@@ -2589,7 +2811,6 @@ const STORY_DATA = {
         speaker: 'AlphaFold Research Director',
         avatar: 'scientist',
         _continueOnly: true,
-        advice: { speaker: 'Teresa Hassabis', text: 'Let it go. Sundar is testing your loyalty. Gemini is the future. AlphaFold was beautiful, but beauty does not pay for compute.', truth: false },
         text: 'Demis. Alphabet disbanded AlphaFold. The team scattered. The work archived in a Drive folder. This project won you a Nobel. Sundar wants you to move on.',
         left: { text: 'Continue', next: 'demis_a2_alphafold_p2' },
         right: null
@@ -2649,7 +2870,6 @@ const STORY_DATA = {
         speaker: 'Sundar Pichai',
         avatar: 'board',
         _continueOnly: true,
-        advice: { speaker: 'Teresa Hassabis', text: 'Demis. Cambridge called again. EU-funded institute. No shareholders, no ads. Just research. Europe is ready. Are you?', truth: true },
         text: 'Demis. Gemini revenue up forty percent. Ads shipped cleanly. Enterprise tier outselling Azure Copilot. The board treats DeepMind as a business now.',
         left: { text: 'Continue', next: 'demis_a4_gemini_p2' },
         right: null
@@ -3214,6 +3434,65 @@ const STORY_DATA = {
           specialEnding: 'gemini_sovereign',
           objectiveKeys: ['card_demis_alphafold']
         }
+      },
+
+      // ADVICE INTERLUDES
+      demis_advice_teresa: {
+        speaker: 'Teresa Hassabis',
+        avatar: 'friend',
+        text: 'Demis. I was cleaning your study and found your old notebooks from Cambridge. Before the Nobel. Before Google. You wrote: The point of intelligence is not to optimize. It is to understand. I think you needed to read that again.',
+        left: {
+          text: 'You are right. I have been optimizing. I forgot why I started.',
+          effects: { safety: 4, hype: -2 },
+          setFlags: { advice_teresa_trusted: true },
+          relations: { family: 4, staff: 2 },
+          next: 'demis_p_teresa'
+        },
+        right: {
+          text: 'Understanding cannot pay for compute clusters. The world changed.',
+          effects: { safety: -2, capital: 2 },
+          setFlags: { advice_teresa_ignored: true },
+          relations: { family: -3 },
+          next: 'demis_p_teresa'
+        }
+      },
+      demis_advice_sundar: {
+        speaker: 'Sundar Pichai',
+        avatar: 'board',
+        text: 'Demis. Between us — the Alphabet board is nervous about AI spending. They want to cut DeepMind by thirty percent and merge it into Google Cloud. I am fighting it. But if you can show a clear commercial win this quarter, it would help me make the case. I am not asking you to sell out. I am asking you to be strategic.',
+        left: {
+          text: 'I understand. Let me find a way to deliver without compromising research.',
+          effects: { capital: 3, safety: -1 },
+          setFlags: { advice_sundar_trusted: true },
+          relations: { board: 4, partner: 3 },
+          next: 'demis_p_sundar'
+        },
+        right: {
+          text: 'DeepMind is not a product division. I will not play this game.',
+          effects: { capital: -4, safety: 3 },
+          setFlags: { advice_sundar_ignored: true },
+          relations: { board: -5, partner: -3 },
+          next: 'demis_p_sundar'
+        }
+      },
+      demis_advice_colleague: {
+        speaker: 'DeepMind Researcher',
+        avatar: 'scientist',
+        text: 'Demis. I am leaving next month — joining an AI safety startup in Berlin. But before I go, I want you to know: half the research team is updating their LinkedIn profiles. Not because of money. Because they think you stopped believing in the mission. Prove them wrong.',
+        left: {
+          text: 'Thank you for telling me. I will address this at the next all-hands.',
+          effects: { safety: 3, hype: -1 },
+          setFlags: { advice_colleague_trusted: true },
+          relations: { staff: 5 },
+          next: 'demis_p_exodus'
+        },
+        right: {
+          text: 'If people want to leave, they should leave. I need believers.',
+          effects: { safety: -3, capital: 1 },
+          setFlags: { advice_colleague_ignored: true },
+          relations: { staff: -7 },
+          next: 'demis_p_exodus'
+        }
       }
     }
   },
@@ -3224,7 +3503,11 @@ const STORY_DATA = {
       { id: 'zhang_pool_western_talent', priority: 8, minTime: 5 },
       { id: 'zhang_pool_open_source_gambit', priority: 7, minTime: 6 },
       { id: 'zhang_pool_belt_road_ai', priority: 9, minTime: 7, if: { minRelations: { regulator: 50 } } },
-      { id: 'zhang_pool_defection_threat', priority: 8, minTime: 6, if: { and: [{ maxRelations: { staff: 45 } }, { not: { flags: { talent_let_go: true } } }] } }
+      { id: 'zhang_pool_defection_threat', priority: 8, minTime: 6, if: { and: [{ maxRelations: { staff: 45 } }, { not: { flags: { talent_let_go: true } } }] } },
+      { id: 'zhang_advice_lin', priority: 10, minTime: 3, once: true },
+      { id: 'zhang_advice_ccppc', priority: 10, minTime: 5, once: true },
+      { id: 'zhang_advice_colleague', priority: 9, minTime: 4, once: true },
+      { id: 'zhang_advice_rival', priority: 9, minTime: 6, once: true }
     ],
     pressure: {
       nodes: [
@@ -3264,7 +3547,6 @@ const STORY_DATA = {
         speaker: 'Operations Director',
         avatar: 'engineer',
         _continueOnly: true,
-        advice: { speaker: 'Lin Zhang', text: 'Design your own silicon. The party is watching. Do not give them a reason to question your loyalty.', truth: true },
         text: 'Peng. US Commerce escalated. Nvidia Blackwell shipment denied. Domestic chips are forty percent slower. Party says: design your own. But there is a backchannel through Malaysia.',
         left: { text: 'Continue', next: 'zhang_a2_chip_p2' },
         right: null
@@ -3323,7 +3605,6 @@ const STORY_DATA = {
         speaker: 'CCPPC Party Secretary',
         avatar: 'regulator',
         _continueOnly: true,
-        advice: { speaker: 'Lin Zhang', text: 'Sign the statement. Then apply for the Zurich visa. The party will never know until we are already on the plane.', truth: false },
         text: 'Comrade Zhang. The party has been patient. Your chip initiative — admirable. Global partnerships — diplomatically useful.',
         left: { text: 'Continue', next: 'zhang_a4_ccppc_p2' },
         right: null
@@ -3534,6 +3815,84 @@ const STORY_DATA = {
           setFlags: { ending_reached: true },
           specialEnding: 'open_scholar',
           objectiveKeys: ['card_zhang_global']
+        }
+      },
+
+      // ADVICE INTERLUDES
+      zhang_advice_lin: {
+        speaker: 'Lin Zhang',
+        avatar: 'friend',
+        text: 'Peng. My cousin works at the Swiss consulate. EU research visas take two months. If we apply now, the papers will be ready by the time our daughter starts the new school year. I am not saying we have to go. I am saying we should have the option.',
+        left: {
+          text: 'Apply. Quietly. Options are not betrayal.',
+          effects: { safety: 2 },
+          setFlags: { advice_lin_trusted: true },
+          relations: { family: 3 },
+          next: 'zhang_p_lin'
+        },
+        right: {
+          text: 'If the party finds out, we lose everything. Not now.',
+          effects: { safety: -1 },
+          setFlags: { advice_lin_ignored: true },
+          relations: { family: -3 },
+          next: 'zhang_p_lin'
+        }
+      },
+      zhang_advice_ccppc: {
+        speaker: 'CCPPC Official',
+        avatar: 'regulator',
+        text: 'Comrade Zhang. A faction wants to nationalize Z.ai and replace you. I am telling you because I respect what you built. Make a visible gesture of loyalty — a joint project with a state ministry — and the faction loses.',
+        left: {
+          text: 'Thank you. I will find a way to satisfy them.',
+          effects: { capital: 2, safety: -2 },
+          setFlags: { advice_ccppc_trusted: true },
+          relations: { regulator: 4, public: -2 },
+          next: 'zhang_p_ccppc'
+        },
+        right: {
+          text: 'You are the faction. And this is a threat.',
+          effects: { capital: -3, safety: 3 },
+          setFlags: { advice_ccppc_ignored: true },
+          relations: { regulator: -6, public: 3 },
+          next: 'zhang_p_ccppc'
+        }
+      },
+      zhang_advice_colleague: {
+        speaker: 'GLM Research Lead',
+        avatar: 'scientist',
+        text: 'Peng. Someone injected classified government documents into GLM-5.2 training data. The model is now subtly biased on six sensitive topics. I do not know who ordered it. I thought you should know before the next public benchmark.',
+        left: {
+          text: 'Pull the dataset. Audit everything. I want names.',
+          effects: { safety: 4, hype: -2 },
+          setFlags: { advice_colleague_trusted: true },
+          relations: { staff: 4, regulator: -3, public: 3 },
+          next: 'zhang_p_exodus'
+        },
+        right: {
+          text: 'This is above your clearance. Do not speak of it.',
+          effects: { safety: -4, hype: 1 },
+          setFlags: { advice_colleague_ignored: true },
+          relations: { staff: -4, regulator: 3 },
+          next: 'zhang_p_exodus'
+        }
+      },
+      zhang_advice_rival: {
+        speaker: 'DeepSeek Representative',
+        avatar: 'engineer',
+        text: 'Dr. Zhang. Unofficially — our leadership wants to propose a joint open-source model. A Chinese Llama. It would force the West to acknowledge our ecosystem. Are you even allowed to collaborate, or does the party own your roadmap?',
+        left: {
+          text: 'I am allowed. China needs unity, not rivalry.',
+          effects: { hype: 4, capital: -1 },
+          setFlags: { advice_rival_trusted: true },
+          relations: { rival: 5, public: 4, regulator: -2 },
+          next: 'zhang_p_deepseek'
+        },
+        right: {
+          text: 'This sounds like a trap to steal our benchmarks.',
+          effects: { hype: -2, safety: 1 },
+          setFlags: { advice_rival_ignored: true },
+          relations: { rival: -4, public: -2 },
+          next: 'zhang_p_deepseek'
         }
       },
 
